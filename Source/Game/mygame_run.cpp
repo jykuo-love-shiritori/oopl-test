@@ -27,6 +27,18 @@ void CGameStateRun::OnBeginState()
 
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
+	if (character.Left() + character.Width() > chest_and_key.Left() &&
+		character.Top() + character.Height() > chest_and_key.Top()) {
+		chest_and_key.SelectShowBitmap(1);
+	}
+	if (phase == 5) {
+		for (int i = 0; i < 3; i++) {
+			if (character.Left() + character.Width() > door[i].Left() &&
+				character.Top() + character.Height() > door[i].Top()) {
+				door[i].SelectShowBitmap(1);
+			}
+		}
+	}
 }
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -47,7 +59,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	});
 	background.SetTopLeft(0, 0);
 
-	character.LoadBitmapByString({ "resources/gray.bmp" });
+	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
@@ -55,13 +67,16 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	bee.LoadBitmapByString({ "resources/bee_1.bmp", "resources/bee_2.bmp" });
 	bee.SetTopLeft(462, 265);
+	bee.SetAnimation(1, FALSE);
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
+	ball.SetAnimation(1000, TRUE);
 
 	for (int i = 0; i < 3; i++) {
 		door[i].LoadBitmapByString({ "resources/door_close.bmp", "resources/door_open.bmp" }, RGB(255, 255, 255));
 		door[i].SetTopLeft(462 - 100 * i, 265);
+		door[i].SetAnimation(1, TRUE);
 	}
 }
 
@@ -119,6 +134,23 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 		}
 	}
+
+	int cL = character.Left();
+	int cT = character.Top();
+	int speeeeed = 20;
+
+	if (nChar == VK_LEFT) {
+		character.SetTopLeft(cL - speeeeed, cT);
+	}
+	if (nChar == VK_RIGHT) {
+		character.SetTopLeft(cL + speeeeed, cT);
+	}
+	if (nChar == VK_UP) {
+		character.SetTopLeft(cL, cT - speeeeed);
+	}
+	if (nChar == VK_DOWN) {
+		character.SetTopLeft(cL, cT + speeeeed);
+	}
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -167,7 +199,9 @@ void CGameStateRun::show_image_by_phase() {
 			for (int i = 0; i < 3; i++) {
 				door[i].ShowBitmap();
 			}
+			ball.ToggleAnimation();
 		}
+
 		if (phase == 6 && sub_phase == 1) {
 			ball.ShowBitmap();
 		}
