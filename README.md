@@ -1,10 +1,8 @@
 # TODO
-- [x] Map data
-
-Level 1:
-	tp minecart not needed
-    normal entrance, elevator
-	tunnel to right leading to dwarf
+- [ ] Map data
+  - [ ] [tmxloader](https://github.com/martygrant/tmxloader)
+- [ ] Steal texture from original game
+  - [ ] *Split texture libary*
 
 Ores:
   - [ ] Copper ore
