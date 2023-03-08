@@ -88,7 +88,7 @@ IDR_MAINFRAME           BITMAP                  "..\\..\\resources\\Toolbar.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "..\\..\\resources\\game.ico"
+IDR_MAINFRAME           ICON                    "..\\..\\resources\\Chicken.ico"
 IDR_GAMETYPE            ICON                    "..\\..\\resources\\gameDoc.ico"
 
 /////////////////////////////////////////////////////////////////////////////
