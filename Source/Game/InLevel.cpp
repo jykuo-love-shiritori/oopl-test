@@ -28,20 +28,60 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
-	
+    if(phase==1){
+        if(character.GetLeft()>1300 && character.GetTop()>425 && character.GetTop()<475){
+            phase++;
+            character.SetTopLeft(100,character.GetTop());
+        }
+    }
+    else if(phase==2){
+        if(character.GetLeft()<100 && character.GetTop()>425 && character.GetTop()<475){
+            phase--;
+            character.SetTopLeft(1300,character.GetTop());
+        }
+    }
+    if(character.GetLeft()<0){
+        character.SetTopLeft(0,character.GetTop());
+    }
+    if(character.GetLeft()+character.GetWidth()>1400){
+        character.SetTopLeft(1400-character.GetWidth(),character.GetTop());
+    }
+    if(character.GetTop()<0){
+        character.SetTopLeft(character.GetLeft(),0);
+    }
+    if(character.GetTop()+character.GetHeight()>900){
+        character.SetTopLeft(character.GetLeft(),900-character.GetHeight());
+    }
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
-	test.LoadBitmapByString({
-        "resources/TitleButtons.bmp"
+	character.LoadBitmapByString({
+        "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
-    test.SetTopLeft(0,0);
+    character.SetTopLeft(750,700);
+
+	background.LoadBitmapByString({
+        "resources/MineEntrance.bmp",
+        "resources/DwarfRoom.bmp"
+	}, RGB(255, 255, 255));
+    background.SetTopLeft(0,0);
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
+	if (nChar == VK_LEFT) {
+		character.SetTopLeft(character.GetLeft()-50,character.GetTop());
+	}
+	if (nChar == VK_RIGHT) {
+		character.SetTopLeft(character.GetLeft()+50,character.GetTop());
+	}
+	if (nChar == VK_UP) {
+		character.SetTopLeft(character.GetLeft(),character.GetTop()-50);
+	}
+	if (nChar == VK_DOWN) {
+		character.SetTopLeft(character.GetLeft(),character.GetTop()+50);
+	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -71,5 +111,12 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-    test.ShowBitmap(5);
+    if(phase==1){
+        background.SetFrameIndexOfBitmap(0);
+    }
+    else if(phase==2){
+        background.SetFrameIndexOfBitmap(1);
+    }
+    background.ShowBitmap(2.3);
+    character.ShowBitmap(1);
 }

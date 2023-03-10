@@ -62,7 +62,9 @@ namespace game_framework {	namespace stage {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		CMovingBitmap test;
+		CMovingBitmap character;
+		CMovingBitmap background;
+		int phase=1;
 	};
 
 	class GameOver : public CGameState {
