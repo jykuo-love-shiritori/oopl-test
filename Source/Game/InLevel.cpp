@@ -28,59 +28,72 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
-    if(phase==1){
-        if(character.GetLeft()>1300 && character.GetTop()>425 && character.GetTop()<475){
-            phase++;
-            character.SetTopLeft(100,character.GetTop());
-        }
+	/* Map move */
+	/* Border detect */
+    if(player.GetCenter().x < 0){
+		if (map.hasLeftMap()) {
+			map.MoveToLeft();
+			player.Move(SIZE_X, 0);
+		}
+		else
+			player.Move(-player.GetCenter().x, 0);
     }
-    else if(phase==2){
-        if(character.GetLeft()<100 && character.GetTop()>425 && character.GetTop()<475){
-            phase--;
-            character.SetTopLeft(1300,character.GetTop());
-        }
-    }
-    if(character.GetLeft()<0){
-        character.SetTopLeft(0,character.GetTop());
-    }
-    if(character.GetLeft()+character.GetWidth()>1400){
-        character.SetTopLeft(1400-character.GetWidth(),character.GetTop());
-    }
-    if(character.GetTop()<0){
-        character.SetTopLeft(character.GetLeft(),0);
-    }
-    if(character.GetTop()+character.GetHeight()>900){
-        character.SetTopLeft(character.GetLeft(),900-character.GetHeight());
-    }
+	if (player.GetCenter().x > SIZE_X) {
+		if (map.hasRightMap()) {
+			map.MoveToRight();
+			player.Move(-SIZE_X, 0);
+		}
+		else
+			player.Move(SIZE_X-player.GetCenter().x, 0);
+	}
+	if (player.GetCenter().y < 0) {
+		if (map.hasUpMap()) {
+			map.MoveToUp();
+			player.Move(0, -SIZE_Y);
+		}
+		else
+			player.Move(0, -player.GetCenter().y);
+	}
+	if (player.GetCenter().y > SIZE_Y) {
+		if (map.hasUpMap()) {
+			map.MoveToUp();
+			player.Move(0, -SIZE_Y);
+		}
+		else
+			player.Move(0, -player.GetCenter().y);
+	}
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
-	character.LoadBitmapByString({
+	player.LoadBitmapByString({
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
-    character.SetTopLeft(750,700);
+	player.SetScale(1);
+	player.SetTopLeft(750,700);
 
-	background.LoadBitmapByString({
+	map.LoadBitmapByString({
         "resources/MineEntrance.bmp",
         "resources/DwarfRoom.bmp"
 	}, RGB(255, 255, 255));
-    background.SetTopLeft(0,0);
+	map.SetScale(2.3);
+    map.SetTopLeft(0,0);
+	map.SetFrameIndexOfBitmap(0); // set init map for test
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == VK_LEFT) {
-		character.SetTopLeft(character.GetLeft()-50,character.GetTop());
+        player.Move(-50, 0);
 	}
 	if (nChar == VK_RIGHT) {
-		character.SetTopLeft(character.GetLeft()+50,character.GetTop());
+		player.Move(50, 0);
 	}
 	if (nChar == VK_UP) {
-		character.SetTopLeft(character.GetLeft(),character.GetTop()-50);
+		player.Move(0, -50);
 	}
 	if (nChar == VK_DOWN) {
-		character.SetTopLeft(character.GetLeft(),character.GetTop()+50);
+		player.Move(0, 50);
 	}
 }
 
@@ -111,12 +124,6 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-    if(phase==1){
-        background.SetFrameIndexOfBitmap(0);
-    }
-    else if(phase==2){
-        background.SetFrameIndexOfBitmap(1);
-    }
-    background.ShowBitmap(2.3);
-    character.ShowBitmap(1);
+    map.ShowBitmap();
+    player.ShowBitmap();
 }

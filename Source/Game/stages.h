@@ -22,6 +22,8 @@
 #pragma once
 
 #include "config.h"
+#include "Map.h"
+#include "Character.h"
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
@@ -62,9 +64,8 @@ namespace game_framework {	namespace stage {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		CMovingBitmap character;
-		CMovingBitmap background;
-		int phase=1;
+		Character player;
+		Map map;
 	};
 
 	class GameOver : public CGameState {
