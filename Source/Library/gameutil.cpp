@@ -232,6 +232,14 @@ namespace game_framework {
 		);
 	}
 
+	CMovingBitmap::Vector2 CMovingBitmap::GetCenter()
+	{
+		return {
+			GetLeft() + GetWidth() / 2,
+			GetTop() + GetHeight() / 2
+		};
+	}
+
 	//! 設置圖片是否為動畫。
 	/*!
 		若 CMovingBitmap 讀入多個圖片，則可以使用此函數來設定物件為動畫。

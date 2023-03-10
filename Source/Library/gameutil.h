@@ -80,6 +80,10 @@ namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 
 	class CMovingBitmap {
+		struct Vector2
+		{
+			int x, y;
+		};
 	public:
 		CMovingBitmap();
 
@@ -111,6 +115,7 @@ namespace game_framework {
 		int   GetLeft();
 		int   GetHeight();
 		int   GetWidth();
+		Vector2 GetCenter();
 		double GetScale() const;
 		string GetImageFileName();
 		COLORREF GetFilterColor();
