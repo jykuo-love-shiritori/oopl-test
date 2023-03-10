@@ -21,9 +21,11 @@
 
 #pragma once
 
-#include "config.h"
 #include "Map.h"
 #include "Character.h"
+#include "Vector2.h"
+
+#include "config.h"
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
@@ -65,6 +67,7 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
 		Character player;
+		Unity::Vector2i playerMoving;
 		Map map;
 	};
 

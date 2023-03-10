@@ -30,6 +30,7 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	player.Move(playerMoving);
 	/* Map move */
 	/* Border detect */
     if(player.GetCenter().x < 0){
@@ -51,18 +52,18 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (player.GetCenter().y < 0) {
 		if (map.hasUpMap()) {
 			map.MoveToUp();
-			player.Move(0, -SIZE_Y);
+			player.Move(0, SIZE_Y);
 		}
 		else
 			player.Move(0, -player.GetCenter().y);
 	}
 	if (player.GetCenter().y > SIZE_Y) {
-		if (map.hasUpMap()) {
-			map.MoveToUp();
+		if (map.hasDownMap()) {
+			map.MoveToDown();
 			player.Move(0, -SIZE_Y);
 		}
 		else
-			player.Move(0, -player.GetCenter().y);
+			player.Move(0, SIZE_Y-player.GetCenter().y);
 	}
 }
 
@@ -85,23 +86,35 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	const int speed = 10;
 	if (nChar == KEY_MOVE_LEFT) {
-        player.Move(-50, 0);
+        playerMoving = Unity::Vector2i(-speed, 0);
 	}
 	if (nChar == KEY_MOVE_RIGHT) {
-		player.Move(50, 0);
+        playerMoving = Unity::Vector2i(speed, 0);
 	}
 	if (nChar == KEY_MOVE_UP) {
-		player.Move(0, -50);
+        playerMoving = Unity::Vector2i(0, -speed);
 	}
 	if (nChar == KEY_MOVE_DOWN) {
-		player.Move(0, 50);
+        playerMoving = Unity::Vector2i(0, speed);
 	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
+	if (nChar == KEY_MOVE_LEFT) {
+        playerMoving = Unity::Vector2i(0, 0);
+	}
+	if (nChar == KEY_MOVE_RIGHT) {
+        playerMoving = Unity::Vector2i(0, 0);
+	}
+	if (nChar == KEY_MOVE_UP) {
+        playerMoving = Unity::Vector2i(0, 0);
+	}
+	if (nChar == KEY_MOVE_DOWN) {
+        playerMoving = Unity::Vector2i(0, 0);
+	}
 }
 
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
