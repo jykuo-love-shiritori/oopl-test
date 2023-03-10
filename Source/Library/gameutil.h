@@ -65,6 +65,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #include <list>
 #include <vector>
@@ -96,9 +97,11 @@ namespace game_framework {
 		void  SetAnimation(int delay, bool _once);
 		void  SetFrameIndexOfBitmap(int frame);
 		void  SetTopLeft(int, int);			// 將圖的左上角座標移至 (x,y)
+		void  SetCenter(int x, int y);		// 將圖的中心座標移至 (x,y)
+		void  SetScale(double scale);		// 設置預設的縮放大小
 
 		/* Show the bitmap with or without factor. */
-		void  ShowBitmap();					// 將圖貼到螢幕
+		void  ShowBitmap();					// 將圖貼到螢幕 使用預設的縮放大小
 		void  ShowBitmap(double factor);	// 將圖貼到螢幕 factor < 1時縮小，>1時放大。注意：需要VGA卡硬體的支援，否則會很慢
 		
 		/* Getter */
@@ -108,6 +111,7 @@ namespace game_framework {
 		int   GetLeft();
 		int   GetHeight();
 		int   GetWidth();
+		double GetScale() const;
 		string GetImageFileName();
 		COLORREF GetFilterColor();
 
@@ -143,6 +147,8 @@ namespace game_framework {
 		string   imageFileName = "";
 		//! 儲存物件過濾的圖片顏色
 		COLORREF filterColor = CLR_INVALID;
+		//! 預設的縮放比例
+		double scaleFactor = 1;
 
 	private:
 		void InitializeRectByBITMAP(BITMAP bitmap);
