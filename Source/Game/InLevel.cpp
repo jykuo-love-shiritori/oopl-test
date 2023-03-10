@@ -7,6 +7,8 @@
 #include "../Library/gamecore.h"
 #include "stages.h"
 
+#include "keymap.h"
+
 using namespace game_framework;
 using namespace game_framework::stage;
 
@@ -83,16 +85,16 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == VK_LEFT) {
+	if (nChar == KEY_MOVE_LEFT) {
         player.Move(-50, 0);
 	}
-	if (nChar == VK_RIGHT) {
+	if (nChar == KEY_MOVE_RIGHT) {
 		player.Move(50, 0);
 	}
-	if (nChar == VK_UP) {
+	if (nChar == KEY_MOVE_UP) {
 		player.Move(0, -50);
 	}
-	if (nChar == VK_DOWN) {
+	if (nChar == KEY_MOVE_DOWN) {
 		player.Move(0, 50);
 	}
 }
