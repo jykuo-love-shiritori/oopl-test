@@ -65,6 +65,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #include <list>
 #include <vector>
@@ -96,6 +97,7 @@ namespace game_framework {
 		void  SetAnimation(int delay, bool _once);
 		void  SetFrameIndexOfBitmap(int frame);
 		void  SetTopLeft(int, int);			// 將圖的左上角座標移至 (x,y)
+		void  SetCenter(int x, int y);		// 將圖的中心座標移至 (x,y)
 		void  SetScale(double scale);		// 設置預設的縮放大小
 
 		/* Show the bitmap with or without factor. */

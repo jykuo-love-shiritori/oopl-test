@@ -218,6 +218,20 @@ namespace game_framework {
 		location.bottom -= dy;
 	}
 
+	//! 設置圖片至畫布指定座標上。
+	/*!
+		將會把圖片中心設置至指定座標上。
+		\param x 中心 x 座標
+		\param y 中心 y 座標
+	*/
+	void  CMovingBitmap::SetCenter(int x, int y)
+	{
+		SetTopLeft(
+			x - GetWidth()/2,
+			y - GetHeight()/2
+		);
+	}
+
 	//! 設置圖片是否為動畫。
 	/*!
 		若 CMovingBitmap 讀入多個圖片，則可以使用此函數來設定物件為動畫。

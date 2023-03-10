@@ -30,21 +30,24 @@ void CGameStateInit::OnInit()
 	background.LoadBitmapByString({
         "resources/Intro.bmp"
     });
-    background.SetTopLeft(0,0);
+	{
+		double scaleX = (double)(SIZE_X)/background.GetWidth();
+		double scaleY = (double)(SIZE_Y)/background.GetHeight();
+		background.SetScale(scaleX>scaleY ? scaleX : scaleY);
+	}
+    background.SetCenter(SIZE_X/2, SIZE_Y/2);
 
 	title.LoadBitmapByString({
 		"resources/logo.bmp"
 	}, RGB(255, 255, 255));
-	title.SetTopLeft(
-		SIZE_X/2 - title.GetWidth()/2,
-		SIZE_Y/10);
+	title.SetScale(1.5);
+	title.SetCenter(SIZE_X/2, SIZE_Y/4);
 
 	LMBtoStart.LoadBitmapByString({
 		"resources/LMBtoStart.bmp"
 	}, RGB(255, 255, 255));
-	LMBtoStart.SetTopLeft(
-		SIZE_X/2 - LMBtoStart.GetWidth()/2,
-		SIZE_Y/2);
+	LMBtoStart.SetScale(1);
+	LMBtoStart.SetCenter(SIZE_X/2, SIZE_Y*3/5);
 	//Sleep(1000);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
 }
 
@@ -64,7 +67,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CGameStateInit::OnShow()
 {
-	background.ShowBitmap(10);
-	title.ShowBitmap(1.5);
-	LMBtoStart.ShowBitmap(1);
+	background.ShowBitmap();
+	title.ShowBitmap();
+	LMBtoStart.ShowBitmap();
 }
