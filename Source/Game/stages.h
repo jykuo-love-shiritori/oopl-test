@@ -23,7 +23,7 @@
 
 #include "Map.h"
 #include "Character.h"
-#include "Vector2.h"
+#include "../Unity/Vector2.h"
 
 #include "config.h"
 
