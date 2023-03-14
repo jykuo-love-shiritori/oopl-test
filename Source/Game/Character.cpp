@@ -12,7 +12,5 @@ void Character::Move(int deltaX, int deltaY)
 
 void Character::Move(Unity::Vector2i vec)
 {
-	int x = GetLeft() + vec.x;
-	int y = GetTop() + vec.y;
-	SetTopLeft(x, y);
+	Move(vec.x, vec.y);
 }
