@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "NPObject.h"
 #include "Map.h"
 #include "Character.h"
 #include "../Unity/Vector2.h"
@@ -66,9 +67,8 @@ namespace game_framework {	namespace stage {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		Character player;
-		Unity::Vector2i playerMoving;
-		Map map;
+		NPOjbect player;
+		NPObject map;
 	};
 
 	class GameOver : public CGameState {

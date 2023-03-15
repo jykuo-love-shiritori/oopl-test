@@ -82,6 +82,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.SetScale(2.3);
     map.SetTopLeft(0,0);
 	map.SetFrameIndexOfBitmap(0); // set init map for test
+
+	NPOjbect::CameraPosition = &player.position;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -139,6 +141,6 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-    map.ShowBitmap();
+    map.Draw(-player.positsion);
     player.ShowBitmap();
 }
