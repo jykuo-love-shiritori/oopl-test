@@ -18,6 +18,10 @@ using namespace game_framework::stage;
 
 InLevel::InLevel(CGame *g) : CGameState(g)
 {
+	isLeftKeyDown = false;
+	isRightKeyDown = false;
+	isUpKeyDown = false;
+	isDownKeyDown = false;
 }
 
 InLevel::~InLevel()
@@ -30,40 +34,18 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
-	player.Move(playerMoving);
-	/* Map move */
-	/* Border detect */
-    if(player.GetCenter().x < 0){
-		if (map.hasLeftMap()) {
-			map.MoveToLeft();
-			player.Move(SIZE_X, 0);
-		}
-		else
-			player.Move(-player.GetCenter().x, 0);
-    }
-	if (player.GetCenter().x > SIZE_X) {
-		if (map.hasRightMap()) {
-			map.MoveToRight();
-			player.Move(-SIZE_X, 0);
-		}
-		else
-			player.Move(SIZE_X-player.GetCenter().x, 0);
+	const int speed=10;
+	if(isLeftKeyDown){
+		player.Move({-speed,0});
 	}
-	if (player.GetCenter().y < 0) {
-		if (map.hasUpMap()) {
-			map.MoveToUp();
-			player.Move(0, SIZE_Y);
-		}
-		else
-			player.Move(0, -player.GetCenter().y);
+	if(isRightKeyDown){
+		player.Move({speed,0});
 	}
-	if (player.GetCenter().y > SIZE_Y) {
-		if (map.hasDownMap()) {
-			map.MoveToDown();
-			player.Move(0, -SIZE_Y);
-		}
-		else
-			player.Move(0, SIZE_Y-player.GetCenter().y);
+	if(isUpKeyDown){
+		player.Move({0,-speed});
+	}
+	if(isDownKeyDown){
+		player.Move({0,speed});
 	}
 }
 
@@ -73,7 +55,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.SetTopLeft(750,700);
+	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
 
 	map.LoadBitmapByString({
         "resources/MineEntrance.bmp",
@@ -82,38 +64,39 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.SetScale(2.3);
     map.SetTopLeft(0,0);
 	map.SetFrameIndexOfBitmap(0); // set init map for test
+
+	Bittermap::CameraPosition = &player.position;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	const int speed = 10;
 	if (nChar == KEY_MOVE_LEFT) {
-        playerMoving = Unity::Vector2i(-speed, 0);
+        isLeftKeyDown = true;
 	}
 	if (nChar == KEY_MOVE_RIGHT) {
-        playerMoving = Unity::Vector2i(speed, 0);
+        isRightKeyDown = true;
 	}
 	if (nChar == KEY_MOVE_UP) {
-        playerMoving = Unity::Vector2i(0, -speed);
+        isUpKeyDown = true;
 	}
 	if (nChar == KEY_MOVE_DOWN) {
-        playerMoving = Unity::Vector2i(0, speed);
+        isDownKeyDown = true;
 	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == KEY_MOVE_LEFT) {
-        playerMoving = Unity::Vector2i(0, 0);
+        isLeftKeyDown = false;
 	}
 	if (nChar == KEY_MOVE_RIGHT) {
-        playerMoving = Unity::Vector2i(0, 0);
+        isRightKeyDown = false;
 	}
 	if (nChar == KEY_MOVE_UP) {
-        playerMoving = Unity::Vector2i(0, 0);
+        isUpKeyDown = false;
 	}
 	if (nChar == KEY_MOVE_DOWN) {
-        playerMoving = Unity::Vector2i(0, 0);
+        isDownKeyDown = false;
 	}
 }
 
@@ -139,6 +122,6 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-    map.ShowBitmap();
+	map.Draw();
     player.ShowBitmap();
 }
