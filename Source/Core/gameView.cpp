@@ -36,7 +36,7 @@
 #include <string.h>
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
-#include "../Game/mygame.h"
+#include "../Game/stages.h"
 #include "gameView.h"
 
 #ifdef _DEBUG

@@ -17,51 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *	 2004-03-02 V4.0
- *      1. Add CGameStateInit, CGameStateRun, and CGameStateOver to
- *         demonstrate the use of states.
- *   2005-09-13
- *      Rewrite the codes for CBall and CEraser.
- *   2005-09-20 V4.2Beta1.
- *   2005-09-29 V4.2Beta2.
- *   2006-02-08 V4.2
- *      1. Rename OnInitialUpdate() -> OnInit().
- *      2. Replace AUDIO_CANYON as AUDIO_NTUT.
- *      3. Add help bitmap to CGameStateRun.
- *   2006-09-09 V4.3
- *      1. Rename Move() and Show() as OnMove and OnShow() to emphasize that they are
- *         event driven.
- *   2008-02-15 V4.4
- *      1. Add namespace game_framework.
- *      2. Replace the demonstration of animation as a new bouncing ball.
- *      3. Use ShowInitProgress(percent) to display loading progress.
-*/
+ */
+
+#pragma once
 
 #include "config.h"
 
-namespace game_framework {
+namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
 	/////////////////////////////////////////////////////////////////////////////
-
-	enum AUDIO_ID {				// 定義各種音效的編號
-		AUDIO_DING,				// 0
-		AUDIO_LAKE,				// 1
-		AUDIO_NTUT				// 2
-	};
 
 	/////////////////////////////////////////////////////////////////////////////
 	// 這個class為遊戲的遊戲開頭畫面物件
 	// 每個Member function的Implementation都要弄懂
 	/////////////////////////////////////////////////////////////////////////////
-
-	class CGameStateInit : public CGameState {
+	class StartScreen : public CGameState {
 	public:
-		CGameStateInit(CGame *g);
+		StartScreen(CGame *g);
 		void OnInit();  								// 遊戲的初值及圖形設定
-		void OnBeginState();							// 設定每次重玩所需的變數
-		void OnKeyUp(UINT, UINT, UINT); 				// 處理鍵盤Up的動作
 		void OnLButtonDown(UINT nFlags, CPoint point);  // 處理滑鼠的動作
 	protected:
 		void OnShow();									// 顯示這個狀態的遊戲畫面
@@ -71,15 +45,10 @@ namespace game_framework {
 		CMovingBitmap LMBtoStart;	// "Press LMB to start" text
 	};
 
-	/////////////////////////////////////////////////////////////////////////////
-	// 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
-	// 每個Member function的Implementation都要弄懂
-	/////////////////////////////////////////////////////////////////////////////
-
-	class CGameStateRun : public CGameState {
+	class InLevel : public CGameState {
 	public:
-		CGameStateRun(CGame *g);
-		~CGameStateRun();
+		InLevel(CGame *g);
+		~InLevel();
 		void OnBeginState();							// 設定每次重玩所需的變數
 		void OnInit();  								// 遊戲的初值及圖形設定
 		void OnKeyDown(UINT, UINT, UINT);
@@ -96,14 +65,9 @@ namespace game_framework {
 		CMovingBitmap test;
 	};
 
-	/////////////////////////////////////////////////////////////////////////////
-	// 這個class為遊戲的結束狀態(Game Over)
-	// 每個Member function的Implementation都要弄懂
-	/////////////////////////////////////////////////////////////////////////////
-
-	class CGameStateOver : public CGameState {
+	class GameOver : public CGameState {
 	public:
-		CGameStateOver(CGame *g);
+		GameOver(CGame *g);
 		void OnBeginState();							// 設定每次重玩所需的變數
 		void OnInit();
 	protected:
@@ -112,5 +76,5 @@ namespace game_framework {
 	private:
 		int counter;	// 倒數之計數器
 	};
-
-}
+	
+}}

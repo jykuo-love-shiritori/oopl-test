@@ -14,6 +14,9 @@
     <Filter Include="MyGame">
       <UniqueIdentifier>{0c798913-b7d2-4e26-8241-0f83266cd626}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MyGame\Stage">
+      <UniqueIdentifier>{52facd6d-aaa4-4357-876f-50b1840422cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="RES\GAME.RC2">
@@ -45,14 +48,14 @@
     <ClCompile Include="Source\Core\StdAfx.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\mygame_initialize.cpp">
-      <Filter>MyGame</Filter>
+    <ClCompile Include="Source\Game\InLevel.cpp">
+      <Filter>MyGame\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\mygame_over.cpp">
-      <Filter>MyGame</Filter>
+    <ClCompile Include="Source\Game\GameOver.cpp">
+      <Filter>MyGame\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\mygame_run.cpp">
-      <Filter>MyGame</Filter>
+    <ClCompile Include="Source\Game\StartScreen.cpp">
+      <Filter>MyGame\Stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,11 +86,11 @@
     <ClInclude Include="Source\Core\StdAfx.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Game\mygame.h">
-      <Filter>MyGame</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Game\config.h">
       <Filter>MyGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\stages.h">
+      <Filter>MyGame\Stage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
