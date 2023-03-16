@@ -60,9 +60,6 @@
     <ClCompile Include="Source\Game\StartScreen.cpp">
       <Filter>MyGame\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\Map.cpp">
-      <Filter>MyGame\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Game\Bittermap.cpp">
       <Filter>MyGame\Object</Filter>
     </ClCompile>
@@ -103,9 +100,6 @@
     </ClInclude>
     <ClInclude Include="Source\Game\stages.h">
       <Filter>MyGame\Stage</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Game\Map.h">
-      <Filter>MyGame\Object</Filter>
     </ClInclude>
     <ClInclude Include="keymap.h">
       <Filter>MyGame</Filter>
