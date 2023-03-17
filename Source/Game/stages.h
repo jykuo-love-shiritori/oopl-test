@@ -68,7 +68,7 @@ namespace game_framework {	namespace stage {
 	private:
 		Bittermap player;
 		Unity::Vector2i playerMoving;
-		Bittermap map;
+		temp_name::Map map;
 	};
 
 	class GameOver : public CGameState {

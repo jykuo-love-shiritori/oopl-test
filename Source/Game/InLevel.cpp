@@ -54,13 +54,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetScale(1);
 	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
 
-	map.LoadBitmapByString({
-        "resources/MineEntrance.bmp",
-        "resources/DwarfRoom.bmp"
-	}, RGB(255, 255, 255));
-	map.SetScale(2.3);
-    map.SetTopLeft(0,0);
-	map.SetFrameIndexOfBitmap(0); // set init map for test
+	map.pushBMP()
 
 	Bittermap::CameraPosition = &player.position;
 }
