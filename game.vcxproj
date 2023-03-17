@@ -243,9 +243,11 @@
     <ClCompile Include="Source\Core\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Game\Bittermap.cpp" />
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />
+    <ClCompile Include="Source\Game\Vector2.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
     <ClCompile Include="Source\Library\gameutil.cpp">
@@ -253,6 +255,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="keymap.h" />
     <ClInclude Include="Source\Core\Game.h" />
     <ClInclude Include="Source\Core\gameDoc.h" />
     <ClInclude Include="Source\Core\gameView.h" />
@@ -260,6 +263,7 @@
     <ClInclude Include="Source\Core\Resource.h" />
     <ClInclude Include="Source\Core\StdAfx.h" />
     <ClInclude Include="Source\Game\config.h" />
+    <ClInclude Include="Source\Game\Bittermap.h" />
     <ClInclude Include="Source\Game\stages.h" />
     <ClInclude Include="Source\Library\audio.h" />
     <ClInclude Include="Source\Library\gamecore.h" />

@@ -7,6 +7,8 @@
 #include "../Library/gamecore.h"
 #include "stages.h"
 
+#include "keymap.h"
+
 using namespace game_framework;
 using namespace game_framework::stage;
 
@@ -28,25 +30,47 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
-	
+	const int KEY_PRESS = 0x8000;
+	const int speed=10;
+	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
+		player.Move({-speed,0});
+	}
+	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
+		player.Move({speed,0});
+	}
+	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
+		player.Move({0,-speed});
+	}
+	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
+		player.Move({0,speed});
+	}
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
-	test.LoadBitmapByString({
-        "resources/TitleButtons.bmp"
+	player.LoadBitmapByString({
+        "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
-    test.SetTopLeft(0,0);
+	player.SetScale(1);
+	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
+
+	map.LoadBitmapByString({
+        "resources/MineEntrance.bmp",
+        "resources/DwarfRoom.bmp"
+	}, RGB(255, 255, 255));
+	map.SetScale(2.3);
+    map.SetTopLeft(0,0);
+	map.SetFrameIndexOfBitmap(0); // set init map for test
+
+	Bittermap::CameraPosition = &player.position;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
 }
 
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -71,5 +95,6 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-    test.ShowBitmap(5);
+	map.Draw();
+    player.ShowBitmap();
 }

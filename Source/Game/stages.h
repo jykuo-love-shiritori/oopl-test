@@ -21,6 +21,10 @@
 
 #pragma once
 
+#include "Map.h"
+#include "Bittermap.h"
+#include "Vector2.h"
+
 #include "config.h"
 
 namespace game_framework {	namespace stage {
@@ -62,7 +66,9 @@ namespace game_framework {	namespace stage {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		CMovingBitmap test;
+		Bittermap player;
+		Unity::Vector2i playerMoving;
+		Bittermap map;
 	};
 
 	class GameOver : public CGameState {
