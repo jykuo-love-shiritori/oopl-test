@@ -67,8 +67,9 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
 		Bittermap player;
+		Bittermap test; // FIXME: test Bittermap
 		Unity::Vector2i playerMoving;
-		Bittermap map;
+		temp_name::Map map;
 	};
 
 	class GameOver : public CGameState {

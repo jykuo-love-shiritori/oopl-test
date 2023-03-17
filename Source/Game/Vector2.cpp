@@ -9,3 +9,10 @@ Vector2i Vector2i::operator+(const Vector2i& other) const {
         this->y + other.y,
     };
 }
+
+Vector2i Vector2i::operator*(const double& other) const {
+	return {
+		(int)(this->x * other),
+		(int)(this->y * other),
+	};
+}
