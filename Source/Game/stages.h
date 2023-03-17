@@ -69,10 +69,6 @@ namespace game_framework {	namespace stage {
 		Bittermap player;
 		Unity::Vector2i playerMoving;
 		Bittermap map;
-		bool isLeftKeyDown;
-		bool isRightKeyDown;
-		bool isUpKeyDown;
-		bool isDownKeyDown;
 	};
 
 	class GameOver : public CGameState {

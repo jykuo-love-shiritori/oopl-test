@@ -18,10 +18,6 @@ using namespace game_framework::stage;
 
 InLevel::InLevel(CGame *g) : CGameState(g)
 {
-	isLeftKeyDown = false;
-	isRightKeyDown = false;
-	isUpKeyDown = false;
-	isDownKeyDown = false;
 }
 
 InLevel::~InLevel()
@@ -34,17 +30,18 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	const int KEY_PRESS = 0x8000;
 	const int speed=10;
-	if(isLeftKeyDown){
+	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
 		player.Move({-speed,0});
 	}
-	if(isRightKeyDown){
+	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
 		player.Move({speed,0});
 	}
-	if(isUpKeyDown){
+	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
 		player.Move({0,-speed});
 	}
-	if(isDownKeyDown){
+	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
 		player.Move({0,speed});
 	}
 }
@@ -70,34 +67,10 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == KEY_MOVE_LEFT) {
-        isLeftKeyDown = true;
-	}
-	if (nChar == KEY_MOVE_RIGHT) {
-        isRightKeyDown = true;
-	}
-	if (nChar == KEY_MOVE_UP) {
-        isUpKeyDown = true;
-	}
-	if (nChar == KEY_MOVE_DOWN) {
-        isDownKeyDown = true;
-	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == KEY_MOVE_LEFT) {
-        isLeftKeyDown = false;
-	}
-	if (nChar == KEY_MOVE_RIGHT) {
-        isRightKeyDown = false;
-	}
-	if (nChar == KEY_MOVE_UP) {
-        isUpKeyDown = false;
-	}
-	if (nChar == KEY_MOVE_DOWN) {
-        isDownKeyDown = false;
-	}
 }
 
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
