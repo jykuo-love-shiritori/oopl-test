@@ -67,6 +67,7 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
 		Bittermap player;
+		Bittermap test;
 		Unity::Vector2i playerMoving;
 		temp_name::Map map;
 	};
