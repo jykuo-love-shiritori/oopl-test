@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 // #define KEY_MOVE_UP		VK_UP
 // #define KEY_MOVE_LEFT	VK_LEFT
 // #define KEY_MOVE_DOWN	VK_DOWN
