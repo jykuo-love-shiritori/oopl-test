@@ -64,7 +64,7 @@ Map Map::loadFile(std::string file)
 void Map::loadBMPs(std::string datapath)
 {
 	std::vector<std::string> bmpList;
-	for(int i=0;i<288;i++){
+	for(int i=0;i<288;i++){ // FIXME: hardcode texture size
 		bmpList.push_back(datapath+"/"+std::to_string(i)+".bmp");
 	}
 	bmps.LoadBitmapByString(bmpList, RGB(0, 0, 0));

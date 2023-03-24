@@ -1,41 +1,116 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Source\Core\game.cpp" />
-    <ClCompile Include="Source\Core\gameDoc.cpp" />
-    <ClCompile Include="Source\Core\gameView.cpp" />
-    <ClCompile Include="Source\Core\MainFrm.cpp" />
-    <ClCompile Include="Source\Core\StdAfx.cpp" />
-    <ClCompile Include="Source\Game\Bittermap.cpp" />
-    <ClCompile Include="Source\Game\StartScreen.cpp" />
-    <ClCompile Include="Source\Game\GameOver.cpp" />
-    <ClCompile Include="Source\Game\InLevel.cpp" />
-    <ClCompile Include="Source\Game\Vector2.cpp" />
-    <ClCompile Include="Source\Library\audio.cpp" />
-    <ClCompile Include="Source\Library\gamecore.cpp" />
-    <ClCompile Include="Source\Library\gameutil.cpp" />
-    <ClCompile Include="Source\Game\Map.cpp" />
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{1a913106-0be0-4476-b0ce-2aa855072614}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="MFC">
+      <UniqueIdentifier>{da904ee8-7f59-4a6c-b3ff-b91b6fb6d0ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameLibrary">
+      <UniqueIdentifier>{df7aa532-3fdf-46a0-b3fc-8f5922e8d9e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyGame">
+      <UniqueIdentifier>{0c798913-b7d2-4e26-8241-0f83266cd626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyGame\Stage">
+      <UniqueIdentifier>{52facd6d-aaa4-4357-876f-50b1840422cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyGame\Object">
+      <UniqueIdentifier>{e8e0c245-9756-4ca7-bf2f-2c15e327552a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="keymap.h" />
-    <ClInclude Include="Source\Core\Game.h" />
-    <ClInclude Include="Source\Core\gameDoc.h" />
-    <ClInclude Include="Source\Core\gameView.h" />
-    <ClInclude Include="Source\Core\MainFrm.h" />
-    <ClInclude Include="Source\Core\Resource.h" />
-    <ClInclude Include="Source\Core\StdAfx.h" />
-    <ClInclude Include="Source\Game\config.h" />
-    <ClInclude Include="Source\Game\Bittermap.h" />
-    <ClInclude Include="Source\Game\stages.h" />
-    <ClInclude Include="Source\Library\audio.h" />
-    <ClInclude Include="Source\Library\gamecore.h" />
-    <ClInclude Include="Source\Library\gameutil.h" />
-    <ClInclude Include="Source\Game\Map.h" />
+    <None Include="RES\GAME.RC2">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Source\Core\game.rc" />
+    <ClCompile Include="Source\Library\audio.cpp">
+      <Filter>GameLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\gamecore.cpp">
+      <Filter>GameLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\gameutil.cpp">
+      <Filter>GameLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\game.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\gameDoc.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\gameView.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\MainFrm.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\StdAfx.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\InLevel.cpp">
+      <Filter>MyGame\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\GameOver.cpp">
+      <Filter>MyGame\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\StartScreen.cpp">
+      <Filter>MyGame\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\Bittermap.cpp">
+      <Filter>MyGame\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\Vector2.cpp">
+      <Filter>MyGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="RES\GAME.RC2" />
+    <ClInclude Include="Source\Library\audio.h">
+      <Filter>GameLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\gamecore.h">
+      <Filter>GameLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\gameutil.h">
+      <Filter>GameLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Game.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\gameDoc.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\gameView.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\MainFrm.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Resource.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\StdAfx.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\config.h">
+      <Filter>MyGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\stages.h">
+      <Filter>MyGame\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="keymap.h">
+      <Filter>MyGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\Bittermap.h">
+      <Filter>MyGame\Object</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Source\Core\game.rc">
+      <Filter>MFC</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

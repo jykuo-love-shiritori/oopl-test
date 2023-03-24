@@ -6,7 +6,7 @@
 
 namespace temp_name {
 	class Map {
-		Unity::Vector2i mapSize={20,20};
+		Unity::Vector2i mapSize={20,20}; // FIXME: hardcode map size
 		//std::vector<Hitbox> hbs;
 	public:
 		game_framework::Bittermap bmps;

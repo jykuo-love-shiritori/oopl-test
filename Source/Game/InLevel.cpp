@@ -54,11 +54,13 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetScale(1);
 	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
 
+
 	std::string datapath="resources/MapTextures/mine";
 	map = temp_name::Map::loadFile("resources/MapData/29.ttt");
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(4);
 
+	// FIXME: test Bittermap
 	test.LoadBitmapByString({
 		"resources/giraffe.bmp"
 		}, RGB(255, 255, 255));
