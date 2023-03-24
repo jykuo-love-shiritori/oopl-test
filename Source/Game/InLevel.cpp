@@ -7,7 +7,7 @@
 #include "../Library/gamecore.h"
 #include "stages.h"
 
-#include "keymap.h"
+#include "../Config/keymap.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
