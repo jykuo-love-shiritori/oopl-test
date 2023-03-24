@@ -10,8 +10,12 @@ namespace temp_name {
 		//std::vector<Hitbox> hbs;
 	public:
 		game_framework::Bittermap bmps;
-		int backTile[400]; // FIXME: hardcode tile size
+		static Map loadFile(std::string file);
+		std::vector<unsigned short> backTile;
+		std::vector<unsigned short> buildingTile;
+		std::vector<unsigned short> frontTile;
 		void drawBack();
+		void drawBuilding();
 		void drawFront();
 		void loadBMPs(std::string datapath);
 	};
