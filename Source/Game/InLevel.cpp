@@ -55,8 +55,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
 
 	std::string datapath="resources/MapTextures/mine";
+	map = temp_name::Map::loadFile("resources/MapData/29.ttt");
 	map.loadBMPs(datapath);
-	map.loadFile("resources/MapData/sample.ttt");
 	map.bmps.SetScale(4);
 
 	test.LoadBitmapByString({

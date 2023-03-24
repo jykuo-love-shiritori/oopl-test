@@ -10,10 +10,10 @@ namespace temp_name {
 		//std::vector<Hitbox> hbs;
 	public:
 		game_framework::Bittermap bmps;
-		static void loadFile(std::string file);
-		static std::vector<unsigned short> backTile;
-		static std::vector<unsigned short> buildingTile;
-		static std::vector<unsigned short> frontTile;
+		static Map loadFile(std::string file);
+		std::vector<unsigned short> backTile;
+		std::vector<unsigned short> buildingTile;
+		std::vector<unsigned short> frontTile;
 		void drawBack();
 		void drawBuilding();
 		void drawFront();

@@ -8,33 +8,57 @@
 #include <iostream>
 
 
+#define HEADER_OFFSET 3
+#define NUMBER_SIZE 2
+
 using namespace temp_name;
 
-void Map::loadFile(std::string file)
+Map Map::loadFile(std::string file)
 {
-    std::ifstream tttFile(file,std::ios::binary);
+	Map newmap;
+	FILE *fp;
 
-    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(tttFile),{});
-       
-	short width, height;
-	width=buffer[3];
-	height=buffer[5];
+	fp = fopen(file.c_str(), "rb");
 
-	for(int i=0;i<height;i++){
-		for(int j=0;j<width;j++){
-			backTile.push_back(buffer[7+2*(i*width+j)]);
+	fseek(fp, HEADER_OFFSET, SEEK_SET);
+
+	unsigned short i = 0;
+
+	int w, h;
+	fread(&i, NUMBER_SIZE, 1, fp);
+	w = i;
+	fread(&i, NUMBER_SIZE, 1, fp);
+	h = i;
+
+	newmap.mapSize={w,h};
+
+	int wCounter = 0;
+	int hCounter = 0;
+	int vectorCounter = 0;
+	while (fread(&i, NUMBER_SIZE, 1, fp)) {
+		if (vectorCounter == 0) {
+			newmap.backTile.push_back(i);
+		}
+		else if (vectorCounter == 1) {
+			newmap.buildingTile.push_back(i);
+		}
+		else {
+			newmap.frontTile.push_back(i);
+		}
+
+		if (++wCounter >= w) {
+			wCounter = 0;
+			hCounter++;
+		}
+		if (hCounter >= h) {
+			vectorCounter++;
+			hCounter = 0;
 		}
 	}
-	for(int i=0;i<height;i++){
-		for(int j=0;j<width;j++){
-			buildingTile.push_back(buffer[7+2*width*height+2*(i*width+j)]);
-		}
-	}
-	for(int i=0;i<height;i++){
-		for(int j=0;j<width;j++){
-			frontTile.push_back(buffer[7+4*width*height+2*(i*width+j)]);
-		}
-	}
+
+	fclose(fp);
+
+	return newmap;
 }
 
 void Map::loadBMPs(std::string datapath)
@@ -87,7 +111,3 @@ void Map::drawFront()
 		}
 	}
 }
-
-std::vector<unsigned short> Map::backTile={};
-std::vector<unsigned short> Map::buildingTile={};
-std::vector<unsigned short> Map::frontTile={};
