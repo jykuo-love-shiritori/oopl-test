@@ -99,6 +99,6 @@ void InLevel::OnShow()
 {
 	map.drawBack();
 	map.drawBuilding();
+	player.ShowBitmap();
 	map.drawFront();
-    player.ShowBitmap();
 }
