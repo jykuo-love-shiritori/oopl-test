@@ -69,7 +69,9 @@ namespace game_framework {	namespace stage {
 		Bittermap player;
 		Bittermap test; // FIXME: test Bittermap
 		Unity::Vector2i playerMoving;
+		std::string datapath="resources/MapTextures/mine";
 		temp_name::Map map;
+		int phase=0;
 	};
 
 	class GameOver : public CGameState {

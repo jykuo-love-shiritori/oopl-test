@@ -14,6 +14,7 @@ namespace temp_name {
 		std::vector<unsigned short> backTile;
 		std::vector<unsigned short> buildingTile;
 		std::vector<unsigned short> frontTile;
+		static std::vector<Unity::Vector2i> startPosition;
 		void drawBack();
 		void drawBuilding();
 		void drawFront();

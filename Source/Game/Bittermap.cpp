@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Bittermap.h"
 
+#include "config.h"
+
 using namespace game_framework;
 
 Vector2i *Bittermap::CameraPosition;
@@ -12,8 +14,8 @@ void Bittermap::Move(Unity::Vector2i vec)
 
 void Bittermap::Draw() {
 	SetTopLeft(
-		position.x - CameraPosition->x,
-		position.y - CameraPosition->y
+		position.x - CameraPosition->x + SIZE_X/2,
+		position.y - CameraPosition->y + SIZE_Y/2
 	);
 	ShowBitmap();
 }
