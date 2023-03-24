@@ -63,7 +63,7 @@
     <ClCompile Include="Source\Game\Bittermap.cpp">
       <Filter>MyGame\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\Unity\Vector2.cpp">
+    <ClCompile Include="Source\Unity\Vector2.cpp">
       <Filter>MyGame</Filter>
     </ClCompile>
   </ItemGroup>

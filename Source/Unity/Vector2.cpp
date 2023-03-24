@@ -1,7 +1,4 @@
-#ifndef STOP_YELLING
 #include "stdafx.h"
-#endif
-
 #include "../Unity/Vector2.h"
 
 using namespace Unity;

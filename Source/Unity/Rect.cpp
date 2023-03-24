@@ -1,11 +1,9 @@
-#include "Vector2.h"
-#ifndef STOP_YELLING
 #include "stdafx.h"
-#endif
 
 #include <cmath>
 
 #include "../Unity/Rect.h"
+#include "../Unity/Vector2.h"
 
 using namespace Unity;
 
