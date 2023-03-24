@@ -7,5 +7,9 @@ namespace Unity {
 		Vector2i() = default;
 		Vector2i(int x, int y) : x(x), y(y) {}
 		Vector2i operator+(const Vector2i& other) const;
+		Vector2i operator-(const Vector2i& other) const;
+		Vector2i operator*(const double& other) const;
+		Vector2i operator/(const double& other) const;
+		bool operator==(const Vector2i& other) const;
 	};
 }
