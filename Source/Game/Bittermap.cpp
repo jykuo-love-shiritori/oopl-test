@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Bittermap.h"
 
-#include "config.h"
+#include "../Config/config.h"
 
 using namespace game_framework;
 

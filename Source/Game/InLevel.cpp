@@ -66,7 +66,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if(nChar=='J' || nChar=='K'){
 		if(nChar=='J'){
-			if(phase<11){
+			if(phase<16){
 				phase++;
 			}
 		}
@@ -119,6 +119,26 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				break;
 			case 10:
 				map = temp_name::Map::loadFile("resources/MapData/11.ttt");
+				player.position=map.startPosition[phase]*16*4;
+				break;
+			case 11:
+				map = temp_name::Map::loadFile("resources/MapData/12.ttt");
+				player.position=map.startPosition[phase]*16*4;
+				break;
+			case 12:
+				map = temp_name::Map::loadFile("resources/MapData/13.ttt");
+				player.position=map.startPosition[phase]*16*4;
+				break;
+			case 13:
+				map = temp_name::Map::loadFile("resources/MapData/14.ttt");
+				player.position=map.startPosition[phase]*16*4;
+				break;
+			case 14:
+				map = temp_name::Map::loadFile("resources/MapData/15.ttt");
+				player.position=map.startPosition[phase]*16*4;
+				break;
+			case 15:
+				map = temp_name::Map::loadFile("resources/MapData/16.ttt");
 				player.position=map.startPosition[phase]*16*4;
 				break;
 		}
