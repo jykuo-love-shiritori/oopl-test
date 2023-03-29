@@ -63,7 +63,7 @@
     <ClCompile Include="Source\Game\Bittermap.cpp">
       <Filter>MyGame\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Game\Vector2.cpp">
+    <ClCompile Include="Source\Unity\Vector2.cpp">
       <Filter>MyGame</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +101,7 @@
     <ClInclude Include="Source\Game\stages.h">
       <Filter>MyGame\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="keymap.h">
+    <ClInclude Include="../Config/keymap.h">
       <Filter>MyGame</Filter>
     </ClInclude>
     <ClInclude Include="Source\Game\Bittermap.h">

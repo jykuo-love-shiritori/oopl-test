@@ -23,9 +23,9 @@
 
 #include "Map.h"
 #include "Bittermap.h"
-#include "Vector2.h"
+#include "../Unity/Vector2.h"
 
-#include "config.h"
+#include "../Config/config.h"
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////

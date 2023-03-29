@@ -36,7 +36,7 @@
 #include "gameutil.h"
 #include "gamecore.h"
 #include "Shlwapi.h"
-#include "../Game/config.h"
+#include "../Config/config.h"
 #include "../Game/stages.h"
 #include <filesystem>
 #include <experimental/filesystem> // Header file for pre-standard implementation

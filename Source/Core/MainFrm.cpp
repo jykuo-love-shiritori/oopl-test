@@ -37,7 +37,7 @@
 #include <string.h>
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
-#include "../Game/config.h"
+#include "../Config/config.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
