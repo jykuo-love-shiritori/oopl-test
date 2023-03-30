@@ -15,10 +15,10 @@ namespace Unity
         static Rect FromVertice(Vector2i topLeft, Vector2i bottomRight);
         Vector2i getTopLeft() const;
         Vector2i getBottomRight() const;
-        Vector2i getCenter() const;
+        Vector2f getCenter() const;
         Vector2i getLength() const;
-        Vector2i getRadius() const;
-        static bool isOverlay(Rect &a, Rect &b);
+        Vector2f getRadius() const;
+        static bool isOverlay(const Rect &a, const Rect &b);
     };
 } // namespace Unity
 

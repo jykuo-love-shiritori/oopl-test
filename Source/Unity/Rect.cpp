@@ -8,6 +8,7 @@
 using namespace Unity;
 
 Rect Rect::FromTopLeft(Vector2i topLeft, Vector2i widthAndHeight) {
+    //FIXME: Verity Data
     Rect rect;
     rect.topLeft = topLeft;
     rect.BottomRight = {
@@ -18,6 +19,7 @@ Rect Rect::FromTopLeft(Vector2i topLeft, Vector2i widthAndHeight) {
 }
 
 Rect Rect::FromVertice(Vector2i topLeft, Vector2i bottomRight) {
+    //FIXME: Verity Data
     Rect rect;
     rect.topLeft = topLeft;
     rect.BottomRight = bottomRight;
@@ -25,28 +27,37 @@ Rect Rect::FromVertice(Vector2i topLeft, Vector2i bottomRight) {
 }
 
 Rect Rect::FromCenter(Vector2i center, Vector2i radius) {
+    //FIXME: Verity Data
     Rect rect;
     rect.topLeft = center - radius;
     rect.BottomRight = center + radius;
     return rect;
 }
 
-Vector2i Rect::getRadius() const {
-    return (BottomRight-topLeft)/2; 
+Vector2f Rect::getRadius() const {
+    return Vector2f(BottomRight-topLeft)/2;
 }
 
-Vector2i Rect::getCenter() const {
-    return topLeft + getRadius();
+Vector2f Rect::getCenter() const {
+    return Vector2f(topLeft) + getRadius();
 }
 
-bool Rect::isOverlay(Rect &a, Rect &b) {
+Vector2i Rect::getTopLeft() const {
+    return topLeft;
+}
+
+Vector2i Rect::getBottomRight() const {
+    return BottomRight;
+}
+
+bool Rect::isOverlay(const Rect &a, const Rect &b) {
     auto centetA = a.getCenter();
     auto centetB = b.getCenter();
-    auto radiusA = (a.BottomRight-a.topLeft)/2;
-    auto radiusB = (b.BottomRight-b.topLeft)/2;
+    auto radiusA = a.getRadius();
+    auto radiusB = b.getRadius();
     
     auto d = centetA - centetB;
     auto r = radiusA + radiusB;
 
-    return abs(d.x) < r.x || abs(d.y) < r.y;
+    return abs(d.x) < r.x && abs(d.y) < r.y;
 }

@@ -20,3 +20,22 @@ TEST(UnityRectangleTest, Overlay) {
     ASSERT_TRUE(Rect::isOverlay(r2, r2));
     ASSERT_FALSE(Rect::isOverlay(r1, r3));
 }
+
+TEST(UnityRectangleTest, Overlay2) {
+    auto subject = Rect::FromTopLeft({1,2}, {3,4});
+
+    EXPECT_EQ(subject.getTopLeft(), Unity::Vector2i(1,2));
+    EXPECT_EQ(subject.getBottomRight(), Unity::Vector2i(4,6));
+
+
+    auto box = Rect::FromTopLeft({5,2}, {3,4});
+    EXPECT_FALSE(Rect::isOverlay(subject, box));
+
+
+    auto box2 = (Rect::FromTopLeft({0,0}, {3,3}));
+
+    EXPECT_EQ(box2.getTopLeft(), Unity::Vector2i(0,0));
+    EXPECT_EQ(box2.getBottomRight(), Unity::Vector2i(3,3));
+
+    EXPECT_TRUE(Rect::isOverlay(subject, box2));
+}

@@ -1,5 +1,5 @@
 ### CMake ###
-.cache
+.cache/*
 cmakeBuild
 build
 Testing

@@ -17,17 +17,19 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_compile_definitions(STOP_YELLING)
+include_directories(Source/Core)
+
 set(SOURCES
-  Source/Unity/Vector2.cpp
   Source/Unity/Rect.cpp
+  Source/Unity/Hitbox.cpp
 )
 add_executable(
   hello_test
   ${SOURCES}
-  gtest_src/idkCpp.cpp
-  gtest_src/rect.cpp
-  #gtest_src/vector2.cpp
-  #gtest_src/hitbox.cpp
+  gtest_src/idk_cpp.cpp
+  gtest_src/ut_rect.cpp
+  gtest_src/ut_vector2.cpp
+  gtest_src/ut_hitboxPool.cpp
 )
 target_link_libraries(
   hello_test
