@@ -59,6 +59,9 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(4);
 
+	test.load();
+	test.createRocks(map);
+
 	Bittermap::CameraPosition = &player.position;
 }
 
@@ -144,6 +147,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		map.loadBMPs(datapath);
 		map.bmps.SetScale(4);
+		test.createRocks(map);
 	}
 }
 
@@ -174,6 +178,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 void InLevel::OnShow()
 {
 	map.drawBack();
+	test.drawRocks();
 	map.drawBuilding();
 	player.ShowBitmap();
 	map.drawFront();

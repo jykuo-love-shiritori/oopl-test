@@ -19,5 +19,7 @@ namespace temp_name {
 		void drawBuilding();
 		void drawFront();
 		void loadBMPs(std::string datapath);
+
+		Unity::Vector2i getMapSize();
 	};
 }

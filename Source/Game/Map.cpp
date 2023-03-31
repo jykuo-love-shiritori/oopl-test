@@ -118,3 +118,7 @@ std::vector<Unity::Vector2i> Map::startPosition={
 	{4,5},{8,4},{17,4},{27,21},{12,9},
 	{23,4}
 };
+
+Unity::Vector2i Map::getMapSize(){
+	return mapSize;
+}
