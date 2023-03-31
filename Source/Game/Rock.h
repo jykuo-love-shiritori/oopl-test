@@ -18,7 +18,8 @@ class Rock{
         int _health;
         game_framework::Bittermap _rockBMPs;
         std::vector<Unity::Vector2i> _rockCoordinates;
-		std::vector<int> _tilesAvailableForRocks={
+        std::vector<int> _rockTypes;
+		std::vector<unsigned int> _tilesAvailableForRocks={
 			1,2,3,17,18,19,33,34,35,137,
 			138,139,140,149,150,151,152,153,154,155,
 			165,166,167,168,169,170,171,172,181,182,

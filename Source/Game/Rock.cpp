@@ -35,11 +35,11 @@ int Rock::getType(){
 }
 
 bool Rock::createRockInstance(unsigned int tileID){
-    for(int i=0;i<57;i++){
-        if(tileID==_tilesAvailableForRocks[i]){
+    for(unsigned int i=0;i<_tilesAvailableForRocks.size();i++){
+        if(tileID==_tilesAvailableForRocks[i]){ //FIXME: cant catch 140 235 and some others as tiles available
             double x=(double)std::rand()/(RAND_MAX+1.0);
 
-            if(x>0.0){
+            if(x>0.5){
                 return true;
             }
             return false;
@@ -53,6 +53,7 @@ game_framework::Bittermap Rock::getRockBMPs(){
 }
 
 void Rock::createRocks(temp_name::Map map){
+    _rockCoordinates={};
     for(int y=0;y < map.getMapSize().y ;y++){
 		for (int x=0;x < map.getMapSize().x ;x++){
             int i=y*map.getMapSize().x+x;
@@ -60,6 +61,7 @@ void Rock::createRocks(temp_name::Map map){
             if(map.buildingTile[i]!=0 || map.frontTile[i]!=0) continue;
             if(createRockInstance(map.backTile[i])){
                 _rockCoordinates.push_back({x,y});
+                _rockTypes.push_back(std::rand()%16);
             }
 		}
 	}
@@ -67,7 +69,8 @@ void Rock::createRocks(temp_name::Map map){
 
 void Rock::drawRocks(){
     for(unsigned int i=0;i<_rockCoordinates.size();i++){
-        _rockBMPs.SetFrameIndexOfBitmap(0);
+        _rockBMPs.SetFrameIndexOfBitmap(_rockTypes[i]);
+        // _rockBMPs.SetFrameIndexOfBitmap(std::rand()%16); //disco party
         _rockBMPs.position = { _rockCoordinates[i].x * 16, _rockCoordinates[i].y * 16 };
         _rockBMPs.position = _rockBMPs.position * 4;
         _rockBMPs.Draw();
