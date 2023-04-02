@@ -61,6 +61,22 @@ void Map::loadFile(std::string file)
 
 	fclose(fp);
 
+	this->loadHitbox();
+}
+
+void Map::loadHitbox()
+{
+	auto magicSize = Vector2i(1,1) * TILE_SIZE * SCALE_SIZE;
+	hp = HitboxPool();
+	for(int y=0;y < mapSize.y ;y++){
+		for (int x=0;x < mapSize.x ;x++){
+			int i = buildingTile[y*mapSize.x + x];
+			if(i != 0) {
+				auto magicPos = Vector2i(x, y) * TILE_SIZE * SCALE_SIZE;
+				hp.AddHitbox(Rect::FromTopLeft(magicPos, magicSize));
+			}
+		}
+	}
 }
 
 void Map::loadBMPs(std::string datapath)

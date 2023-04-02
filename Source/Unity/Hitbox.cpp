@@ -1,6 +1,9 @@
+#include "stdafx.h"
 #include "Hitbox.h"
 #include "Rect.h"
-#include "stdafx.h"
+
+#include <cmath>
+#include <algorithm>
 
 using Unity::HitboxPool;
 using Unity::Rect;
@@ -13,6 +16,19 @@ vector<Rect> HitboxPool::Collide(const Rect& subject) const {
             result.push_back(box);
         }
     }
+    struct
+    {
+        Rect subject = subject;
+        bool operator()(Rect a, Rect b) const {
+            auto ca = a.getCenter();
+			auto cb = b.getCenter();
+			auto cs = subject.getCenter();
+            auto da = pow(ca.x - cs.x, 2) + pow(ca.y - cs.y, 2);
+            auto db = pow(cb.x - cs.x, 2) + pow(cb.y - cs.y, 2);
+            return da < db;
+        }
+    } euclideanDistance;
+	std::sort(result.begin(), result.end(), euclideanDistance);
     return result;
 }
 

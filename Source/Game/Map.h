@@ -11,7 +11,7 @@ namespace temp_name {
 	public:
 		static std::vector<Unity::Vector2i> startPosition;
 
-		//Unity::HitboxPool hp;
+		Unity::HitboxPool hp;
 		game_framework::Bittermap bmps;
 
 		std::vector<unsigned short> backTile;
@@ -30,7 +30,7 @@ namespace temp_name {
 		Unity::Vector2i getMapSize();
 	private:
 		Unity::Vector2i mapSize;
-		//void loadHitbox();
+		void loadHitbox();
 		void drawTiles(std::vector<unsigned short> tile);
 	};
 }

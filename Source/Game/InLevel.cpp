@@ -9,6 +9,7 @@
 
 #include <shobjidl_core.h>
 #include <string>
+#include <cmath>
 #include <winuser.h>
 
 #include "../Config/keymap.h"
@@ -36,20 +37,56 @@ void InLevel::OnBeginState()
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	const int KEY_PRESS = 0x8000;
-	const int speed=10;
+	const int speed=20;
+	Vector2i move = {0,0};
 	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
-		player.Move({-speed,0});
+		move.x = -1;
 	}
 	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
-		player.Move({speed,0});
+		move.x = 1;
 	}
 	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
-		player.Move({0,-speed});
+		move.y = -1;
 	}
 	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
-		player.Move({0,speed});
+		move.y = 1;
 	}
+	//move = move * speed;
 
+	for (int i = 0; i < speed; i++) {
+		player.Move(move);
+		auto magicSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
+		auto magicBox = Rect::FromTopLeft(player.position, magicSize);
+		auto collitions = map.hp.Collide(magicBox);
+		while (collitions.size() != 0) {
+			auto rect = collitions[0];
+			auto magic = magicBox.getCenter() - rect.getCenter();
+
+			auto d = rect.getRadius() + magicBox.getRadius();
+			magic.x = (magic.x >= 0 ? d.x : -d.x) - magic.x;
+			magic.y = (magic.y >= 0 ? d.y : -d.y) - magic.y;
+
+			if (move.y == 0) {
+				magic.y = 0;
+			}
+			else if (move.x == 0) {
+				magic.x = 0;
+			}
+			else {
+				if (abs(magic.x) < abs(magic.y)) {
+					magic.y = 0;
+				}
+				else {
+					magic.x = 0;
+				}
+			}
+
+			player.Move(magic);
+
+			magicBox = Rect::FromTopLeft(player.position, magicSize);
+			collitions = map.hp.Collide(magicBox);
+		}
+	}
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
@@ -117,9 +154,9 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-	map.drawBack();
+	//map.drawBack();
 	test.drawRocks();
 	map.drawBuilding();
 	player.Draw();
-	map.drawFront();
+	//map.drawFront();
 }
