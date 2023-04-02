@@ -8,31 +8,31 @@ namespace Unity {
 		Vector2<T>(T x, T y) : x(x), y(y) {}
 		template<typename U>
 		Vector2<T> operator+(const Vector2<U>& other) const {
-			return {
+			return Vector2<T>(
 				this->x + other.x,
-				this->y + other.y,
-			};
+				this->y + other.y
+			);
 		};
 		template<typename U>
 		Vector2<T> operator-(const Vector2<U>& other) const {
-			return {
+			return Vector2<T>(
 				this->x - other.x,
-				this->y - other.y,
-			};
+				this->y - other.y
+			);
 		};
 		template<typename U>
 		Vector2<T> operator*(const U& other) const {
-			return {
+			return Vector2<T>(
 				this->x * other,
-				this->y * other,
-			};
+				this->y * other
+			);
 		}
 		template<typename U>
 		Vector2<T> operator/(const U& other) const {
-			return {
+			return Vector2<T>(
 				this->x / other,
-				this->y / other,
-			};
+				this->y / other
+			);
 		};
 		template<typename U>
 		bool operator==(const Vector2<U>& other) const {
