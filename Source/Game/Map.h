@@ -3,24 +3,34 @@
 #include "../Library/gameutil.h"
 #include "./Bittermap.h"
 #include "../Unity/Vector2.h"
+#include "../Unity/Hitbox.h"
 //#include "./Hitbox.h"
 
 namespace temp_name {
-	class Map { // TODO: change to singleton
-		Unity::Vector2i mapSize={20,20}; // FIXME: hardcode map size
-		//std::vector<Hitbox> hbs;
+	class Map {
 	public:
+		static std::vector<Unity::Vector2i> startPosition;
+
+		//Unity::HitboxPool hp;
 		game_framework::Bittermap bmps;
-		static Map loadFile(std::string file);
+
 		std::vector<unsigned short> backTile;
 		std::vector<unsigned short> buildingTile;
 		std::vector<unsigned short> frontTile;
-		static std::vector<Unity::Vector2i> startPosition;
+	public:
+		void loadFile(std::string file);
+		void loadBMPs(std::string datapath);
+
+		/* put in OnShow */
 		void drawBack();
 		void drawBuilding();
 		void drawFront();
-		void loadBMPs(std::string datapath);
 
+		/* Getter */
 		Unity::Vector2i getMapSize();
+	private:
+		Unity::Vector2i mapSize;
+		//void loadHitbox();
+		void drawTiles(std::vector<unsigned short> tile);
 	};
 }

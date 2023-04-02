@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Rock.h"
 
+#include "../Config/scaler.h"
+
 #include <cstdlib>
 
 void Rock::load(){
@@ -61,7 +63,7 @@ void Rock::createRocks(temp_name::Map map){
             if(map.buildingTile[i]!=0 || map.frontTile[i]!=0) continue;
             if(createRockInstance(map.backTile[i])){
                 _rockCoordinates.push_back({x,y});
-                _rockTypes.push_back(std::rand()%16);
+                _rockTypes.push_back(std::rand()%17);
             }
 		}
 	}
@@ -70,9 +72,8 @@ void Rock::createRocks(temp_name::Map map){
 void Rock::drawRocks(){
     for(unsigned int i=0;i<_rockCoordinates.size();i++){
         _rockBMPs.SetFrameIndexOfBitmap(_rockTypes[i]);
-        // _rockBMPs.SetFrameIndexOfBitmap(std::rand()%16); //disco party
-        _rockBMPs.position = { _rockCoordinates[i].x * 16, _rockCoordinates[i].y * 16 };
-        _rockBMPs.position = _rockBMPs.position * 4;
+        // _rockBMPs.SetFrameIndexOfBitmap(std::rand() % 17); //disco party
+        _rockBMPs.position = _rockCoordinates[i] * TILE_SIZE * SCALE_SIZE;
         _rockBMPs.Draw();
     }
 }
