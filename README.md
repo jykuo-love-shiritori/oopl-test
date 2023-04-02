@@ -15,14 +15,12 @@ Gems:
   - [ ] Topaz
   - [ ] Quartz
   - [ ] Earth crystal
-  - [ ] Frozen geode
   - [ ] Aquamarine
   - [ ] Frozen tear
   - [ ] Jade
   - [ ] Diamond
   - [ ] Emerald
   - [ ] Fire quartz
-  - [ ] Magma geode
   - [ ] Ruby
 
 Monsters:
