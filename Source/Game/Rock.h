@@ -4,7 +4,7 @@
 #include "./Map.h"
 
 
-class Rock{ // TODO: change to singleton
+class Rock{
     public:
         void load();
         int getType();

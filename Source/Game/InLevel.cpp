@@ -12,6 +12,7 @@
 #include <winuser.h>
 
 #include "../Config/keymap.h"
+#include "../Config/scaler.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -48,6 +49,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
 		player.Move({0,speed});
 	}
+
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
@@ -56,12 +58,11 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.SetTopLeft(SIZE_X/2, SIZE_Y/2);
-	player.position=Vector2i(10,4)*16*4;
+	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
 
-	map = temp_name::Map::loadFile("resources/MapData/1.ttt");
+	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
-	map.bmps.SetScale(4);
+	map.bmps.SetScale(SCALE_SIZE);
 
 	test.load();
 
@@ -80,11 +81,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if(--phase < 0) phase++;
 			}
 
-			map = temp_name::Map::loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-			player.position=map.startPosition[phase]*16*4; // hard code 1-16(0-15)
-
-			map.loadBMPs(datapath);
-			map.bmps.SetScale(4);
+			map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
+			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
 			break;
 		case 'O': // create rock
 			test.createRocks(map);
@@ -122,6 +120,6 @@ void InLevel::OnShow()
 	map.drawBack();
 	test.drawRocks();
 	map.drawBuilding();
-	player.ShowBitmap();
+	player.Draw();
 	map.drawFront();
 }
