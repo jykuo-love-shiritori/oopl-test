@@ -36,6 +36,7 @@ void InLevel::OnBeginState()
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	/* player move and collision START*/
 	const int KEY_PRESS = 0x8000;
 	const int speed=20;
 	Vector2i moveVec = Vector2i(0,0);
@@ -52,12 +53,13 @@ void InLevel::OnMove()							// 移動遊戲元素
 		moveVec.y = 1;
 	}
 
+	HitboxPool bighp = map.hp + test.hp;
 	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
 	for (int i = 0; i < speed; i++) {
 		player.Move(moveVec);
 		while (true) {
 			auto playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
-			auto collitions = map.hp.Collide(playerHitbox);
+			auto collitions = bighp.Collide(playerHitbox);
 			if (collitions.size() == 0) break;
 
 			auto totalReaction = Vector2i(0, 0);
@@ -101,6 +103,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 			player.Move(totalReaction);
 		}
 	}
+	/* player move and collision END */
 }
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
@@ -136,6 +139,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
 			break;
 		case 'O': // create rock
+			// FIXME: rock generate at player spawn point would break collision system
 			test.createRocks(map);
 			break;
 	}

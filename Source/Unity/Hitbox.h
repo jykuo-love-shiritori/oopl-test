@@ -16,6 +16,7 @@ namespace Unity
       public:
         vector<Rect> Collide(const Rect& subject) const;
         void AddHitbox(const Rect& hitbox);
+        HitboxPool operator+(const HitboxPool& other) const;
     };
 } /* namespace Unity */
 

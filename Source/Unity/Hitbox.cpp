@@ -35,3 +35,12 @@ vector<Rect> HitboxPool::Collide(const Rect& subject) const {
 void HitboxPool::AddHitbox(const Rect& hitbox) {
     this->vec.push_back(hitbox);
 }
+
+HitboxPool HitboxPool::operator+(const HitboxPool& other) const {
+    HitboxPool newpool = HitboxPool();
+    vector<Rect> v;
+    v.insert(v.end(), this->vec.begin(), this->vec.end());
+    v.insert(v.end(), other.vec.begin(), other.vec.end());
+    newpool.vec = v;
+    return newpool;
+}

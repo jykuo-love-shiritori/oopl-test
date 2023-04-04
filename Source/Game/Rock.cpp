@@ -41,7 +41,7 @@ bool Rock::createRockInstance(unsigned int tileID){ // TODO: refactor this for l
         if(tileID==_tilesAvailableForRocks[i]){ //FIXME: cant catch 140 235 and some others as tiles available
             double x=(double)std::rand()/(RAND_MAX+1.0);
 
-            if(x>0.5){
+            if(x<0.2){
                 return true;
             }
             return false;
@@ -55,7 +55,11 @@ game_framework::Bittermap Rock::getRockBMPs(){
 }
 
 void Rock::createRocks(temp_name::Map map){
+    /* init */
+    _rockTypes = {};
     _rockCoordinates={};
+    hp = HitboxPool();
+    
     for(int y=0;y < map.getMapSize().y ;y++){
 		for (int x=0;x < map.getMapSize().x ;x++){
             int i=y*map.getMapSize().x+x;
@@ -64,6 +68,10 @@ void Rock::createRocks(temp_name::Map map){
             if(createRockInstance(map.backTile[i])){
                 _rockCoordinates.push_back({x,y});
                 _rockTypes.push_back(std::rand()%17);
+                hp.AddHitbox( Rect::FromTopLeft(
+                    Vector2i(x, y) * TILE_SIZE * SCALE_SIZE,
+                    Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
+                ));
             }
 		}
 	}

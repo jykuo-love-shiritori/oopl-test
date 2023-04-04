@@ -13,6 +13,7 @@ class Rock{
         bool createRockInstance(unsigned int tileID);
         void createRocks(temp_name::Map map);
         void drawRocks();
+		Unity::HitboxPool hp;
     private:
         int _type;
         int _health;
