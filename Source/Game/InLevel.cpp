@@ -38,66 +38,67 @@ void InLevel::OnMove()							// 移動遊戲元素
 {
 	const int KEY_PRESS = 0x8000;
 	const int speed=20;
-	Vector2i move = {0,0};
+	Vector2i moveVec = Vector2i(0,0);
 	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
-		move.x = -1;
+		moveVec.x = -1;
 	}
 	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
-		move.x = 1;
+		moveVec.x = 1;
 	}
 	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
-		move.y = -1;
+		moveVec.y = -1;
 	}
 	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
-		move.y = 1;
+		moveVec.y = 1;
 	}
-	//move = move * speed;
 
+	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
 	for (int i = 0; i < speed; i++) {
-		player.Move(move);
-		auto magicSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
-		auto magicBox = Rect::FromTopLeft(player.position, magicSize);
-		auto collitions = map.hp.Collide(magicBox);
-		while (collitions.size() != 0) {
-			auto totalMagic = Vector2i(0, 0);
-			for (auto const &rect : collitions) {
-				auto magic = magicBox.getCenter() - rect.getCenter();
+		player.Move(moveVec);
+		while (true) {
+			auto playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
+			auto collitions = map.hp.Collide(playerHitbox);
+			if (collitions.size() == 0) break;
 
-				auto d = rect.getRadius() + magicBox.getRadius();
-				magic.x = (magic.x >= 0 ? d.x : -d.x) - magic.x;
-				magic.y = (magic.y >= 0 ? d.y : -d.y) - magic.y;
+			auto totalReaction = Vector2i(0, 0);
+			for (auto const &wallBox : collitions) {
+				auto currD = playerHitbox.getCenter() - wallBox.getCenter();
 
-				if (move.y == 0) {
-					magic.y = 0;
+				auto limitD = wallBox.getRadius() + playerHitbox.getRadius();
+				auto reactionVec = Vector2i(
+					(currD.x >= 0 ? limitD.x : -limitD.x) - currD.x,
+					(currD.y >= 0 ? limitD.y : -limitD.y) - currD.y
+				);
+
+				if (abs(reactionVec.x) == abs(reactionVec.y)) {
+					// nop
 				}
-				else if (move.x == 0) {
-					magic.x = 0;
+				else if (abs(reactionVec.x) < abs(reactionVec.y)) {
+					reactionVec.y = 0;
 				}
 				else {
-					if (abs(magic.x) == abs(magic.y)) {
-						// nop
-					}
-					else if (abs(magic.x) < abs(magic.y)) {
-						magic.y = 0;
-					}
-					else {
-						magic.x = 0;
-					}
+					reactionVec.x = 0;
 				}
-				totalMagic = totalMagic + magic;
+				totalReaction = totalReaction + reactionVec;
 			}
-			if (abs(totalMagic.x) == abs(totalMagic.y)) {
-				// nop
+			if (moveVec.y == 0) {
+				totalReaction.y = 0;
 			}
-			else if (abs(totalMagic.x) > abs(totalMagic.y)) {
-				totalMagic.y = 0;
+			else if (moveVec.x == 0) {
+				totalReaction.x = 0;
 			}
 			else {
-				totalMagic.x = 0;
+				if (abs(totalReaction.x) == abs(totalReaction.y)) {
+					// nop
+				}
+				else if (abs(totalReaction.x) > abs(totalReaction.y)) {
+					totalReaction.y = 0;
+				}
+				else {
+					totalReaction.x = 0;
+				}
 			}
-			player.Move(totalMagic);
-			magicBox = Rect::FromTopLeft(player.position, magicSize);
-			collitions = map.hp.Collide(magicBox);
+			player.Move(totalReaction);
 		}
 	}
 }
