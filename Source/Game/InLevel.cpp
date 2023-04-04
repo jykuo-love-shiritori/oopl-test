@@ -59,30 +59,43 @@ void InLevel::OnMove()							// 移動遊戲元素
 		auto magicBox = Rect::FromTopLeft(player.position, magicSize);
 		auto collitions = map.hp.Collide(magicBox);
 		while (collitions.size() != 0) {
-			auto rect = collitions[0];
-			auto magic = magicBox.getCenter() - rect.getCenter();
+			auto totalMagic = Vector2i(0, 0);
+			for (auto const &rect : collitions) {
+				auto magic = magicBox.getCenter() - rect.getCenter();
 
-			auto d = rect.getRadius() + magicBox.getRadius();
-			magic.x = (magic.x >= 0 ? d.x : -d.x) - magic.x;
-			magic.y = (magic.y >= 0 ? d.y : -d.y) - magic.y;
+				auto d = rect.getRadius() + magicBox.getRadius();
+				magic.x = (magic.x >= 0 ? d.x : -d.x) - magic.x;
+				magic.y = (magic.y >= 0 ? d.y : -d.y) - magic.y;
 
-			if (move.y == 0) {
-				magic.y = 0;
-			}
-			else if (move.x == 0) {
-				magic.x = 0;
-			}
-			else {
-				if (abs(magic.x) < abs(magic.y)) {
+				if (move.y == 0) {
 					magic.y = 0;
 				}
-				else {
+				else if (move.x == 0) {
 					magic.x = 0;
 				}
+				else {
+					if (abs(magic.x) == abs(magic.y)) {
+						// nop
+					}
+					else if (abs(magic.x) < abs(magic.y)) {
+						magic.y = 0;
+					}
+					else {
+						magic.x = 0;
+					}
+				}
+				totalMagic = totalMagic + magic;
 			}
-
-			player.Move(magic);
-
+			if (abs(totalMagic.x) == abs(totalMagic.y)) {
+				// nop
+			}
+			else if (abs(totalMagic.x) > abs(totalMagic.y)) {
+				totalMagic.y = 0;
+			}
+			else {
+				totalMagic.x = 0;
+			}
+			player.Move(totalMagic);
 			magicBox = Rect::FromTopLeft(player.position, magicSize);
 			collitions = map.hp.Collide(magicBox);
 		}
