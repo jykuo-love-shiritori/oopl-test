@@ -13,9 +13,11 @@ void Bittermap::Move(Unity::Vector2i vec)
 }
 
 void Bittermap::Draw() {
-	SetTopLeft(
-		position.x - CameraPosition->x + SIZE_X/2,
-		position.y - CameraPosition->y + SIZE_Y/2
-	);
-	ShowBitmap();
+	if (isShow) {
+		SetTopLeft(
+			position.x - CameraPosition->x + SIZE_X/2,
+			position.y - CameraPosition->y + SIZE_Y/2
+		);
+		ShowBitmap();
+	}
 }

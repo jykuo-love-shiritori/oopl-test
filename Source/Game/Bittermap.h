@@ -10,6 +10,7 @@ namespace game_framework {
 	public:
 		static Vector2i *CameraPosition;
 		Vector2i position;
+		bool isShow = true;
 		void Draw();
 		void Move(Vector2i vec);
 	};

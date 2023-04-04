@@ -9,3 +9,5 @@
 #define KEY_MOVE_LEFT	'A'
 #define KEY_MOVE_DOWN	'S'
 #define KEY_MOVE_RIGHT	'D'
+
+#define KEY_DO_ACTION	'X'

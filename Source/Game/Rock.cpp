@@ -36,45 +36,26 @@ int Rock::getType(){
     return _type;
 }
 
-bool Rock::createRockInstance(unsigned int tileID){ // TODO: refactor this for loop searching
-    for(unsigned int i=0;i<_tilesAvailableForRocks.size();i++){
-        if(tileID==_tilesAvailableForRocks[i]){ //FIXME: cant catch 140 235 and some others as tiles available
-            double x=(double)std::rand()/(RAND_MAX+1.0);
-
-            if(x<0.2){
-                return true;
-            }
-            return false;
-        }
-    }
-    return false;
-}
-
 game_framework::Bittermap Rock::getRockBMPs(){
     return _rockBMPs;
 }
 
-void Rock::createRocks(temp_name::Map map){
+void Rock::createRocks(const temp_name::Map map){
     /* init */
     _rockTypes = {};
     _rockCoordinates={};
     hp = HitboxPool();
-    
-    for(int y=0;y < map.getMapSize().y ;y++){
-		for (int x=0;x < map.getMapSize().x ;x++){
-            int i=y*map.getMapSize().x+x;
-			if(map.backTile[i]==0) continue;
-            if(map.buildingTile[i]!=0 || map.frontTile[i]!=0) continue;
-            if(createRockInstance(map.backTile[i])){
-                _rockCoordinates.push_back({x,y});
-                _rockTypes.push_back(std::rand()%17);
-                hp.AddHitbox( Rect::FromTopLeft(
-                    Vector2i(x, y) * TILE_SIZE * SCALE_SIZE,
-                    Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
-                ));
-            }
-		}
-	}
+
+    for(const Vector2i &pos : map.getPlaceablePositions()) {
+        if ( 0.2 > (double)std::rand()/(RAND_MAX+1.0)) {
+            _rockCoordinates.push_back(pos);
+            _rockTypes.push_back(std::rand()%17);
+            hp.AddHitbox( Rect::FromTopLeft(
+				pos * TILE_SIZE * SCALE_SIZE,
+                Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
+            ));
+        }
+    }
 }
 
 void Rock::drawRocks(){

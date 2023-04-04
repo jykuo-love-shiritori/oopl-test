@@ -73,7 +73,8 @@ namespace game_framework {	namespace stage {
 		temp_name::Map map;
 		int phase=0;
 
-		Rock test; //FIXME: rock testing, is temporary
+		Rock testRock; //FIXME: rock testing, is temporary
+		Bittermap testExit;
 	};
 
 	class GameOver : public CGameState {

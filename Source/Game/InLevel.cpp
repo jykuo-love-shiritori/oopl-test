@@ -10,6 +10,7 @@
 #include <shobjidl_core.h>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 #include <winuser.h>
 
 #include "../Config/keymap.h"
@@ -34,10 +35,11 @@ void InLevel::OnBeginState()
 {
 }
 
+const int KEY_PRESS = 0x8000;
+
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	/* player move and collision START*/
-	const int KEY_PRESS = 0x8000;
 	const int speed=20;
 	Vector2i moveVec = Vector2i(0,0);
 	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
@@ -53,7 +55,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		moveVec.y = 1;
 	}
 
-	HitboxPool bighp = map.hp + test.hp;
+	HitboxPool bighp = map.hp + testRock.hp;
 	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
 	for (int i = 0; i < speed; i++) {
 		player.Move(moveVec);
@@ -64,12 +66,12 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 			auto totalReaction = Vector2i(0, 0);
 			for (auto const &wallBox : collitions) {
-				auto currD = playerHitbox.getCenter() - wallBox.getCenter();
+				auto currDist = playerHitbox.getCenter() - wallBox.getCenter();
 
-				auto limitD = wallBox.getRadius() + playerHitbox.getRadius();
+				auto limitDist = wallBox.getRadius() + playerHitbox.getRadius();
 				auto reactionVec = Vector2i(
-					(currD.x >= 0 ? limitD.x : -limitD.x) - currD.x,
-					(currD.y >= 0 ? limitD.y : -limitD.y) - currD.y
+					(currDist.x >= 0 ? limitDist.x : -limitDist.x) - currDist.x,
+					(currDist.y >= 0 ? limitDist.y : -limitDist.y) - currDist.y
 				);
 
 				if (abs(reactionVec.x) == abs(reactionVec.y)) {
@@ -118,14 +120,20 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
-	test.load();
+	testRock.load();
+
+	testExit.LoadBitmapByString({ // next level entry
+        datapath + "/173.bmp"
+	}, RGB(255, 255, 255));
+	testExit.SetScale(4);
+	testExit.isShow = false;
 
 	Bittermap::CameraPosition = &player.position;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	/* debug key start */
+	/* debug key START */
 	switch (nChar) {
 		case 'J': // next map
 		case 'K': // previous map
@@ -139,11 +147,42 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
 			break;
 		case 'O': // create rock
-			// FIXME: rock generate at player spawn point would break collision system
-			test.createRocks(map);
+			if(GetKeyState(VK_SHIFT) & KEY_PRESS){
+				testRock = Rock();
+				testRock.load();
+			} else {
+				const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
+				const Rect playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
+				do { // FIXED: rock generate at player spawn point would break collision system
+					testRock.createRocks(map);
+				} while (testRock.hp.Collide(playerHitbox).size() != 0);
+			}
+			break;
+		case 'E': // create exit
+			testExit.isShow = true;
+			auto pps = map.getPlaceablePositions();
+			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			break;
 	}
-	/* debug key end */
+	/* debug key END */
+
+	switch (nChar) {
+		case KEY_DO_ACTION: // Check/Do Action
+			const Rect playerHitbox = Rect::FromTopLeft(player.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 0.7);
+			const Rect exitHitbox = Rect::FromTopLeft(testExit.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 1);
+			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
+				// switch to next level
+				if(++phase > 15) phase--;
+				map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
+				player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+
+				// create exit
+				testExit.isShow = true;
+				auto pps = map.getPlaceablePositions();
+				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+			}
+			break;
+	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -172,9 +211,13 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-	//map.drawBack();
-	test.drawRocks();
+	map.drawBack();
+
 	map.drawBuilding();
+
+	testExit.Draw();
+	testRock.drawRocks();
 	player.Draw();
-	//map.drawFront();
+
+	map.drawFront();
 }
