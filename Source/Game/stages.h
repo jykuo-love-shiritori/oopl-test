@@ -22,10 +22,11 @@
 #pragma once
 
 #include "Map.h"
+#include "Rock.h"
 #include "Bittermap.h"
-#include "Vector2.h"
+#include "../Unity/Vector2.h"
 
-#include "config.h"
+#include "../Config/config.h"
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
@@ -67,9 +68,13 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
 		Bittermap player;
-		Bittermap test; // FIXME: test Bittermap
 		Unity::Vector2i playerMoving;
+		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
 		temp_name::Map map;
+		int phase=0;
+
+		Rock testRock; //FIXME: rock testing, is temporary
+		Bittermap testExit;
 	};
 
 	class GameOver : public CGameState {

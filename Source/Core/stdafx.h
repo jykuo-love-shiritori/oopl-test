@@ -9,7 +9,7 @@
  *      1. Remove #define _WIN32_WINNT and Preprocessor Definitions (WINVER=0x500)
  *      2. Include SDKDDKVER.h, the file automatic setting WINVER and _WIN32_WINNT in latest version
 */
-
+#ifndef STOP_YELLING
 #include <sdkddkver.h>
 
 #if !defined(AFX_STDAFX_H__243A7A47_6962_11D3_9B4D_BAD1A91E5344__INCLUDED_)
@@ -34,3 +34,4 @@
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_STDAFX_H__243A7A47_6962_11D3_9B4D_BAD1A91E5344__INCLUDED_)
+#endif /* STOP_YELLING */
