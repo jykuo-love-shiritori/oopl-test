@@ -58,25 +58,33 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	Bittermap::CameraPosition = &player.position;
 }
 
-const int KEY_PRESS = 0x8000;
+/* helper functions START */
+bool isPress(int key) {
+	return GetKeyState(key) & 0x8000;
+}
+Vector2i getMoveVecByKeys() {
+	Vector2i moveVec = Vector2i(0,0);
+	if(isPress(KEY_MOVE_LEFT)){
+		moveVec.x = -1;
+	}
+	if(isPress(KEY_MOVE_RIGHT)){
+		moveVec.x = 1;
+	}
+	if(isPress(KEY_MOVE_UP)){
+		moveVec.y = -1;
+	}
+	if(isPress(KEY_MOVE_DOWN)){
+		moveVec.y = 1;
+	}
+	return moveVec;
+}
+/* helper functions START */
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	/* player move and collision START*/
 	const int speed=20;
-	Vector2i moveVec = Vector2i(0,0);
-	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
-		moveVec.x = -1;
-	}
-	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
-		moveVec.x = 1;
-	}
-	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
-		moveVec.y = -1;
-	}
-	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
-		moveVec.y = 1;
-	}
+	const Vector2i moveVec = getMoveVecByKeys();
 
 	HitboxPool bighp = map.hp + testRock.hp;
 	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
@@ -147,7 +155,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
 			break;
 		case 'O': // create rock
-			if(GetKeyState(VK_SHIFT) & KEY_PRESS){
+			if(isPress(VK_SHIFT)){
 				testRock = Rock();
 				testRock.load();
 			} else {
