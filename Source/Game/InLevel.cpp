@@ -35,6 +35,29 @@ void InLevel::OnBeginState()
 {
 }
 
+void InLevel::OnInit()  								// 遊戲的初值及圖形設定
+{
+	player.LoadBitmapByString({
+        "resources/giraffe.bmp"
+	}, RGB(255, 255, 255));
+	player.SetScale(1);
+	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+
+	map.loadFile("resources/MapData/1.ttt");
+	map.loadBMPs(datapath);
+	map.bmps.SetScale(SCALE_SIZE);
+
+	testRock.load();
+
+	testExit.LoadBitmapByString({ // next level entry
+        datapath + "/173.bmp"
+	}, RGB(255, 255, 255));
+	testExit.SetScale(4);
+	testExit.isShow = false;
+
+	Bittermap::CameraPosition = &player.position;
+}
+
 const int KEY_PRESS = 0x8000;
 
 void InLevel::OnMove()							// 移動遊戲元素
@@ -106,29 +129,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 		}
 	}
 	/* player move and collision END */
-}
-
-void InLevel::OnInit()  								// 遊戲的初值及圖形設定
-{
-	player.LoadBitmapByString({
-        "resources/giraffe.bmp"
-	}, RGB(255, 255, 255));
-	player.SetScale(1);
-	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
-
-	map.loadFile("resources/MapData/1.ttt");
-	map.loadBMPs(datapath);
-	map.bmps.SetScale(SCALE_SIZE);
-
-	testRock.load();
-
-	testExit.LoadBitmapByString({ // next level entry
-        datapath + "/173.bmp"
-	}, RGB(255, 255, 255));
-	testExit.SetScale(4);
-	testExit.isShow = false;
-
-	Bittermap::CameraPosition = &player.position;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
