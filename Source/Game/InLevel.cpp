@@ -42,6 +42,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
 	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
 	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
@@ -54,6 +55,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	}, RGB(255, 255, 255));
 	testExit.SetScale(4);
 	testExit.isShow = false;
+	testExit.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 1.0);
 
 	Bittermap::CameraPosition = &player.position;
 }
@@ -86,55 +88,9 @@ void InLevel::OnMove()							// 移動遊戲元素
 	const int speed=20;
 	const Vector2i moveVec = getMoveVecByKeys();
 
-	HitboxPool bighp = map.hp + testRock.hp;
-	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
+	const HitboxPool collisionPool = map.hp + testRock.hp;
 	for (int i = 0; i < speed; i++) {
-		player.Move(moveVec);
-		while (true) {
-			auto playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
-			auto collitions = bighp.Collide(playerHitbox);
-			if (collitions.size() == 0) break;
-
-			auto totalReaction = Vector2i(0, 0);
-			for (auto const &wallBox : collitions) {
-				auto currDist = playerHitbox.getCenter() - wallBox.getCenter();
-
-				auto limitDist = wallBox.getRadius() + playerHitbox.getRadius();
-				auto reactionVec = Vector2i(
-					(currDist.x >= 0 ? limitDist.x : -limitDist.x) - currDist.x,
-					(currDist.y >= 0 ? limitDist.y : -limitDist.y) - currDist.y
-				);
-
-				if (abs(reactionVec.x) == abs(reactionVec.y)) {
-					// nop
-				}
-				else if (abs(reactionVec.x) < abs(reactionVec.y)) {
-					reactionVec.y = 0;
-				}
-				else {
-					reactionVec.x = 0;
-				}
-				totalReaction = totalReaction + reactionVec;
-			}
-			if (moveVec.y == 0) {
-				totalReaction.y = 0;
-			}
-			else if (moveVec.x == 0) {
-				totalReaction.x = 0;
-			}
-			else {
-				if (abs(totalReaction.x) == abs(totalReaction.y)) {
-					// nop
-				}
-				else if (abs(totalReaction.x) > abs(totalReaction.y)) {
-					totalReaction.y = 0;
-				}
-				else {
-					totalReaction.x = 0;
-				}
-			}
-			player.Move(totalReaction);
-		}
+		player.MoveWithCollision(moveVec, collisionPool);
 	}
 	/* player move and collision END */
 }
@@ -159,8 +115,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testRock = Rock();
 				testRock.load();
 			} else {
-				const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
-				const Rect playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
+				const Rect playerHitbox = player.GetHitBox();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					testRock.createRocks(map);
 				} while (testRock.hp.Collide(playerHitbox).size() != 0);
@@ -176,8 +131,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = Rect::FromTopLeft(player.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 0.7);
-			const Rect exitHitbox = Rect::FromTopLeft(testExit.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 1);
+			const Rect playerHitbox = player.GetHitBox();
+			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
 				if(++phase > 15) phase--;
