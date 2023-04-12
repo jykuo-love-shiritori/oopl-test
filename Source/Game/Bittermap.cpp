@@ -15,7 +15,7 @@ void Bittermap::Move(Unity::Vector2i vec)
 
 void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitboxPool)
 {
-	this->position += moveVec;
+	this->position = this->position + moveVec;
 	while (true) {
 		auto thisHitbox = GetHitBox();
 		auto collisions = hitboxPool.Collide(thisHitbox);
