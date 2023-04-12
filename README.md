@@ -1,8 +1,29 @@
+# Stardew Valley OOPL Project
+
+|Keys   |Function           |
+|:-----:|:-----------------:|
+|W/A/S/D|movement|
+|X|go to next level if on exit|
+
+## Debug
+
+|Keys   |Function           |
+|:-----:|:-----------------:|
+|J/K    |next/previousmap   |
+|E      |create random exit |
+|O      |create random rocks|
+|Shift+O|clear all rocks    |
+
+## Known bugs:
+- If rocks are not cleared before entering next level, rocks will remain on last levels locations
+- If player spawns on said rocks, game will freeze
+- Hitbox is still WIP, actual hitbox is different from sprite
+
 # TODO
-- [ ] Map data
-  - [ ] [tmxloader](https://github.com/martygrant/tmxloader)
-- [ ] Steal texture from original game
-  - [ ] *Split texture libary*
+- [x] Map data
+  - [x] python preprosses TMX to [Custom format](https://github.com/jykuo-love-shiritori/tileset-image-cropper/tree/master/tmx_preprocess/txm2bin)
+- [x] Steal texture from original game
+  - [x] [jykuo-love-shiritori/tileset-image-cropper](https://github.com/jykuo-love-shiritori/tileset-image-cropper)
 
 Ores:
   - [ ] Copper ore
@@ -19,7 +40,7 @@ Gems:
   - [ ] Frozen tear
   - [ ] Jade
   - [ ] Diamond
-  - [ ] Emerald
+  - [ ] Emeraldg
   - [ ] Fire quartz
   - [ ] Ruby
 
