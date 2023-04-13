@@ -1,3 +1,14 @@
+### CMake ###
+.cache/*
+cmakeBuild
+build
+Testing
+
+### Map Resources ###
+Resources/MapTextures
+Resources/MapData
+Resources/Minerals
+
 ### VScode ###
 .vscode
 

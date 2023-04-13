@@ -22,10 +22,11 @@
 #pragma once
 
 #include "Map.h"
+#include "Rock.h"
 #include "Bittermap.h"
-#include "Vector2.h"
+#include "../Unity/Vector2.h"
 
-#include "config.h"
+#include "../Config/config.h"
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,12 @@ namespace game_framework {	namespace stage {
 	private:
 		Bittermap player;
 		Unity::Vector2i playerMoving;
-		Bittermap map;
+		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
+		temp_name::Map map;
+		int phase=0;
+
+		Rock testRock; //FIXME: rock testing, is temporary
+		Bittermap testExit;
 	};
 
 	class GameOver : public CGameState {
