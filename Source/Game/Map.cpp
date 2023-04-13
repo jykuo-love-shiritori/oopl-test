@@ -15,6 +15,24 @@
 
 using namespace temp_name;
 
+std::set<unsigned int> Map::kTilesAvailableForRocks = {
+	//FIXME: cant catch 140 235 and some others as tiles available
+	1,2,3,17,18,19,33,34,35,137,
+	138,139,140,149,150,151,152,153,154,155,
+	165,166,167,168,169,170,171,172,181,182,
+	183,184,185,186,187,188,198,199,200,201,
+	202,203,217,218,219,233,234,235,240,241,
+	242,256,257,258,272,273,274
+};
+
+std::vector<Unity::Vector2i> Map::kStartPosition = {
+	// TODO: there is only 16 levels
+	{10,4},{4,5},{9,31},{18,4},{12,6},
+	{6,38},{27,24},{20,5},{19,9},{6,6},
+	{4,5},{8,4},{17,4},{27,21},{12,9},
+	{23,4}
+};
+
 void Map::loadFile(std::string file)
 {
 	FILE *fp;
@@ -119,13 +137,6 @@ void Map::drawFront()
 	drawTiles(frontTile);
 }
 
-std::vector<Unity::Vector2i> Map::startPosition={
-	{10,4},{4,5},{9,31},{18,4},{12,6},
-	{6,38},{27,24},{20,5},{19,9},{6,6},
-	{4,5},{8,4},{17,4},{27,21},{12,9},
-	{23,4}
-};
-
 Unity::Vector2i Map::getMapSize() const {
 	return mapSize;
 }
@@ -158,3 +169,35 @@ std::vector<Vector2i> Map::getPlaceablePositions() const {
 	}
 	return result;
 }
+
+Map::Info Map::getInfo() const {
+	Info info;
+	info.startPosition = kStartPosition[m_mapIndex];
+	info.hasPresetExit false; // TODO: preset exit
+	return info;
+}
+
+unsigned int Map::getLevel() const {
+	return m_mapIndex;
+}
+
+void Map::setLevel(unsigned int index) {
+	// TODO: better exception handle
+	m_mapIndex = index;
+	loadFile("resources/MapData/" + std::to_string(m_mapIndex+1) + ".ttt");
+}
+
+bool Map::nextLevel() {
+	// TODO: better exception handle
+	if(m_mapIndex < kStartPosition.size()) return false;
+	setLevel(m_mapIndex+1);
+	return true;
+}
+
+bool Map::prevLevel() {
+	// TODO: better exception handle
+	if(m_mapIndex = 0) return false;
+	setLevel(m_mapIndex-1);
+	return true;
+}
+

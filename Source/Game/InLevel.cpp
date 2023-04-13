@@ -97,20 +97,21 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	/* debug key START */
+	#define DEBUG_KEY
+	#ifdef DEBUG_KEY
 	switch (nChar) {
 		case 'J': // next map
 		case 'K': // previous map
+			unsigned int mapIndex = map.getLevel();
 			if(nChar=='J'){
-				if(++phase > 15) phase--;
+				if(++mapIndex > 15) mapIndex--;
 			} else { // nChar=='K'
-				if(--phase < 0) phase++;
+				if(--mapIndex < 0) mapIndex++;
 			}
-
-			map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+			map.setLevel(mapIndex);
+			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
-		case 'O': // create rock
+		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				testRock = Rock();
 				testRock.load();
@@ -121,13 +122,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (testRock.hp.Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'E': // create exit
+		case 'E': // randomly create exit
 			testExit.isShow = true;
 			auto pps = map.getPlaceablePositions();
 			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			break;
 	}
-	/* debug key END */
+	#endif /* DEBUG_KEY */
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
@@ -135,14 +136,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if(++phase > 15) phase--;
-				map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-				player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+				if (map.nextLevel()) // if no next level
+					break;
 
-				// create exit
-				testExit.isShow = true;
-				auto pps = map.getPlaceablePositions();
-				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				auto mapInfo = map.getInfo();
+				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+				if (mapInfo.hasPresetExit) {
+					testExit.position = mapInfo.presetExit * TILE_SIZE * SCALE_SIZE;
+					testExit.isShow = true;
+				} else {
+					testExit.isShow = false;
+					// FIXME: randomly create exit for test
+					testExit.isShow = true;
+					auto pps = map.getPlaceablePositions();
+					testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				}
 			}
 			break;
 	}
