@@ -9,6 +9,7 @@ class Rock{
         int getType();
         int getHealth();
         game_framework::Bittermap getRockBMPs();
+        int rockSelector();
         void createRocks(temp_name::Map map);
         void drawRocks();
 		Unity::HitboxPool hp;

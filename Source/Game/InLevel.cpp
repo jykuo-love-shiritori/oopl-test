@@ -41,8 +41,15 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	player.position = Vector2i(10,5) * TILE_SIZE * SCALE_SIZE;
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
+
+	playerAttack.LoadBitmapByString({
+        "resources/slash.bmp"
+	}, RGB(25, 28, 36));
+	playerAttack.SetScale(1);
+	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	playerAttack.isShow=false;
 
 	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
@@ -87,12 +94,18 @@ void InLevel::OnMove()							// 移動遊戲元素
 	/* player move and collision START*/
 	const int speed=20;
 	const Vector2i moveVec = getMoveVecByKeys();
+	if(!(moveVec==Vector2i(0,0))) lastKeyPress=moveVec;
 
 	const HitboxPool collisionPool = map.hp + testRock.hp;
 	for (int i = 0; i < speed; i++) {
 		player.MoveWithCollision(moveVec, collisionPool);
 	}
 	/* player move and collision END */
+
+	/* player attack show timer*/
+	if(counter!=0) counter--;
+	else playerAttack.isShow=false;
+	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -120,6 +133,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 					testRock.createRocks(map);
 				} while (testRock.hp.Collide(playerHitbox).size() != 0);
 			}
+			break;
+		case 'R':
+			playerAttack.isShow=true;
+			counter=5;
 			break;
 		case 'E': // create exit
 			testExit.isShow = true;
@@ -181,6 +198,7 @@ void InLevel::OnShow()
 	testExit.Draw();
 	testRock.drawRocks();
 	player.Draw();
+	playerAttack.Draw();
 
 	map.drawFront();
 }
