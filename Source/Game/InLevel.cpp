@@ -45,7 +45,10 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
 	playerAttack.LoadBitmapByString({
-        "resources/slash.bmp"
+        "resources/slashLeft.bmp",
+        "resources/slashDown.bmp",
+        "resources/slashRight.bmp",
+        "resources/slashUp.bmp"
 	}, RGB(25, 28, 36));
 	playerAttack.SetScale(1);
 	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
@@ -91,6 +94,10 @@ Vector2i getMoveVecByKeys() {
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	//TODO: can change timer into cool thing
+	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
+	// CSpecialEffect::SetCurrentTime();
+	
 	/* player move and collision START*/
 	const int speed=20;
 	const Vector2i moveVec = getMoveVecByKeys();
@@ -103,8 +110,10 @@ void InLevel::OnMove()							// 移動遊戲元素
 	/* player move and collision END */
 
 	/* player attack show timer*/
-	if(counter!=0) counter--;
-	else playerAttack.isShow=false;
+	if(counter!=0) {
+		counter--;
+		if(counter<15) playerAttack.isShow=false;
+	}
 	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
 }
 
@@ -134,9 +143,22 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (testRock.hp.Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'R':
+		case 'P':
+			if(counter!=0) break;
+			if(lastKeyPress==Vector2i(1,0)){
+				playerAttack.SetFrameIndexOfBitmap(0);
+			}
+			else if(lastKeyPress==Vector2i(0,1)){
+				playerAttack.SetFrameIndexOfBitmap(1);
+			}
+			else if(lastKeyPress==Vector2i(-1,0)){
+				playerAttack.SetFrameIndexOfBitmap(2);
+			}
+			else if(lastKeyPress==Vector2i(0,-1)){
+				playerAttack.SetFrameIndexOfBitmap(3);
+			}
 			playerAttack.isShow=true;
-			counter=5;
+			counter=20;			
 			break;
 		case 'E': // create exit
 			testExit.isShow = true;
