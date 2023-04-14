@@ -41,7 +41,6 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.position = Vector2i(10,5) * TILE_SIZE * SCALE_SIZE;
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
 	playerAttack.LoadBitmapByString({
@@ -54,9 +53,11 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
 	playerAttack.isShow=false;
 
-	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
+
+	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	testRock.load();
 
@@ -119,20 +120,22 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	/* debug key START */
+	#define DEBUG_KEY
+	#ifdef DEBUG_KEY
+
+	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
-				if(++phase > 15) phase--;
+				if(mapIndex < 16) mapIndex++;
 			} else { // nChar=='K'
-				if(--phase < 0) phase++;
+				if(mapIndex != 1) mapIndex--;
 			}
-
-			map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+			map.setLevel(mapIndex);
+			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
-		case 'O': // create rock
+		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				testRock = Rock();
 				testRock.load();
@@ -160,13 +163,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerAttack.isShow=true;
 			counter=20;			
 			break;
-		case 'E': // create exit
+		case 'E': // randomly create exit
 			testExit.isShow = true;
 			auto pps = map.getPlaceablePositions();
 			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			break;
 	}
-	/* debug key END */
+	#endif /* DEBUG_KEY */
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
@@ -174,14 +177,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if(++phase > 15) phase--;
-				map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-				player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+				if (map.nextLevel()) // if no next level
+					break;
 
-				// create exit
-				testExit.isShow = true;
-				auto pps = map.getPlaceablePositions();
-				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				auto mapInfo = map.getInfo();
+				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+				if (mapInfo.hasPresetExit) {
+					testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
+					testExit.isShow = true;
+				} else {
+					testExit.isShow = false;
+					// FIXME: randomly create exit for test
+					testExit.isShow = true;
+					auto pps = map.getPlaceablePositions();
+					testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				}
 			}
 			break;
 	}
