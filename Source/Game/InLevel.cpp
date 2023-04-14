@@ -177,7 +177,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if (map.nextLevel()) // if no next level
+				if (!map.nextLevel()) // if no next level
 					break;
 
 				auto mapInfo = map.getInfo();
