@@ -41,12 +41,13 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
-	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
+
+	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	testRock.load();
 
@@ -99,14 +100,15 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	#define DEBUG_KEY
 	#ifdef DEBUG_KEY
+
+	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
 		case 'J': // next map
 		case 'K': // previous map
-			unsigned int mapIndex = map.getLevel();
 			if(nChar=='J'){
-				if(++mapIndex > 15) mapIndex--;
+				if(mapIndex < 16) mapIndex++;
 			} else { // nChar=='K'
-				if(--mapIndex < 0) mapIndex++;
+				if(mapIndex != 1) mapIndex--;
 			}
 			map.setLevel(mapIndex);
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
@@ -142,7 +144,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				auto mapInfo = map.getInfo();
 				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
 				if (mapInfo.hasPresetExit) {
-					testExit.position = mapInfo.presetExit * TILE_SIZE * SCALE_SIZE;
+					testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
 					testExit.isShow = true;
 				} else {
 					testExit.isShow = false;

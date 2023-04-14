@@ -50,8 +50,8 @@ namespace temp_name {
 
 	private:
 		/* Static constants */
-		static const std::set<unsigned int> kTilesAvailableForRocks;
-		static const std::vector<Unity::Vector2i> kStartPosition;
+		static std::set<unsigned int> kTilesAvailableForRocks;
+		static std::vector<Unity::Vector2i> kStartPosition;
 		
 		/* helper functions */
 		void loadHitbox();
