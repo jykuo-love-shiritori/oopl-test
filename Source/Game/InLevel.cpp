@@ -35,90 +35,19 @@ void InLevel::OnBeginState()
 {
 }
 
-const int KEY_PRESS = 0x8000;
-
-void InLevel::OnMove()							// 移動遊戲元素
-{
-	/* player move and collision START*/
-	const int speed=20;
-	Vector2i moveVec = Vector2i(0,0);
-	if(GetKeyState(KEY_MOVE_LEFT) & KEY_PRESS){
-		moveVec.x = -1;
-	}
-	if(GetKeyState(KEY_MOVE_RIGHT) & KEY_PRESS){
-		moveVec.x = 1;
-	}
-	if(GetKeyState(KEY_MOVE_UP) & KEY_PRESS){
-		moveVec.y = -1;
-	}
-	if(GetKeyState(KEY_MOVE_DOWN) & KEY_PRESS){
-		moveVec.y = 1;
-	}
-
-	HitboxPool bighp = map.hp + testRock.hp;
-	const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
-	for (int i = 0; i < speed; i++) {
-		player.Move(moveVec);
-		while (true) {
-			auto playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
-			auto collitions = bighp.Collide(playerHitbox);
-			if (collitions.size() == 0) break;
-
-			auto totalReaction = Vector2i(0, 0);
-			for (auto const &wallBox : collitions) {
-				auto currDist = playerHitbox.getCenter() - wallBox.getCenter();
-
-				auto limitDist = wallBox.getRadius() + playerHitbox.getRadius();
-				auto reactionVec = Vector2i(
-					(currDist.x >= 0 ? limitDist.x : -limitDist.x) - currDist.x,
-					(currDist.y >= 0 ? limitDist.y : -limitDist.y) - currDist.y
-				);
-
-				if (abs(reactionVec.x) == abs(reactionVec.y)) {
-					// nop
-				}
-				else if (abs(reactionVec.x) < abs(reactionVec.y)) {
-					reactionVec.y = 0;
-				}
-				else {
-					reactionVec.x = 0;
-				}
-				totalReaction = totalReaction + reactionVec;
-			}
-			if (moveVec.y == 0) {
-				totalReaction.y = 0;
-			}
-			else if (moveVec.x == 0) {
-				totalReaction.x = 0;
-			}
-			else {
-				if (abs(totalReaction.x) == abs(totalReaction.y)) {
-					// nop
-				}
-				else if (abs(totalReaction.x) > abs(totalReaction.y)) {
-					totalReaction.y = 0;
-				}
-				else {
-					totalReaction.x = 0;
-				}
-			}
-			player.Move(totalReaction);
-		}
-	}
-	/* player move and collision END */
-}
-
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	player.LoadBitmapByString({
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
-	map.loadFile("resources/MapData/1.ttt");
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
+
+	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	testRock.load();
 
@@ -127,59 +56,103 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	}, RGB(255, 255, 255));
 	testExit.SetScale(4);
 	testExit.isShow = false;
+	testExit.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 1.0);
 
 	Bittermap::CameraPosition = &player.position;
 }
 
+/* helper functions START */
+bool isPress(int key) {
+	return GetKeyState(key) & 0x8000;
+}
+Vector2i getMoveVecByKeys() {
+	Vector2i moveVec = Vector2i(0,0);
+	if(isPress(KEY_MOVE_LEFT)){
+		moveVec.x = -1;
+	}
+	if(isPress(KEY_MOVE_RIGHT)){
+		moveVec.x = 1;
+	}
+	if(isPress(KEY_MOVE_UP)){
+		moveVec.y = -1;
+	}
+	if(isPress(KEY_MOVE_DOWN)){
+		moveVec.y = 1;
+	}
+	return moveVec;
+}
+/* helper functions START */
+
+void InLevel::OnMove()							// 移動遊戲元素
+{
+	/* player move and collision START*/
+	const int speed=20;
+	const Vector2i moveVec = getMoveVecByKeys();
+
+	const HitboxPool collisionPool = map.hp + testRock.hp;
+	for (int i = 0; i < speed; i++) {
+		player.MoveWithCollision(moveVec, collisionPool);
+	}
+	/* player move and collision END */
+}
+
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	/* debug key START */
+	#define DEBUG_KEY
+	#ifdef DEBUG_KEY
+
+	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
-				if(++phase > 15) phase--;
+				if(mapIndex < 16) mapIndex++;
 			} else { // nChar=='K'
-				if(--phase < 0) phase++;
+				if(mapIndex != 1) mapIndex--;
 			}
-
-			map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-			player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+			map.setLevel(mapIndex);
+			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
-		case 'O': // create rock
-			if(GetKeyState(VK_SHIFT) & KEY_PRESS){
+		case 'O': // randomly create/clear rock
+			if(isPress(VK_SHIFT)){
 				testRock = Rock();
 				testRock.load();
 			} else {
-				const auto playerBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7;
-				const Rect playerHitbox = Rect::FromTopLeft(player.position, playerBoxSize);
+				const Rect playerHitbox = player.GetHitBox();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					testRock.createRocks(map);
 				} while (testRock.hp.Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'E': // create exit
+		case 'E': // randomly create exit
 			testExit.isShow = true;
 			auto pps = map.getPlaceablePositions();
 			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			break;
 	}
-	/* debug key END */
+	#endif /* DEBUG_KEY */
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = Rect::FromTopLeft(player.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 0.7);
-			const Rect exitHitbox = Rect::FromTopLeft(testExit.position, Vector2i(1,1) * TILE_SIZE * SCALE_SIZE * 1);
+			const Rect playerHitbox = player.GetHitBox();
+			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if(++phase > 15) phase--;
-				map.loadFile("resources/MapData/" + std::to_string(phase+1) + ".ttt");
-				player.position=map.startPosition[phase] * TILE_SIZE * SCALE_SIZE; // hard code 1-16(0-15)
+				if (map.nextLevel()) // if no next level
+					break;
 
-				// create exit
-				testExit.isShow = true;
-				auto pps = map.getPlaceablePositions();
-				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				auto mapInfo = map.getInfo();
+				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+				if (mapInfo.hasPresetExit) {
+					testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
+					testExit.isShow = true;
+				} else {
+					testExit.isShow = false;
+					// FIXME: randomly create exit for test
+					testExit.isShow = true;
+					auto pps = map.getPlaceablePositions();
+					testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+				}
 			}
 			break;
 	}
