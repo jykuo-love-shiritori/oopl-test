@@ -40,8 +40,8 @@ namespace Unity {
 		}
 		template<typename U>
 		Vector2<T>(Vector2<U> const & origin) {
-			x = (T)origin.x;
-			y = (T)origin.y;
+			x = static_cast<T>(origin.x);
+			y = static_cast<T>(origin.y);
 		}
 	};
 	using Vector2i = Vector2<int>;
