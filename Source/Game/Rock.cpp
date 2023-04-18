@@ -42,23 +42,23 @@ game_framework::Bittermap Rock::getRockBMPs(){
 
 int Rock::rockSelector(){
     int res=std::rand()%1000;
-    if(res<430) return 0;
-    else if(res<860) return 1;
-    else if(res<900) return 2;
-    else if(res<925) return 3;
-    else if(res<940) return 4;
-    else if(res<941) return 5;
-    else if(res<945) return 6;
-    else if(res<949) return 7;
-    else if(res<955) return 8;
-    else if(res<965) return 9;
-    else if(res<969) return 10;
-    else if(res<979) return 11;
-    else if(res<983) return 12;
-    else if(res<985) return 13;
-    else if(res<990) return 14;
-    else if(res<996) return 15;
-    else return 16;
+    if(res<430) return stoneType1;
+    else if(res<860) return stoneType2;
+    else if(res<900) return copperNode;
+    else if(res<925) return ironNode;
+    else if(res<940) return goldNode;
+    else if(res<941) return iridiumnNode;
+    else if(res<945) return amethystNode;
+    else if(res<949) return topazNode;
+    else if(res<955) return quartz;
+    else if(res<965) return earthCrystal;
+    else if(res<969) return aquamarineNode;
+    else if(res<979) return frozenTear;
+    else if(res<983) return jadeNode;
+    else if(res<985) return emeraldNode;
+    else if(res<990) return diamondNode;
+    else if(res<996) return fireQuartz;
+    else return rubyNode;
 }
 
 void Rock::createRocks(const temp_name::Map map){
