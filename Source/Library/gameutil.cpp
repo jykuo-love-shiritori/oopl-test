@@ -276,6 +276,22 @@ namespace game_framework {
 		ShowBitmapBySetting();
 	}
 
+	//! 顯示圖片。
+	/*!
+		僅能在 `onShow()` 時呼叫，且圖片需要被讀取。
+		圖片顯示在@param的左上角座標
+		\param left, top 圖的左上角座標
+		\param frameIndex 圖片索引值
+	*/
+	void CMovingBitmap::ShowBitmap(int param_left, int param_top, int param_frameIndex) const
+	{
+		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
+		GAME_ASSERT(factor >= 0, "CMovingBitmap factor cannot be negative number!!!!!!!!!!")
+		CDDraw::BltBitmapToBack(surfaceID[param_frameIndex], param_left, param_top, factor);
+		/* v I think this is only for animation, remove for const safety */
+		// ShowBitmapBySetting();
+	}
+
 	//! 設置當前圖片顯示幀的索引值。
 	/*!
 		圖片顯示幀的索引值以 0 開始。
