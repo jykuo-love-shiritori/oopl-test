@@ -283,11 +283,14 @@ namespace game_framework {
 		\param left, top 圖的左上角座標
 		\param frameIndex 圖片索引值
 	*/
-	void CMovingBitmap::ShowBitmap(int param_left, int param_top, int param_frameIndex) const
+	void CMovingBitmap::ShowBitmap(
+		int param_left, int param_top,
+		int param_frameIndex
+		) const
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
-		GAME_ASSERT(factor >= 0, "CMovingBitmap factor cannot be negative number!!!!!!!!!!")
-		CDDraw::BltBitmapToBack(surfaceID[param_frameIndex], param_left, param_top, factor);
+		GAME_ASSERT(scaleFactor >= 0, "CMovingBitmap factor cannot be negative number!!!!!!!!!!")
+		CDDraw::BltBitmapToBack(surfaceID[param_frameIndex], param_left, param_top, scaleFactor);
 		/* v I think this is only for animation, remove for const safety */
 		// ShowBitmapBySetting();
 	}
