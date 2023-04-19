@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "Rock.h"
+#include "RockManager.h"
 
 #include "../Config/scaler.h"
 
 #include <cstdlib>
 
-void Rock::load(){
+void RockManager::load(){
     _rockBMPs.LoadBitmapByString({
         "Resources/Minerals/stoneType1.bmp",    //0
         "Resources/Minerals/stoneType2.bmp",    //1
@@ -28,19 +28,19 @@ void Rock::load(){
 }
 
 
-int Rock::getHealth(){
+int RockManager::getHealth(){
     return _health;
 }
 
-int Rock::getType(){
+int RockManager::getType(){
     return _type;
 }
 
-game_framework::Bittermap Rock::getRockBMPs(){
+game_framework::Bittermap RockManager::getRockBMPs(){
     return _rockBMPs;
 }
 
-void Rock::createRocks(const temp_name::Map map){
+void RockManager::createRocks(const temp_name::Map map){
     /* init */
     _rockTypes = {};
     _rockCoordinates={};
@@ -58,7 +58,7 @@ void Rock::createRocks(const temp_name::Map map){
     }
 }
 
-void Rock::drawRocks(){
+void RockManager::drawRocks(){
     for(unsigned int i=0;i<_rockCoordinates.size();i++){
         _rockBMPs.SetFrameIndexOfBitmap(_rockTypes[i]);
         // _rockBMPs.SetFrameIndexOfBitmap(std::rand() % 17); //disco party

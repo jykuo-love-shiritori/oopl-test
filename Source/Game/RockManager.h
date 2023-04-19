@@ -3,7 +3,7 @@
 #include "../Game/Map.h"
 
 
-class Rock{
+class RockManager{
     public:
         void load();
         int getType();

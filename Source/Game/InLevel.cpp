@@ -89,7 +89,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	const int speed=20;
 	const Vector2i moveVec = getMoveVecByKeys();
 
-	const HitboxPool collisionPool = map.hp + testRock.hp;
+	const HitboxPool collisionPool = map.hp + testRockManager.hp;
 	for (int i = 0; i < speed; i++) {
 		player.MoveWithCollision(moveVec, collisionPool);
 	}
@@ -121,7 +121,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				const Rect playerHitbox = player.GetHitBox();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					testRock.createRocks(map);
-				} while (testRock.hp.Collide(playerHitbox).size() != 0);
+				} while (testRockManager.hp.Collide(playerHitbox).size() != 0);
 			}
 			break;
 		case 'E': // randomly create exit

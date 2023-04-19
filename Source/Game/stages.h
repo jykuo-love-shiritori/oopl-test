@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Map.h"
-#include "Rock.h"
+#include "RockManager.h"
 #include "Bittermap.h"
 #include "../Unity/Vector2.h"
 
@@ -73,7 +73,7 @@ namespace game_framework {	namespace stage {
 		temp_name::Map map;
 		int phase=0;
 
-		Rock testRock; //FIXME: rock testing, is temporary
+		RockManager testRock; //FIXME: rock testing, is temporary
 		Bittermap testExit;
 	};
 
