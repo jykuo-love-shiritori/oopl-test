@@ -4,6 +4,7 @@
 #include "../Config/scaler.h"
 
 #include <cstdlib>
+#include <random>
 
 void Rock::load(){
     _rockBMPs.LoadBitmapByString({
@@ -41,24 +42,10 @@ game_framework::Bittermap Rock::getRockBMPs(){
 }
 
 int Rock::rockSelector(){
-    int res=std::rand()%1000;
-    if(res<430) return stoneType1;
-    else if(res<860) return stoneType2;
-    else if(res<900) return copperNode;
-    else if(res<925) return ironNode;
-    else if(res<940) return goldNode;
-    else if(res<941) return iridiumnNode;
-    else if(res<945) return amethystNode;
-    else if(res<949) return topazNode;
-    else if(res<955) return quartz;
-    else if(res<965) return earthCrystal;
-    else if(res<969) return aquamarineNode;
-    else if(res<979) return frozenTear;
-    else if(res<983) return jadeNode;
-    else if(res<985) return emeraldNode;
-    else if(res<990) return diamondNode;
-    else if(res<996) return fireQuartz;
-    else return rubyNode;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> res({430,430,40,25,15,1,4,4,6,10,4,10,4,2,5,6,4});
+    return res(gen);
 }
 
 void Rock::createRocks(const temp_name::Map map){
