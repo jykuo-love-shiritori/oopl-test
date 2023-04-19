@@ -68,6 +68,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.isShow = false;
 	testExit.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 1.0);
 
+	bug.spawn(Vector2i(10,8));
+
 	Bittermap::CameraPosition = &player.position;
 }
 
@@ -110,12 +112,16 @@ void InLevel::OnMove()							// 移動遊戲元素
 	}
 	/* player move and collision END */
 
-	/* player attack show timer*/
+	/* player attack show timer START*/
 	if(counter!=0) {
 		counter--;
 		if(counter<15) playerAttack.isShow=false;
 	}
 	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
+	/* player attack show timer END*/
+
+	/*bug pursuit START*/
+	bug.pursuit(player.position);
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -231,6 +237,8 @@ void InLevel::OnShow()
 	testRock.drawRocks();
 	player.Draw();
 	playerAttack.Draw();
+
+	bug.drawBug();
 
 	map.drawFront();
 }

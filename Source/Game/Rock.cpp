@@ -3,7 +3,6 @@
 
 #include "../Config/scaler.h"
 
-#include <cstdlib>
 #include <random>
 
 void Rock::load(){
@@ -44,7 +43,7 @@ game_framework::Bittermap Rock::getRockBMPs(){
 int Rock::rockSelector(){
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::discrete_distribution<> res({300,300,30,20,15,1,3,3,5,5,3,5,3,1,3,5,3});
+    std::discrete_distribution<> res({300,300,30,20,10,1,3,3,5,5,3,5,3,1,3,5,3});
     return res(gen);
 }
 

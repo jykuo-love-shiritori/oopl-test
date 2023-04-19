@@ -23,6 +23,7 @@
 
 #include "Map.h"
 #include "Rock.h"
+#include "Bug.h"
 #include "Bittermap.h"
 #include "../Unity/Vector2.h"
 
@@ -79,6 +80,7 @@ namespace game_framework {	namespace stage {
 
 		Rock testRock; //FIXME: rock testing, is temporary
 		Bittermap testExit;
+		Bug bug;
 	};
 
 	class GameOver : public CGameState {
