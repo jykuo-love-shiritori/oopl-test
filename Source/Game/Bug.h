@@ -6,11 +6,12 @@
 
 class Bug{
     public:
-        void spawn(Vector2i startLocation);
+        void spawn(Vector2i startLocation,Vector2i playerLocation);
         void pursuit(Vector2i playerLocation);
         void drawBug();
 
     private:
         game_framework::Bittermap _sprite;
         int _health;
+        Vector2i _currentMomentum;
 };
