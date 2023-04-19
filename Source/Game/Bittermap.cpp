@@ -76,7 +76,7 @@ void Bittermap::Draw() {
 void Bittermap::Draw(Vector2i pos, int fIndex) const {
 	ShowBitmap(
 		pos.x - CameraPosition->x + SIZE_X/2,
-		pos.y - CameraPosition->x + SIZE_X/2,
+		pos.y - CameraPosition->y + SIZE_Y/2,
 		fIndex
 	);
 }
