@@ -73,7 +73,7 @@ namespace game_framework {	namespace stage {
 		temp_name::Map map;
 		int phase=0;
 
-		RockManager testRock; //FIXME: rock testing, is temporary
+		RockManager rockMan;
 		Bittermap testExit;
 	};
 

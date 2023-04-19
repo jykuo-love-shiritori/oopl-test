@@ -3,9 +3,10 @@
 
 #include "../Config/scaler.h"
 
-#include <cstdlib>
+#include <cstdlib> // for std::rand()
+#include <vector>
 
-void RockManager::load(){
+void RockManager::loadBMP(){
     _rockBMPs.LoadBitmapByString({
         "Resources/Minerals/stoneType1.bmp",    //0
         "Resources/Minerals/stoneType2.bmp",    //1
@@ -27,42 +28,41 @@ void RockManager::load(){
     },RGB(255,255,255));  
 }
 
+void RockManager::createRocksOn(const std::vector<Vector2i> placeablePositions) {
+    clear();
 
-int RockManager::getHealth(){
-    return _health;
-}
-
-int RockManager::getType(){
-    return _type;
-}
-
-game_framework::Bittermap RockManager::getRockBMPs(){
-    return _rockBMPs;
-}
-
-void RockManager::createRocks(const temp_name::Map map){
-    /* init */
-    _rockTypes = {};
-    _rockCoordinates={};
-    hp = HitboxPool();
-
-    for(const Vector2i &pos : map.getPlaceablePositions()) {
+    for(const Vector2i &pos : placeablePositions) {
+        // TODO: change to new rarity function
         if ( 0.2 > (double)std::rand()/(RAND_MAX+1.0)) {
-            _rockCoordinates.push_back(pos);
-            _rockTypes.push_back(std::rand()%17);
-            hp.AddHitbox( Rect::FromTopLeft(
+            Rock rock;
+            rock.position = pos;
+            rock.type = std::rand()%17;
+            _rocks.push_back(rock);
+            _hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
                 Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
             ));
         }
     }
+
+    _rocks.shrink_to_fit();
 }
 
-void RockManager::drawRocks(){
-    for(unsigned int i=0;i<_rockCoordinates.size();i++){
-        _rockBMPs.SetFrameIndexOfBitmap(_rockTypes[i]);
+void RockManager::drawRocks() const{
+    for (Rock const& rock : _rocks) {
         // _rockBMPs.SetFrameIndexOfBitmap(std::rand() % 17); //disco party
-        _rockBMPs.position = _rockCoordinates[i] * TILE_SIZE * SCALE_SIZE;
-        _rockBMPs.Draw();
+        _rockBMPs.Draw(
+            rock.position * TILE_SIZE * SCALE_SIZE,
+            rock.type
+        );
     }
+}
+
+HitboxPool RockManager::getHitbox() const {
+    return _hp;
+}
+
+void RockManager::clear() {
+    _rocks.clear();
+    _hp = HitboxPool();
 }
