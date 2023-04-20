@@ -13,5 +13,5 @@ class Bug{
     private:
         game_framework::Bittermap _sprite;
         int _health;
-        Vector2i _currentMomentum;
+        Vector2f _currentMomentum;
 };

@@ -11,7 +11,7 @@ void Bug::spawn(Vector2i startLocation,Vector2i playerLocation){
     },RGB(255,255,255));
     _sprite.position=startLocation * TILE_SIZE * SCALE_SIZE;
     _currentMomentum=playerLocation-_sprite.position;
-    _currentMomentum=_currentMomentum*7/sqrt(pow((_currentMomentum.x),2)+pow((_currentMomentum.y),2));
+    _currentMomentum=_currentMomentum/sqrt(pow((_currentMomentum.x),2)+pow((_currentMomentum.y),2));
 }
 
 void Bug::drawBug(){
@@ -19,7 +19,7 @@ void Bug::drawBug(){
 }
 
 void Bug::pursuit(Vector2i playerLocation){
-    Vector2i deltaVec=playerLocation-_sprite.position;
-    _currentMomentum=_currentMomentum+deltaVec*3/100;
+    Vector2f deltaVec=playerLocation-_sprite.position;
+    _currentMomentum=_currentMomentum+deltaVec/sqrt(pow((deltaVec.x),2)+pow((deltaVec.y),2));
     _sprite.Move(_currentMomentum);
 }
