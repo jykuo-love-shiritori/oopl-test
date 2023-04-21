@@ -68,10 +68,14 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
 		Bittermap player;
+		Bittermap playerAttack;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
 		temp_name::Map map;
 		int phase=0;
+
+		unsigned int counter=0;
+		Unity::Vector2i lastKeyPress={1,0};
 
 		Rock testRock; //FIXME: rock testing, is temporary
 		Bittermap testExit;

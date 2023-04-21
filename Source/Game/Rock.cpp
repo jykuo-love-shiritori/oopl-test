@@ -4,6 +4,7 @@
 #include "../Config/scaler.h"
 
 #include <cstdlib>
+#include <random>
 
 void Rock::load(){
     _rockBMPs.LoadBitmapByString({
@@ -40,6 +41,13 @@ game_framework::Bittermap Rock::getRockBMPs(){
     return _rockBMPs;
 }
 
+int Rock::rockSelector(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> res({300,300,30,20,15,1,3,3,5,5,3,5,3,1,3,5,3});
+    return res(gen);
+}
+
 void Rock::createRocks(const temp_name::Map map){
     /* init */
     _rockTypes = {};
@@ -47,9 +55,9 @@ void Rock::createRocks(const temp_name::Map map){
     hp = HitboxPool();
 
     for(const Vector2i &pos : map.getPlaceablePositions()) {
-        if ( 0.2 > (double)std::rand()/(RAND_MAX+1.0)) {
+        if ( 30 > std::rand() % 100 ) {
             _rockCoordinates.push_back(pos);
-            _rockTypes.push_back(std::rand()%17);
+            _rockTypes.push_back(rockSelector());
             hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
                 Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
