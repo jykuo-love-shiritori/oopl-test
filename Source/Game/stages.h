@@ -81,6 +81,7 @@ namespace game_framework {	namespace stage {
 		Rock testRock; //FIXME: rock testing, is temporary
 		Bittermap testExit;
 		Bug bug;
+		Bug bug2;
 	};
 
 	class GameOver : public CGameState {

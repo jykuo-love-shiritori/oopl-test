@@ -69,6 +69,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 1.0);
 
 	bug.spawn(Vector2i(10,8),player.position);
+	bug2.spawn(Vector2i(15,4),player.position);
 
 	Bittermap::CameraPosition = &player.position;
 }
@@ -122,6 +123,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	/*bug pursuit START*/
 	bug.pursuit(player.position);
+	bug2.pursuit(player.position);
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -238,7 +240,8 @@ void InLevel::OnShow()
 	player.Draw();
 	playerAttack.Draw();
 
-	bug.drawBug();
-
 	map.drawFront();
+	
+	bug.drawBug();
+	bug2.drawBug();
 }
