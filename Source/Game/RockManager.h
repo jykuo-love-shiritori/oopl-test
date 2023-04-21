@@ -16,6 +16,7 @@ struct Rock {
 class RockManager{
     public:
         void loadBMP();
+        int rockSelector();
         void createRocksOn(const std::vector<Vector2i> placeablePositions);
         void drawRocks() const;
         HitboxPool getHitbox() const;

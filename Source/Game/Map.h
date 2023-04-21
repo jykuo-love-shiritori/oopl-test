@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <map>
 
 namespace temp_name {
 	class Map {
@@ -52,6 +53,7 @@ namespace temp_name {
 		/* Static constants */
 		static std::set<unsigned int> kTilesAvailableForRocks;
 		static std::vector<Unity::Vector2i> kStartPosition;
+		static std::map<int,Vector2i> presetExitLevels;
 		
 		/* helper functions */
 		void loadHitbox();

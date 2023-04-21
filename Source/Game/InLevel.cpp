@@ -43,6 +43,16 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetScale(1);
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
+	playerAttack.LoadBitmapByString({
+        "resources/slashLeft.bmp",
+        "resources/slashDown.bmp",
+        "resources/slashRight.bmp",
+        "resources/slashUp.bmp"
+	}, RGB(25, 28, 36));
+	playerAttack.SetScale(1);
+	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	playerAttack.isShow=false;
+
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
@@ -85,15 +95,27 @@ Vector2i getMoveVecByKeys() {
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	//TODO: can change timer into cool thing
+	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
+	// CSpecialEffect::SetCurrentTime();
+	
 	/* player move and collision START*/
 	const int speed=20;
 	const Vector2i moveVec = getMoveVecByKeys();
+	if(!(moveVec==Vector2i(0,0))) lastKeyPress=moveVec;
 
 	const HitboxPool collisionPool = map.hp + rockMan.getHitbox();
 	for (int i = 0; i < speed; i++) {
 		player.MoveWithCollision(moveVec, collisionPool);
 	}
 	/* player move and collision END */
+
+	/* player attack show timer*/
+	if(counter!=0) {
+		counter--;
+		if(counter<15) playerAttack.isShow=false;
+	}
+	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -124,6 +146,23 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockMan.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
+		case 'P':
+			if(counter!=0) break;
+			if(lastKeyPress==Vector2i(1,0)){
+				playerAttack.SetFrameIndexOfBitmap(0);
+			}
+			else if(lastKeyPress==Vector2i(0,1)){
+				playerAttack.SetFrameIndexOfBitmap(1);
+			}
+			else if(lastKeyPress==Vector2i(-1,0)){
+				playerAttack.SetFrameIndexOfBitmap(2);
+			}
+			else if(lastKeyPress==Vector2i(0,-1)){
+				playerAttack.SetFrameIndexOfBitmap(3);
+			}
+			playerAttack.isShow=true;
+			counter=20;			
+			break;
 		case 'E': // randomly create exit
 			testExit.isShow = true;
 			auto pps = map.getPlaceablePositions();
@@ -138,7 +177,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if (map.nextLevel()) // if no next level
+				if (!map.nextLevel()) // if no next level
 					break;
 
 				auto mapInfo = map.getInfo();
@@ -191,6 +230,7 @@ void InLevel::OnShow()
 	rockMan.drawRocks();
 	testExit.Draw();
 	player.Draw();
+	playerAttack.Draw();
 
 	map.drawFront();
 	/* top layer */

@@ -5,6 +5,7 @@
 
 #include <cstdlib> // for std::rand()
 #include <vector>
+#include <random>
 
 void RockManager::loadBMP(){
     _rockBMPs.LoadBitmapByString({
@@ -28,15 +29,21 @@ void RockManager::loadBMP(){
     },RGB(255,255,255));  
 }
 
+int RockManager::rockSelector(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> res({300,300,30,20,15,1,3,3,5,5,3,5,3,1,3,5,3});
+    return res(gen);
+}
+
 void RockManager::createRocksOn(const std::vector<Vector2i> placeablePositions) {
     clear();
 
     for(const Vector2i &pos : placeablePositions) {
-        // TODO: change to new rarity function
-        if ( 0.2 > (double)std::rand()/(RAND_MAX+1.0)) {
+        if ( 30 > std::rand() % 100 ) {
             Rock rock;
             rock.position = pos;
-            rock.type = std::rand()%17;
+            rock.type = rockSelector();
             _rocks.push_back(rock);
             _hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
