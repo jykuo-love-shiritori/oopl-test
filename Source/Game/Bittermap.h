@@ -24,7 +24,7 @@ namespace game_framework {
 		
 		/* Getter */
 		/* Get the hitbox with the current position as the top left */
-		Rect GetHitBox() const ;
+		Rect GetHitbox() const ;
 		bool isShown() {return _isShow;}
 	};
 }

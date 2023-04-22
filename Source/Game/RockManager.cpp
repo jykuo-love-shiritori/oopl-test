@@ -77,8 +77,12 @@ void RockManager::clear() {
 std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) const {
     std::vector<Rock*> vec = {};
     for (unsigned int i=0; i < _rocks.size(); ++i) {
-        if(_hp.getCollisionWith(hitbox)) {
-            vec.push_back(&(_rocks[i]));
+        Rect rockBox = Rect::FromTopLeft(
+				pos * TILE_SIZE * SCALE_SIZE,
+                Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
+            )
+        if(Rect::isOverlay(rockBox, hitbox)) {
+            vec.push_back(&_rocks[i]);
         }
     }
     vec.shrink_to_fit();
@@ -94,4 +98,13 @@ void RockManager::remove(std::set<Rock*> ptrs) {
     }
     _rocks = newRocks;
     _rocks.shrink_to_fit();
+}
+
+std::vector<Vector2i> RockManager::getPositions() const {
+    std::vector<Vector2i> vec = {}
+    for (const auto& rock : _rocks) {
+        vec.push_back(rock.position);
+    }
+    vec.shrink_to_fit();
+    return vec;
 }

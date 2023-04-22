@@ -136,7 +136,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 	{ /* player attack timer BEGIN */
 		if(playerAttackTimer > 0) {
 			playerAttackTimer--;
-			if (player) {}
 			playerAttack.SetShow(playerAttackTimer > PLAYER_ATTACK_CD);
 		}
 		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
@@ -153,7 +152,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 			const auto 🗡️ = playerAttack.GetHitbox();
 			// Loop through all the rocks that collide with the attack area
-			vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
+			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
 			for (const auto& 🗿 : 🗿🗿🗿) {
 				if (markedRocks.count(🗿) != 0) continue;
 				markedRocks.insert(🗿);
@@ -198,7 +197,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
 			} else {
-				const Rect playerHitbox = player.GetHitBox();
+				const Rect playerHitbox = player.GetHitbox();
 				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					rockManager.createRocksOn(pps);
@@ -223,8 +222,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = player.GetHitBox();
-			const Rect exitHitbox = testExit.GetHitBox();
+			const Rect playerHitbox = player.GetHitbox();
+			const Rect exitHitbox = testExit.GetHitbox();
 			if (testExit.isShown() && Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
 				if (!map.nextLevel()) // if no next level
