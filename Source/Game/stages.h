@@ -74,8 +74,8 @@ namespace game_framework {	namespace stage {
 		temp_name::Map map;
 		int phase=0;
 
-		unsigned int counter=0;
-		Unity::Vector2i lastKeyPress={1,0};
+		int playerAttackTimer=0; // use int for conveniently handle underflow
+		Unity::Vector2i attackDirection={1,0};
 
 		RockManager rockManager;
 		Bittermap testExit;

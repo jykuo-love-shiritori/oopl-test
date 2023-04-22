@@ -16,6 +16,9 @@
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
 
+#define PLAYER_ATTACK_CD	15
+#define PLAYER_ATTACK_TIME	5
+
 using namespace game_framework;
 using namespace game_framework::stage;
 
@@ -91,6 +94,21 @@ Vector2i getMoveVecByKeys() {
 	}
 	return moveVec;
 }
+unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
+	if(attackDirection==Vector2i(0,1)){
+		return 1; // Down
+	}
+	if(attackDirection==Vector2i(0,-1)){
+		return 3; // Up
+	}
+	if(attackDirection.x == -1){
+		return 2; // Left
+	}
+	if(attackDirection.x == 1){
+		return 0; // Right
+	}
+	throw "wtf";
+}
 /* helper functions START */
 
 void InLevel::OnMove()							// 移動遊戲元素
@@ -99,23 +117,25 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
 	
-	/* player move and collision START*/
+	// player moving speed
 	const int speed=20;
-	const Vector2i moveVec = getMoveVecByKeys();
-	if(!(moveVec==Vector2i(0,0))) lastKeyPress=moveVec;
+	{ /* player move and collision BEGIN */
+		const Vector2i moveVec = getMoveVecByKeys();
+		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-	const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
-	for (int i = 0; i < speed; i++) {
-		player.MoveWithCollision(moveVec, collisionPool);
-	}
-	/* player move and collision END */
+		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+		for (int i = 0; i < speed; i++) {
+			player.MoveWithCollision(moveVec, collisionPool);
+		}
+	} /* player move and collision END */
 
-	/* player attack show timer*/
-	if(counter!=0) {
-		counter--;
-		if(counter<15) playerAttack.isShow=false;
-	}
-	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
+	{ /* player attack timer BEGIN */
+		if(playerAttackTimer > 0) {
+			playerAttackTimer--;
+			playerAttack.isShow = playerAttackTimer > PLAYER_ATTACK_CD;
+		}
+		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
+	} /* player attack counter END */
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -146,22 +166,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'P':
-			if(counter!=0) break;
-			if(lastKeyPress==Vector2i(1,0)){
-				playerAttack.SetFrameIndexOfBitmap(0);
-			}
-			else if(lastKeyPress==Vector2i(0,1)){
-				playerAttack.SetFrameIndexOfBitmap(1);
-			}
-			else if(lastKeyPress==Vector2i(-1,0)){
-				playerAttack.SetFrameIndexOfBitmap(2);
-			}
-			else if(lastKeyPress==Vector2i(0,-1)){
-				playerAttack.SetFrameIndexOfBitmap(3);
-			}
-			playerAttack.isShow=true;
-			counter=20;			
+		case 'P': // player attack
+			if(playerAttackTimer > 0) break; // cd-ing
+
+			playerAttack.SetFrameIndexOfBitmap(
+				getFrameIndexOfBitmapBy(attackDirection);
+			);
+			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			break;
 		case 'E': // randomly create exit
 			testExit.isShow = true;
