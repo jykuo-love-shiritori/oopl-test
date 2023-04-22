@@ -73,3 +73,25 @@ void RockManager::clear() {
     _rocks.clear();
     _hp = HitboxPool();
 }
+
+std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) const {
+    std::vector<Rock*> vec = {};
+    for (unsigned int i=0; i < _rocks.size(); ++i) {
+        if(_hp.getCollisionWith(hitbox)) {
+            vec.push_back(&(_rocks[i]));
+        }
+    }
+    vec.shrink_to_fit();
+    return vec;
+}
+
+void RockManager::remove(std::set<Rock*> ptrs) {
+    std::vector<Rock> newRocks = {};
+    for (const auto& rock : _rocks) {
+        if (ptrs.count(&rock) == 0) {
+            newRocks.push_back(rock);
+        }
+    }
+    _rocks = newRocks;
+    _rocks.shrink_to_fit();
+}

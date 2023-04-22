@@ -64,7 +64,7 @@ void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitbo
 }
 
 void Bittermap::Draw() {
-	if (isShow) {
+	if (_isShow) {
 		SetTopLeft(
 			position.x - CameraPosition->x + SIZE_X/2,
 			position.y - CameraPosition->y + SIZE_Y/2
