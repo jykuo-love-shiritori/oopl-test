@@ -59,7 +59,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	rockMan.loadBMP();
+	rockManager.loadBMP();
 
 	testExit.LoadBitmapByString({ // next level entry
         datapath + "/173.bmp"
@@ -104,7 +104,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	const Vector2i moveVec = getMoveVecByKeys();
 	if(!(moveVec==Vector2i(0,0))) lastKeyPress=moveVec;
 
-	const HitboxPool collisionPool = map.hp + rockMan.getHitbox();
+	const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
 	for (int i = 0; i < speed; i++) {
 		player.MoveWithCollision(moveVec, collisionPool);
 	}
@@ -137,13 +137,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
-				rockMan.clear();
+				rockManager.clear();
 			} else {
 				const Rect playerHitbox = player.GetHitBox();
 				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
-					rockMan.createRocksOn(pps);
-				} while (rockMan.getHitbox().Collide(playerHitbox).size() != 0);
+					rockManager.createRocksOn(pps);
+				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
 		case 'P':
@@ -227,7 +227,7 @@ void InLevel::OnShow()
 	map.drawBack();
 	map.drawBuilding();
 
-	rockMan.drawRocks();
+	rockManager.drawRocks();
 	testExit.Draw();
 	player.Draw();
 	playerAttack.Draw();

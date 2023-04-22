@@ -77,7 +77,7 @@ namespace game_framework {	namespace stage {
 		unsigned int counter=0;
 		Unity::Vector2i lastKeyPress={1,0};
 
-		RockManager rockMan;
+		RockManager rockManager;
 		Bittermap testExit;
 	};
 
