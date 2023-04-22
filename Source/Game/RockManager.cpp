@@ -74,15 +74,15 @@ void RockManager::clear() {
     _hp = HitboxPool();
 }
 
-std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) const {
+std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) {
     std::vector<Rock*> vec = {};
-    for (unsigned int i=0; i < _rocks.size(); ++i) {
+    for (auto& rock : _rocks) {
         Rect rockBox = Rect::FromTopLeft(
-				pos * TILE_SIZE * SCALE_SIZE,
+				rock.position * TILE_SIZE * SCALE_SIZE,
                 Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
-            )
+            );
         if(Rect::isOverlay(rockBox, hitbox)) {
-            vec.push_back(&_rocks[i]);
+            vec.push_back(&rock);
         }
     }
     vec.shrink_to_fit();
@@ -91,7 +91,7 @@ std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) const {
 
 void RockManager::remove(std::set<Rock*> ptrs) {
     std::vector<Rock> newRocks = {};
-    for (const auto& rock : _rocks) {
+    for (auto& rock : _rocks) {
         if (ptrs.count(&rock) == 0) {
             newRocks.push_back(rock);
         }
@@ -101,7 +101,7 @@ void RockManager::remove(std::set<Rock*> ptrs) {
 }
 
 std::vector<Vector2i> RockManager::getPositions() const {
-    std::vector<Vector2i> vec = {}
+    std::vector<Vector2i> vec = {};
     for (const auto& rock : _rocks) {
         vec.push_back(rock.position);
     }

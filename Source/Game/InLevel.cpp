@@ -153,7 +153,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 			const auto 🗡️ = playerAttack.GetHitbox();
 			// Loop through all the rocks that collide with the attack area
 			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
-			for (const auto& 🗿 : 🗿🗿🗿) {
+			for (auto& 🗿 : 🗿🗿🗿) {
 				if (markedRocks.count(🗿) != 0) continue;
 				markedRocks.insert(🗿);
 

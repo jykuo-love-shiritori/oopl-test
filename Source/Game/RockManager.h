@@ -22,9 +22,9 @@ class RockManager{
         int rockSelector();
         void createRocksOn(const std::vector<Vector2i> placeablePositions);
         void drawRocks() const;
-        
+
         HitboxPool getHitbox() const;
-        std::vector<Rock*> getCollisionWith(Rect hitbox) const;
+        std::vector<Rock*> getCollisionWith(Rect hitbox);
         std::vector<Vector2i> getPositions() const;
 
         void remove(std::set<Rock*> ptrs);
