@@ -170,7 +170,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			if(playerAttackTimer > 0) break; // cd-ing
 
 			playerAttack.SetFrameIndexOfBitmap(
-				getFrameIndexOfBitmapBy(attackDirection);
+				getFrameIndexOfBitmapBy(attackDirection)
 			);
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			break;
