@@ -28,6 +28,8 @@
 
 #include "../Config/config.h"
 
+using temp_name::Map;
+
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
@@ -73,7 +75,7 @@ namespace game_framework {	namespace stage {
 		Bittermap playerAttack;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
-		temp_name::Map map;
+		Map map;
 		int phase=0;
 
 		int playerAttackTimer=0; // use int for conveniently handle underflow
