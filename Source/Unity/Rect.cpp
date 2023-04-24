@@ -8,7 +8,7 @@
 using namespace Unity;
 
 Rect Rect::FromTopLeft(Vector2i topLeft, Vector2i widthAndHeight) {
-    //FIXME: Verity Data
+    //TODO: Verity Data
     Rect rect;
     rect.topLeft = topLeft;
     rect.BottomRight = {
@@ -19,7 +19,7 @@ Rect Rect::FromTopLeft(Vector2i topLeft, Vector2i widthAndHeight) {
 }
 
 Rect Rect::FromVertice(Vector2i topLeft, Vector2i bottomRight) {
-    //FIXME: Verity Data
+    //TODO: Verity Data
     Rect rect;
     rect.topLeft = topLeft;
     rect.BottomRight = bottomRight;
@@ -27,7 +27,7 @@ Rect Rect::FromVertice(Vector2i topLeft, Vector2i bottomRight) {
 }
 
 Rect Rect::FromCenter(Vector2i center, Vector2i radius) {
-    //FIXME: Verity Data
+    //TODO: Verity Data
     Rect rect;
     rect.topLeft = center - radius;
     rect.BottomRight = center + radius;

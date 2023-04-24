@@ -14,6 +14,7 @@ namespace game_framework {
 		Vector2i position;
 		bool isShow = true;
 		void Draw();
+		void Draw(Vector2i position, int frameIndex) const;
 		void Move(Vector2i vec);
 		void MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool);
 		

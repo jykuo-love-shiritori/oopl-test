@@ -33,6 +33,10 @@ std::vector<Unity::Vector2i> Map::kStartPosition = {
 	{23,4}
 };
 
+std::map<int,Vector2i> Map::presetExitLevels = {
+	{10,Vector2i(15,11)},{12,Vector2i(75,9)}
+};
+
 void Map::loadFile(std::string file)
 {
 	FILE *fp;
@@ -90,6 +94,8 @@ void Map::loadHitbox()
 	for(int y=0;y < m_mapSize.y ;y++){
 		for (int x=0;x < m_mapSize.x ;x++){
 			int i = m_buildingTile[y*m_mapSize.x + x];
+			if(i == 173+1)
+				continue; // exit
 			if(i != 0) {
 				auto magicPos = Vector2i(x, y) * TILE_SIZE * SCALE_SIZE;
 				hp.AddHitbox(Rect::FromTopLeft(magicPos, magicSize));
@@ -173,7 +179,13 @@ std::vector<Vector2i> Map::getPlaceablePositions() const {
 Map::Info Map::getInfo() const {
 	Info info;
 	info.startPosition = kStartPosition[m_mapIndex-1];
-	info.hasPresetExit = false; // TODO: preset exit
+	if(presetExitLevels.count(m_mapIndex)){
+		info.hasPresetExit=true;
+		info.presetExitPosition=presetExitLevels[m_mapIndex];
+	}
+	else{
+		info.hasPresetExit=false;
+	}
 	return info;
 }
 
@@ -190,7 +202,7 @@ void Map::setLevel(unsigned int index) {
 bool Map::nextLevel() {
 	// TODO: better exception handle
 	// file is start at 1 but vector start at 0 :(
-	if(m_mapIndex-1 < kStartPosition.size()) return false;
+	if(!(m_mapIndex-1+1 < kStartPosition.size())) return false;
 	// set to next level
 	setLevel(m_mapIndex+1);
 	return true;

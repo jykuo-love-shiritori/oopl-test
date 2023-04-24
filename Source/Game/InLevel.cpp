@@ -16,6 +16,9 @@
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
 
+#define PLAYER_ATTACK_CD	15
+#define PLAYER_ATTACK_TIME	5
+
 using namespace game_framework;
 using namespace game_framework::stage;
 
@@ -43,13 +46,23 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.SetScale(1);
 	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
 
+	playerAttack.LoadBitmapByString({
+        "resources/slashLeft.bmp",
+        "resources/slashDown.bmp",
+        "resources/slashRight.bmp",
+        "resources/slashUp.bmp"
+	}, RGB(25, 28, 36));
+	playerAttack.SetScale(1);
+	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
+	playerAttack.isShow=false;
+
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	testRock.load();
+	rockManager.loadBMP();
 
 	testExit.LoadBitmapByString({ // next level entry
         datapath + "/173.bmp"
@@ -81,19 +94,48 @@ Vector2i getMoveVecByKeys() {
 	}
 	return moveVec;
 }
+unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
+	if(attackDirection==Vector2i(0,1)){
+		return 1; // Down
+	}
+	if(attackDirection==Vector2i(0,-1)){
+		return 3; // Up
+	}
+	if(attackDirection.x == -1){
+		return 2; // Left
+	}
+	if(attackDirection.x == 1){
+		return 0; // Right
+	}
+	throw "wtf";
+}
 /* helper functions START */
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
-	/* player move and collision START*/
+	//TODO: can change timer into cool thing
+	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
+	// CSpecialEffect::SetCurrentTime();
+	
+	// player moving speed
 	const int speed=20;
-	const Vector2i moveVec = getMoveVecByKeys();
+	{ /* player move and collision BEGIN */
+		const Vector2i moveVec = getMoveVecByKeys();
+		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-	const HitboxPool collisionPool = map.hp + testRock.hp;
-	for (int i = 0; i < speed; i++) {
-		player.MoveWithCollision(moveVec, collisionPool);
-	}
-	/* player move and collision END */
+		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+		for (int i = 0; i < speed; i++) {
+			player.MoveWithCollision(moveVec, collisionPool);
+		}
+	} /* player move and collision END */
+
+	{ /* player attack timer BEGIN */
+		if(playerAttackTimer > 0) {
+			playerAttackTimer--;
+			playerAttack.isShow = playerAttackTimer > PLAYER_ATTACK_CD;
+		}
+		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
+	} /* player attack counter END */
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -115,14 +157,22 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
-				testRock = Rock();
-				testRock.load();
+				rockManager.clear();
 			} else {
 				const Rect playerHitbox = player.GetHitBox();
+				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
-					testRock.createRocks(map);
-				} while (testRock.hp.Collide(playerHitbox).size() != 0);
+					rockManager.createRocksOn(pps);
+				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
+			break;
+		case 'P': // player attack
+			if(playerAttackTimer > 0) break; // cd-ing
+
+			playerAttack.SetFrameIndexOfBitmap(
+				getFrameIndexOfBitmapBy(attackDirection)
+			);
+			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			break;
 		case 'E': // randomly create exit
 			testExit.isShow = true;
@@ -138,7 +188,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			const Rect exitHitbox = testExit.GetHitBox();
 			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
-				if (map.nextLevel()) // if no next level
+				if (!map.nextLevel()) // if no next level
 					break;
 
 				auto mapInfo = map.getInfo();
@@ -184,13 +234,15 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	/* bottom layer */
 	map.drawBack();
-
 	map.drawBuilding();
 
+	rockManager.drawRocks();
 	testExit.Draw();
-	testRock.drawRocks();
 	player.Draw();
+	playerAttack.Draw();
 
 	map.drawFront();
+	/* top layer */
 }

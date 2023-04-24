@@ -1,11 +1,13 @@
 #include "stdafx.h"
-#include "Rock.h"
+#include "RockManager.h"
 
 #include "../Config/scaler.h"
 
-#include <cstdlib>
+#include <cstdlib> // for std::rand()
+#include <vector>
+#include <random>
 
-void Rock::load(){
+void RockManager::loadBMP(){
     _rockBMPs.LoadBitmapByString({
         "Resources/Minerals/stoneType1.bmp",    //0
         "Resources/Minerals/stoneType2.bmp",    //1
@@ -27,42 +29,47 @@ void Rock::load(){
     },RGB(255,255,255));  
 }
 
-
-int Rock::getHealth(){
-    return _health;
+int RockManager::rockSelector(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> res({300,300,30,20,15,1,3,3,5,5,3,5,3,1,3,5,3});
+    return res(gen);
 }
 
-int Rock::getType(){
-    return _type;
-}
+void RockManager::createRocksOn(const std::vector<Vector2i> placeablePositions) {
+    clear();
 
-game_framework::Bittermap Rock::getRockBMPs(){
-    return _rockBMPs;
-}
-
-void Rock::createRocks(const temp_name::Map map){
-    /* init */
-    _rockTypes = {};
-    _rockCoordinates={};
-    hp = HitboxPool();
-
-    for(const Vector2i &pos : map.getPlaceablePositions()) {
-        if ( 0.2 > (double)std::rand()/(RAND_MAX+1.0)) {
-            _rockCoordinates.push_back(pos);
-            _rockTypes.push_back(std::rand()%17);
-            hp.AddHitbox( Rect::FromTopLeft(
+    for(const Vector2i &pos : placeablePositions) {
+        if ( 30 > std::rand() % 100 ) {
+            Rock rock;
+            rock.position = pos;
+            rock.type = rockSelector();
+            _rocks.push_back(rock);
+            _hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
                 Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
             ));
         }
     }
+
+    _rocks.shrink_to_fit();
 }
 
-void Rock::drawRocks(){
-    for(unsigned int i=0;i<_rockCoordinates.size();i++){
-        _rockBMPs.SetFrameIndexOfBitmap(_rockTypes[i]);
+void RockManager::drawRocks() const{
+    for (Rock const& rock : _rocks) {
         // _rockBMPs.SetFrameIndexOfBitmap(std::rand() % 17); //disco party
-        _rockBMPs.position = _rockCoordinates[i] * TILE_SIZE * SCALE_SIZE;
-        _rockBMPs.Draw();
+        _rockBMPs.Draw(
+            rock.position * TILE_SIZE * SCALE_SIZE,
+            rock.type
+        );
     }
+}
+
+HitboxPool RockManager::getHitbox() const {
+    return _hp;
+}
+
+void RockManager::clear() {
+    _rocks.clear();
+    _hp = HitboxPool();
 }
