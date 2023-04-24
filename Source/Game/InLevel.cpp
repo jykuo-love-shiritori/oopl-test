@@ -34,10 +34,6 @@ InLevel::~InLevel()
 {
 }
 
-void InLevel::OnBeginState()
-{
-}
-
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
@@ -61,9 +57,6 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
-	map.setLevel(1);
-	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
-
 	rockManager.loadBMP();
 
 	testExit.LoadBitmapByString({ // next level entry
@@ -74,6 +67,14 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
 	Bittermap::CameraPosition = &player.position;
+}
+
+void InLevel::OnBeginState()
+{
+	map.setLevel(1);
+
+	auto mapInfo = map.getInfo();
+	SetupLevel(mapInfo);
 }
 
 /* helper functions BEGIN */
@@ -112,6 +113,23 @@ unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
 		return 0; // Right
 	}
 	throw "wtf";
+}
+
+void SetupLevel(Map::Info mapInfo) {
+	/* generate rocks */
+	const auto pps = map.getPlaceablePositions();
+	rockManager.createRocksOn(pps);
+
+	/* generate exit */
+	player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+	if (mapInfo.hasPresetExit) {
+		testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
+		testExit.SetShow();
+	} else {
+		const auto rocksPositions = rockManager.getPositions();
+		testExit.position = rocksPositions[std::rand() % rocksPositions.size()];
+		testExit.SetShow(false);
+	}
 }
 /* helper functions END */
 
@@ -204,14 +222,6 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'P': // player attack
-			if(playerAttackTimer > 0) break; // cd-ing
-
-			playerAttack.SetFrameIndexOfBitmap(
-				getFrameIndexOfBitmapBy(attackDirection)
-			);
-			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
-			break;
 		case 'E': // randomly create exit
 			testExit.SetShow();
 			auto pps = map.getPlaceablePositions();
@@ -230,23 +240,16 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 					break;
 
 				auto mapInfo = map.getInfo();
-
-				/* generate rocks */
-				// FIXME: remove entry position from placeable positions
-				const auto pps = map.getPlaceablePositions();
-				rockManager.createRocksOn(pps);
-
-				/* generate exit */
-				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
-				if (mapInfo.hasPresetExit) {
-					testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
-					testExit.SetShow();
-				} else {
-					const auto rocksPositions = rockManager.getPositions();
-					testExit.position = rocksPositions[std::rand() % rocksPositions.size()];
-					testExit.SetShow(false);
-				}
+				SetupLevel(mapInfo);
 			}
+			break;
+		case 'P': // player attack
+			if(playerAttackTimer > 0) break; // cd-ing
+
+			playerAttack.SetFrameIndexOfBitmap(
+				getFrameIndexOfBitmapBy(attackDirection)
+			);
+			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			break;
 	}
 }
