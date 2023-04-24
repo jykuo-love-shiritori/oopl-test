@@ -27,8 +27,8 @@ void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitbo
 
 			auto limitDist = wallBox.getRadius() + thisHitbox.getRadius();
 			auto reactionVec = Vector2i(
-				(currDist.x >= 0 ? limitDist.x : -limitDist.x) - currDist.x,
-				(currDist.y >= 0 ? limitDist.y : -limitDist.y) - currDist.y
+                static_cast<int>((currDist.x >= 0 ? limitDist.x : -limitDist.x) - currDist.x),
+                static_cast<int>((currDist.y >= 0 ? limitDist.y : -limitDist.y) - currDist.y)
 			);
 
 			if (abs(reactionVec.x) == abs(reactionVec.y)) {
