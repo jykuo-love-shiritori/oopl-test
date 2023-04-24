@@ -115,7 +115,7 @@ unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
 	throw "wtf";
 }
 
-void SetupLevel(Map::Info mapInfo) {
+void InLevel::SetupLevel(Map::Info mapInfo) {
 	/* generate rocks */
 	const auto pps = map.getPlaceablePositions();
 	rockManager.createRocksOn(pps);
