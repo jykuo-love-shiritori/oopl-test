@@ -91,9 +91,15 @@ std::vector<Rock*> RockManager::getCollisionWith(Rect hitbox) {
 
 void RockManager::remove(std::set<Rock*> ptrs) {
     std::vector<Rock> newRocks = {};
+    _hp = HitboxPool();
     for (auto& rock : _rocks) {
         if (ptrs.count(&rock) == 0) {
             newRocks.push_back(rock);
+            // TODO: merge hitbox into rock struct
+            _hp.AddHitbox( Rect::FromTopLeft(
+				rock.position * TILE_SIZE * SCALE_SIZE,
+                Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE
+            ));
         }
     }
     _rocks = newRocks;
@@ -103,7 +109,7 @@ void RockManager::remove(std::set<Rock*> ptrs) {
 std::vector<Vector2i> RockManager::getPositions() const {
     std::vector<Vector2i> vec = {};
     for (const auto& rock : _rocks) {
-        vec.push_back(rock.position);
+        vec.push_back(rock.position *  TILE_SIZE * SCALE_SIZE);
     }
     vec.shrink_to_fit();
     return vec;
