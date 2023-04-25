@@ -9,10 +9,10 @@ using namespace Unity;
 namespace game_framework {
 	class Bittermap : public CMovingBitmap {
 		Vector2i size = Vector2i(1,1);
+		bool _isShow = true;
 	public:
 		static Vector2i *CameraPosition;
 		Vector2i position;
-		bool isShow = true;
 		void Draw();
 		void Draw(Vector2i position, int frameIndex) const;
 		void Move(Vector2i vec);
@@ -20,9 +20,11 @@ namespace game_framework {
 		
 		/* Setter */
 		void SetHitBox(Vector2i size);
+		void SetShow(bool isShow=true) {_isShow = isShow;}
 		
 		/* Getter */
 		/* Get the hitbox with the current position as the top left */
-		Rect GetHitBox() const ;
+		Rect GetHitbox() const ;
+		bool isShown() {return _isShow;}
 	};
 }

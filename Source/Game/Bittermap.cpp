@@ -17,7 +17,7 @@ void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitbo
 {
 	this->position = this->position + moveVec;
 	while (true) {
-		auto thisHitbox = GetHitBox();
+		auto thisHitbox = GetHitbox();
 		auto collisions = hitboxPool.Collide(thisHitbox);
 		if (collisions.size() == 0) break;
 
@@ -64,7 +64,7 @@ void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitbo
 }
 
 void Bittermap::Draw() {
-	if (isShow) {
+	if (_isShow) {
 		SetTopLeft(
 			position.x - CameraPosition->x + SIZE_X/2,
 			position.y - CameraPosition->y + SIZE_Y/2
@@ -86,6 +86,6 @@ void Bittermap::SetHitBox(Vector2i size) {
 	this->size = size;
 }
 
-Rect Bittermap::GetHitBox() const {
+Rect Bittermap::GetHitbox() const {
 	return Rect::FromTopLeft(this->position, this->size);
 }

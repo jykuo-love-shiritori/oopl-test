@@ -161,6 +161,8 @@ bool Map::isPlaceable(Vector2i pos) const {
 		m_frontTile[i]!=0
 	) return false;
 
+	if (pos == kStartPosition[m_mapIndex-1]) return false;
+
 	return kTilesAvailableForRocks.count(m_backTile[i]) != 0;
 }
 

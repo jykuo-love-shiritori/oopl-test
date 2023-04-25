@@ -86,3 +86,25 @@ TEST(CppSyntaxTest, HandPointer) {
   std::cout << b 👉 a << std::endl;
   delete b;
 }
+
+TEST(CppSyntaxTest, VectorOfPointersRef) { 
+  std::vector<int*> vp = {};
+  std::vector<int> v = {1,2,3,4,5};
+  for (auto& i : v) {
+    vp.push_back(&i);
+  }
+  for (const auto& i : vp) {
+    std::cout << *i<< std::endl;
+  }
+}
+
+TEST(CppSyntaxTest, VectorOfPointers) { 
+  std::vector<int*> vp = {};
+  std::vector<int> v = {1,2,3,4,5};
+  for (auto& i : v) {
+    vp.push_back(&i);
+  }
+  for (const auto& i : vp) {
+    std::cout << *i<< std::endl;
+  }
+}
