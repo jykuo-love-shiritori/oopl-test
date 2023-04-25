@@ -182,7 +182,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 					// Add the rock as an item to the floor and the player's bag
 					// Increase the player's score based on the type of rock
 					// If the rock is at the testExit position, show the testExit
-					if ( 🗿->position == testExit.position ) {
+					if ( 🗿->position * TILE_SIZE * SCALE_SIZE == testExit.position ) {
 						testExit.SetShow();
 					}
 				}
