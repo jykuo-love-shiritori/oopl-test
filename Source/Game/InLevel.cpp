@@ -165,6 +165,15 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerAttack.isShow=true;
 			counter=20;			
 			break;
+		case 'N': //score--
+		case 'M': //score++
+			if(nChar=='N'){
+				userInterface.alterScore(-1);
+			}
+			else{
+				userInterface.alterScore(1);
+			}
+			break;
 		case 'E': // randomly create exit
 			testExit.isShow = true;
 			auto pps = map.getPlaceablePositions();

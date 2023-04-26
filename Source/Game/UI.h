@@ -12,8 +12,11 @@ class UI{
         game_framework::Bittermap getUIsprite();
         game_framework::Bittermap getNumberSprite();
         int getScore();
+
+        /*setter*/
+        void alterScore(int delta);
     private:
         game_framework::Bittermap _UIsprite;
         game_framework::Bittermap _moneyNumbers;
-        int _score;
+        unsigned int _score;
 };

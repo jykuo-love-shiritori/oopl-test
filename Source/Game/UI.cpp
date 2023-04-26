@@ -15,6 +15,10 @@ int UI::getScore(){
     return _score;
 }
 
+void UI::alterScore(int delta){
+    _score+=delta;
+}
+
 void UI::init(){
     _score=1234067;
 
