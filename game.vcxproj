@@ -249,6 +249,7 @@
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />
+    <ClCompile Include="Source\Game\UI.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
     <ClCompile Include="Source\Library\gameutil.cpp">
@@ -270,6 +271,7 @@
     <ClInclude Include="Source\Game\Map.h" />
     <ClInclude Include="Source\Game\Rock.h" />
     <ClInclude Include="Source\Game\stages.h" />
+    <ClInclude Include="Source\Game\UI.h" />
     <ClInclude Include="Source\Library\audio.h" />
     <ClInclude Include="Source\Library\gamecore.h" />
     <ClInclude Include="Source\Library\gameutil.h" />

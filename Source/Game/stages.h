@@ -24,6 +24,7 @@
 #include "Map.h"
 #include "Rock.h"
 #include "Bittermap.h"
+#include "UI.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -72,7 +73,7 @@ namespace game_framework {	namespace stage {
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine";
 		temp_name::Map map;
-		Bittermap UI;
+		UI userInterface;
 		int phase=0;
 
 		unsigned int counter=0;

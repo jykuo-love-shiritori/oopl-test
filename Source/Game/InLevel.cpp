@@ -59,11 +59,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	UI.LoadBitmapByString({
-		"resources/moneyUI.bmp"
-	},RGB(255,255,255));
-	playerAttack.SetScale(1);
-	UI.SetTopLeft(SIZE_X-400,50);
+	userInterface.init();
 
 	testRock.load();
 
@@ -239,5 +235,5 @@ void InLevel::OnShow()
 	playerAttack.Draw();
 
 	map.drawFront();
-	UI.ShowBitmap();
+	userInterface.showUI();
 }

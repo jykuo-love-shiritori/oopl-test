@@ -63,11 +63,11 @@
     <ClCompile Include="Source\Game\Bittermap.cpp">
       <Filter>MyGame\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Unity\Vector2.cpp">
-      <Filter>MyGame</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Game\Map.cpp" />
     <ClCompile Include="Source\Game\Rock.cpp" />
+    <ClCompile Include="Source\Unity\Hitbox.cpp" />
+    <ClCompile Include="Source\Unity\Rect.cpp" />
+    <ClCompile Include="Source\Game\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -111,6 +111,10 @@
     </ClInclude>
     <ClInclude Include="Source\Game\Map.h" />
     <ClInclude Include="Source\Game\Rock.h" />
+    <ClInclude Include="Source\Unity\Hitbox.h" />
+    <ClInclude Include="Source\Unity\Rect.h" />
+    <ClInclude Include="Source\Unity\Vector2.h" />
+    <ClInclude Include="Source\Game\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">
