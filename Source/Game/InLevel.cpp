@@ -168,7 +168,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'N': //score--
 		case 'M': //score++
 			if(nChar=='N'){
-				userInterface.alterScore(-1);
+				if(userInterface.getScore()){
+					userInterface.alterScore(-1);
+				}
 			}
 			else{
 				userInterface.alterScore(1);
