@@ -9,8 +9,6 @@ class UI{
         void showUI();
 
         /*getter*/
-        game_framework::Bittermap getUIsprite();
-        game_framework::Bittermap getNumberSprite();
         int getScore();
 
         /*setter*/

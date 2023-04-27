@@ -4,12 +4,6 @@
 
 #include <string>
 
-game_framework::Bittermap UI::getUIsprite(){
-    return _UIsprite;
-}
-game_framework::Bittermap UI::getNumberSprite(){
-    return _moneyNumbers;
-}
 
 int UI::getScore(){
     return _score;
@@ -20,7 +14,7 @@ void UI::alterScore(int delta){
 }
 
 void UI::init(){
-    _score=1234067;
+    _score=1234067; //FIXME: this is test value, change to 0 in v1.0
 
     _UIsprite.LoadBitmapByString({
 		"resources/moneyUI.bmp"
@@ -50,21 +44,10 @@ void UI::showUI(){
 
     _UIsprite.ShowBitmap();
 
-    if(_score==0){
-        _moneyNumbers.ShowBitmap();
-        return;
-    }
-    int i=0;
-    while(_score/int(pow(10,i))!=0){
-        if((_score%int(pow(10,i+1))<pow(10,i))){
-            _moneyNumbers.SetFrameIndexOfBitmap(0);
-        }
-        else{
-            int wut=std::to_string(_score%int(pow(10,i+1)))[0]-'0';
-            _moneyNumbers.SetFrameIndexOfBitmap(wut);
-        }
+    std::string result = std::to_string(_score);
+    for (int i = 0; i < result.length(); ++i) {
+        _moneyNumbers.SetFrameIndexOfBitmap(result[result.length()-1-i]-'0');
         _moneyNumbers.SetTopLeft(SIZE_X-85-offset*i,193);
         _moneyNumbers.ShowBitmap();
-        i++;
     }
 }
