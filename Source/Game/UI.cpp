@@ -5,7 +5,7 @@
 #include <string>
 
 
-int UI::getScore(){
+int UI::getScore() const{
     return _score;
 }
 

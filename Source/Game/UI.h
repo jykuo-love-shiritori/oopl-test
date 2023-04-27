@@ -9,7 +9,7 @@ class UI{
         void showUI();
 
         /*getter*/
-        int getScore();
+        int getScore() const;
 
         /*setter*/
         void alterScore(int delta);
