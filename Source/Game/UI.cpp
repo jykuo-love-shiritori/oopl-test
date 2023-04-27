@@ -9,6 +9,10 @@ int UI::getScore() const{
     return _score;
 }
 
+void UI::setScore(int score){
+    _score=score;
+}
+
 void UI::alterScore(int delta){
     _score+=delta;
 }

@@ -13,6 +13,7 @@ class UI{
 
         /*setter*/
         void alterScore(int delta);
+        void setScore(int score);
     private:
         game_framework::Bittermap _UIsprite;
         game_framework::Bittermap _moneyNumbers;
