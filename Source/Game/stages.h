@@ -71,7 +71,7 @@ namespace game_framework {	namespace stage {
 		Bittermap player;
 		Bittermap playerAttack;
 		Unity::Vector2i playerMoving;
-		std::string datapath="resources/MapTextures/mine";
+		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		temp_name::Map map;
 		UI userInterface;
 		int phase=0;
