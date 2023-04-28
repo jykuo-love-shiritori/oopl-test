@@ -54,6 +54,9 @@ namespace Unity {
 		Vector2<T> normalized(){
 			return *this/sqrt(pow(this->x,2)+pow(this->y,2));
 		}
+		T dot(const Vector2<T> & other){
+			return this->x * other.x + this->y * other.y;
+		}
 	};
 	using Vector2i = Vector2<int>;
 	using Vector2f = Vector2<float>;

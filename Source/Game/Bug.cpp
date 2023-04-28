@@ -22,6 +22,8 @@ void Bug::drawBug(){
 
 void Bug::pursuit(Vector2i playerLocation){
     Vector2f deltaVec=playerLocation-_sprite.position;
-    _currentMomentum=_currentMomentum+deltaVec.normalized();
+    const auto scaler = Vector2f(_currentMomentum).dot(deltaVec);
+    const auto vec = (_currentMomentum+deltaVec).normalized();
+    _currentMomentum = vec * scaler;
     _sprite.Move(_currentMomentum);
 }
