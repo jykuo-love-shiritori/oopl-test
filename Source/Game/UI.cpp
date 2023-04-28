@@ -4,22 +4,13 @@
 
 #include <string>
 
-
-int UI::getScore() const{
-    return _score;
-}
-
-void UI::setScore(int score){
-    _score=score;
-}
-
 void UI::alterScore(int delta){
     _score+=delta;
 }
 
-void UI::init(){
-    _score=1234067; //FIXME: this is test value, change to 0 in v1.0
+const auto LSB_LOCATION = Vector2i(SIZE_X-85, 193);
 
+void UI::load() {
     _UIsprite.LoadBitmapByString({
 		"resources/moneyUI.bmp"
 	},RGB(255,255,255));
@@ -39,19 +30,17 @@ void UI::init(){
         "resources/Fonts/9.bmp"
     },RGB(0,0,0));
     _moneyNumbers.SetScale(1.5);
-    _moneyNumbers.SetFrameIndexOfBitmap(0);
-    _moneyNumbers.SetTopLeft(SIZE_X-85,193);  // LSB location: (SIZE_X-85,193), <<1 -21
 }
 
-void UI::showUI(){
-    const int offset=21;
+void UI::showUI() {
+    const int offset=21; // each digit offset
 
     _UIsprite.ShowBitmap();
 
     std::string result = std::to_string(_score);
     for (int i = 0; i < result.length(); ++i) {
-        _moneyNumbers.SetFrameIndexOfBitmap(result[result.length()-1-i]-'0');
-        _moneyNumbers.SetTopLeft(SIZE_X-85-offset*i,193);
-        _moneyNumbers.ShowBitmap();
+        const auto pos = LSB_LOCATION - Vector2i(offset*i, 0);
+        const auto num = result[result.length()-1 -i] - '0';
+        _moneyNumbers.ShowBitmap(pos.x, pos.y, num);
     }
 }

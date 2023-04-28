@@ -60,7 +60,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	userInterface.init();
+	userInterface.load();
 
 	rockManager.loadBMP();
 
@@ -77,6 +77,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 void InLevel::OnBeginState()
 {
 	map.setLevel(1);
+
+	userInterface.setScore(1234067);
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);

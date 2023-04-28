@@ -5,17 +5,17 @@
 
 class UI{
     public:
-        void init();
+        void load();
         void showUI();
 
         /*getter*/
-        int getScore() const;
+        int getScore() const { return _score; }
 
         /*setter*/
         void alterScore(int delta);
-        void setScore(int score);
+        void setScore(int score) { _score = score; }
     private:
         game_framework::Bittermap _UIsprite;
         game_framework::Bittermap _moneyNumbers;
-        unsigned int _score;
+        unsigned int _score = 0;
 };
