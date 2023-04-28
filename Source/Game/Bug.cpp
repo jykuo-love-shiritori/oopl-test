@@ -22,6 +22,9 @@ void Bug::drawBug(){
 
 void Bug::pursuit(Vector2i playerLocation){
     Vector2f deltaVec=playerLocation-_sprite.position;
-    _currentMomentum=_currentMomentum+deltaVec.normalized();
+	const auto origin = _currentMomentum.norm();
+	_currentMomentum = (_currentMomentum + deltaVec/10).normalized() * deltaVec.norm() / 10;
+	if (_currentMomentum.norm() < 20)
+		_currentMomentum = _currentMomentum.normalized() * 20;
     _sprite.Move(_currentMomentum);
 }

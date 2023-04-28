@@ -52,7 +52,12 @@ namespace Unity {
 		}
 
 		Vector2<T> normalized(){
-			return *this/sqrt(pow(this->x,2)+pow(this->y,2));
+			if (this->norm() == 0) return {0,0};
+			return *this / norm();
+		}
+		
+		T norm() {
+			return sqrt(pow(this->x, 2) + pow(this->y, 2));
 		}
 	};
 	using Vector2i = Vector2<int>;
