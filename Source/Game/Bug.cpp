@@ -4,14 +4,16 @@
 #include "../Config/config.h"
 #include "../Config/scaler.h"
 
-void Bug::spawn(Vector2i startLocation,Vector2i playerLocation){
-    _health=22;
+void Bug::load() {
     _sprite.LoadBitmapByString({
         "Resources/bug.bmp"
     },RGB(255,255,255));
+}
+
+void Bug::init(Vector2i startLocation) {
+    _currentMomentum = Vector2f(0,0);
+    _health=22;
     _sprite.position=startLocation * TILE_SIZE * SCALE_SIZE;
-    _currentMomentum=playerLocation-_sprite.position;
-    _currentMomentum=_currentMomentum.normalized();
 }
 
 void Bug::drawBug(){

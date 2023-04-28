@@ -71,8 +71,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
-	bug.spawn(Vector2i(10,8),player.position);
-	bug2.spawn(Vector2i(15,4),player.position);
+	bug.load();
+	bug2.load();
 
 	Bittermap::CameraPosition = &player.position;
 }
@@ -85,6 +85,9 @@ void InLevel::OnBeginState()
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
+
+	bug.init(Vector2i(10,8));
+	bug2.init(Vector2i(15,4));
 }
 
 /* helper functions BEGIN */

@@ -6,7 +6,8 @@
 
 class Bug{
     public:
-        void spawn(Vector2i startLocation,Vector2i playerLocation);
+        void load();
+        void init(Vector2i startLocation);
         void pursuit(Vector2i playerLocation);
         void drawBug();
 
