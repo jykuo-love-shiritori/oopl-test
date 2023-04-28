@@ -210,7 +210,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 			markedRocks.clear();
 		} 
 	} /* attack rock END */
->>>>>>> master
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
