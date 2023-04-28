@@ -64,10 +64,11 @@
       <Filter>MyGame\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Game\Map.cpp" />
-    <ClCompile Include="Source\Game\Rock.cpp" />
+<ClCompile Include="Source\Game\RockManager.cpp" />
     <ClCompile Include="Source\Unity\Hitbox.cpp" />
     <ClCompile Include="Source\Unity\Rect.cpp" />
     <ClCompile Include="Source\Game\Bug.cpp" />
+    <ClCompile Include="Source\Game\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -110,11 +111,12 @@
       <Filter>MyGame\Object</Filter>
     </ClInclude>
     <ClInclude Include="Source\Game\Map.h" />
-    <ClInclude Include="Source\Game\Rock.h" />
+    <ClInclude Include="Source\Game\RockManager.h" />
     <ClInclude Include="Source\Unity\Hitbox.h" />
     <ClInclude Include="Source\Unity\Rect.h" />
     <ClInclude Include="Source\Unity\Vector2.h" />
     <ClInclude Include="Source\Game\Bug.h" />
+    <ClInclude Include="Source\Game\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">

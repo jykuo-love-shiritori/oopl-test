@@ -22,12 +22,15 @@
 #pragma once
 
 #include "Map.h"
-#include "Rock.h"
+#include "RockManager.h"
 #include "Bug.h"
 #include "Bittermap.h"
+#include "UI.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
+
+using temp_name::Map;
 
 namespace game_framework {	namespace stage {
 	/////////////////////////////////////////////////////////////////////////////
@@ -67,18 +70,21 @@ namespace game_framework {	namespace stage {
 	protected:
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
+	private: /* helper */
+		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
 		Bittermap player;
 		Bittermap playerAttack;
 		Unity::Vector2i playerMoving;
-		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
-		temp_name::Map map;
+		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
+		Map map;
+		UI userInterface;
 		int phase=0;
 
-		unsigned int counter=0;
-		Unity::Vector2i lastKeyPress={1,0};
+		int playerAttackTimer=0; // use int for conveniently handle underflow
+		Unity::Vector2i attackDirection={1,0};
 
-		Rock testRock; //FIXME: rock testing, is temporary
+		RockManager rockManager;
 		Bittermap testExit;
 		Bug bug;
 		Bug bug2;
