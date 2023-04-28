@@ -9,12 +9,15 @@
 
 #include <shobjidl_core.h>
 #include <string>
-#include <cmath>
-#include <cstdlib>
-#include <winuser.h>
+#include <vector>
+#include <cstdlib>		// for std::rand()
+#include <winuser.h>	// for GetKeyState()
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
+
+#define PLAYER_ATTACK_CD	15
+#define PLAYER_ATTACK_TIME	5
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -31,17 +34,15 @@ InLevel::~InLevel()
 {
 }
 
-void InLevel::OnBeginState()
-{
-}
-
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
+	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
+	
 	player.LoadBitmapByString({
         "resources/giraffe.bmp"
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
-	player.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 0.7);
+	player.SetHitBox(regularBoxSize * 0.7);
 
 	playerAttack.LoadBitmapByString({
         "resources/slashLeft.bmp",
@@ -50,31 +51,37 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
         "resources/slashUp.bmp"
 	}, RGB(25, 28, 36));
 	playerAttack.SetScale(1);
-	playerAttack.position = Vector2i(10,4) * TILE_SIZE * SCALE_SIZE;
-	playerAttack.isShow=false;
+	playerAttack.SetHitBox(regularBoxSize * 1.0);
+	playerAttack.SetShow(false);
 
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
-	map.setLevel(1);
-	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
-
-	testRock.load();
+	rockManager.loadBMP();
 
 	testExit.LoadBitmapByString({ // next level entry
         datapath + "/173.bmp"
 	}, RGB(255, 255, 255));
 	testExit.SetScale(4);
-	testExit.isShow = false;
-	testExit.SetHitBox(Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE * 1.0);
+	testExit.SetShow(false);
+	testExit.SetHitBox(regularBoxSize * 1.0);
 
 	Bittermap::CameraPosition = &player.position;
 }
 
-/* helper functions START */
+void InLevel::OnBeginState()
+{
+	map.setLevel(1);
+
+	auto mapInfo = map.getInfo();
+	SetupLevel(mapInfo);
+}
+
+/* helper functions BEGIN */
 bool isPress(int key) {
 	return GetKeyState(key) & 0x8000;
 }
+
 Vector2i getMoveVecByKeys() {
 	Vector2i moveVec = Vector2i(0,0);
 	if(isPress(KEY_MOVE_LEFT)){
@@ -91,7 +98,40 @@ Vector2i getMoveVecByKeys() {
 	}
 	return moveVec;
 }
-/* helper functions START */
+
+unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
+	if(attackDirection==Vector2i(0,1)){
+		return 1; // Down
+	}
+	if(attackDirection==Vector2i(0,-1)){
+		return 3; // Up
+	}
+	if(attackDirection.x == -1){
+		return 2; // Left
+	}
+	if(attackDirection.x == 1){
+		return 0; // Right
+	}
+	throw "wtf";
+}
+
+void InLevel::SetupLevel(Map::Info mapInfo) {
+	/* generate rocks */
+	const auto pps = map.getPlaceablePositions();
+	rockManager.createRocksOn(pps);
+
+	/* generate exit */
+	player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+	if (mapInfo.hasPresetExit) {
+		testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
+		testExit.SetShow();
+	} else {
+		const auto rocksPositions = rockManager.getPositions();
+		testExit.position = rocksPositions[std::rand() % rocksPositions.size()];
+		testExit.SetShow(false);
+	}
+}
+/* helper functions END */
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
@@ -99,23 +139,59 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
 	
-	/* player move and collision START*/
+	// player moving speed
 	const int speed=20;
-	const Vector2i moveVec = getMoveVecByKeys();
-	if(!(moveVec==Vector2i(0,0))) lastKeyPress=moveVec;
+	{ /* player move and collision BEGIN */
+		const Vector2i moveVec = getMoveVecByKeys();
+		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-	const HitboxPool collisionPool = map.hp + testRock.hp;
-	for (int i = 0; i < speed; i++) {
-		player.MoveWithCollision(moveVec, collisionPool);
-	}
-	/* player move and collision END */
+		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+		for (int i = 0; i < speed; i++) {
+			player.MoveWithCollision(moveVec, collisionPool);
+		}
+	} /* player move and collision END */
 
-	/* player attack show timer*/
-	if(counter!=0) {
-		counter--;
-		if(counter<15) playerAttack.isShow=false;
-	}
-	playerAttack.position=player.position+lastKeyPress * TILE_SIZE * SCALE_SIZE;
+	{ /* player attack timer BEGIN */
+		if(playerAttackTimer > 0) {
+			playerAttackTimer--;
+			playerAttack.SetShow(playerAttackTimer > PLAYER_ATTACK_CD);
+		}
+		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
+	} /* player attack counter END */
+
+	// Damage value caused by the attack.
+	const int damage = 1;
+	{ /* attack rock BEGIN */
+		// A static set can be used to keep track of marked rocks until the end of the round of attack
+		static std::set<Rock*> markedRocks = {};
+
+		if ( playerAttack.isShown() ) { /* is attacking */
+			std::set<Rock*> brokenRockPtrs = {};
+
+			const auto 🗡️ = playerAttack.GetHitbox();
+			// Loop through all the rocks that collide with the attack area
+			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
+			for (auto& 🗿 : 🗿🗿🗿) {
+				if (markedRocks.count(🗿) != 0) continue;
+				markedRocks.insert(🗿);
+
+				🗿->health -= damage;
+				if ( 🗿->health <= 0 ) {
+					brokenRockPtrs.insert(🗿);
+					// TODO: pick up
+					// Add the rock as an item to the floor and the player's bag
+					// Increase the player's score based on the type of rock
+					// If the rock is at the testExit position, show the testExit
+					if ( 🗿->position * TILE_SIZE * SCALE_SIZE == testExit.position ) {
+						testExit.SetShow();
+					}
+				}
+			}
+			rockManager.remove(brokenRockPtrs);
+		} else { /* is not attacking */
+			markedRocks.clear();
+		} 
+	} /* attack rock END */
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -137,34 +213,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
-				testRock = Rock();
-				testRock.load();
+				rockManager.clear();
 			} else {
-				const Rect playerHitbox = player.GetHitBox();
+				const Rect playerHitbox = player.GetHitbox();
+				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
-					testRock.createRocks(map);
-				} while (testRock.hp.Collide(playerHitbox).size() != 0);
+					rockManager.createRocksOn(pps);
+				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
-			break;
-		case 'P':
-			if(counter!=0) break;
-			if(lastKeyPress==Vector2i(1,0)){
-				playerAttack.SetFrameIndexOfBitmap(0);
-			}
-			else if(lastKeyPress==Vector2i(0,1)){
-				playerAttack.SetFrameIndexOfBitmap(1);
-			}
-			else if(lastKeyPress==Vector2i(-1,0)){
-				playerAttack.SetFrameIndexOfBitmap(2);
-			}
-			else if(lastKeyPress==Vector2i(0,-1)){
-				playerAttack.SetFrameIndexOfBitmap(3);
-			}
-			playerAttack.isShow=true;
-			counter=20;			
 			break;
 		case 'E': // randomly create exit
-			testExit.isShow = true;
+			testExit.SetShow();
 			auto pps = map.getPlaceablePositions();
 			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			break;
@@ -173,26 +232,24 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = player.GetHitBox();
-			const Rect exitHitbox = testExit.GetHitBox();
-			if (Rect::isOverlay(playerHitbox, exitHitbox)) {
+			const Rect playerHitbox = player.GetHitbox();
+			const Rect exitHitbox = testExit.GetHitbox();
+			if (testExit.isShown() && Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
 				if (!map.nextLevel()) // if no next level
 					break;
 
 				auto mapInfo = map.getInfo();
-				player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
-				if (mapInfo.hasPresetExit) {
-					testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
-					testExit.isShow = true;
-				} else {
-					testExit.isShow = false;
-					// FIXME: randomly create exit for test
-					testExit.isShow = true;
-					auto pps = map.getPlaceablePositions();
-					testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
-				}
+				SetupLevel(mapInfo);
 			}
+			break;
+		case 'P': // player attack
+			if(playerAttackTimer > 0) break; // cd-ing
+
+			playerAttack.SetFrameIndexOfBitmap(
+				getFrameIndexOfBitmapBy(attackDirection)
+			);
+			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			break;
 	}
 }
@@ -223,14 +280,15 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	/* bottom layer */
 	map.drawBack();
-
 	map.drawBuilding();
 
+	rockManager.drawRocks();
 	testExit.Draw();
-	testRock.drawRocks();
 	player.Draw();
 	playerAttack.Draw();
 
 	map.drawFront();
+	/* top layer */
 }

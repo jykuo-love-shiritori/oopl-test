@@ -38,6 +38,9 @@ namespace Unity {
 		bool operator==(const Vector2<U>& other) const {
 			return this->x == other.x && this->y == other.y;
 		}
+		bool operator!=(const Vector2<T>& other) const {
+			return !(*this == other);
+		}
 		template<typename U>
 		Vector2<T>(Vector2<U> const & origin) {
 			x = (T)origin.x;
