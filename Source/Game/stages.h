@@ -24,6 +24,7 @@
 #include "Map.h"
 #include "RockManager.h"
 #include "Bittermap.h"
+#include "UI.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -74,8 +75,9 @@ namespace game_framework {	namespace stage {
 		Bittermap player;
 		Bittermap playerAttack;
 		Unity::Vector2i playerMoving;
-		std::string datapath="resources/MapTextures/mine"; // FIXME: hardcode textures files
+		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
+		UI userInterface;
 		int phase=0;
 
 		int playerAttackTimer=0; // use int for conveniently handle underflow

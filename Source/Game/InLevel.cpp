@@ -57,6 +57,11 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
+	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+
+	userInterface.load();
+
 	rockManager.loadBMP();
 
 	testExit.LoadBitmapByString({ // next level entry
@@ -72,6 +77,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 void InLevel::OnBeginState()
 {
 	map.setLevel(1);
+
+	userInterface.setScore(1234067);
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -222,6 +229,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
+		case 'N': //score--
+		case 'M': //score++
+			if(nChar=='N'){
+				if(userInterface.getScore()){
+					userInterface.alterScore(-1);
+				}
+			}
+			else{
+				userInterface.alterScore(1);
+			}
+			break;
 		case 'E': // randomly create exit
 			testExit.SetShow();
 			auto pps = map.getPlaceablePositions();
@@ -290,5 +308,6 @@ void InLevel::OnShow()
 	playerAttack.Draw();
 
 	map.drawFront();
+	userInterface.showUI();
 	/* top layer */
 }
