@@ -173,7 +173,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 		static std::set<Rock*> markedRocks = {};
 
 		if ( playerAttack.isShown() ) { /* is attacking */
-			std::set<Rock*> brokenRockPtrs = {};
 
 			const auto 🗡️ = playerAttack.GetHitbox();
 			// Loop through all the rocks that collide with the attack area
@@ -184,20 +183,19 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 				🗿->health -= damage;
 				if ( 🗿->health <= 0 ) {
-					brokenRockPtrs.insert(🗿);
-					// TODO: pick up
-					// Add the rock as an item to the floor and the player's bag
-					// Increase the player's score based on the type of rock
-					// If the rock is at the testExit position, show the testExit
-					if ( 🗿->position * TILE_SIZE * SCALE_SIZE == testExit.position ) {
-						testExit.SetShow();
+					if( 🗿->timer == -1) {
+						🗿->timer = 7;
 					}
 				}
 			}
-			rockManager.remove(brokenRockPtrs);
 		} else { /* is not attacking */
 			markedRocks.clear();
-		} 
+		}
+		/* play animation and break rock and show exit */
+		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
+		if ( isExitRock ) {
+			testExit.SetShow();
+		}
 	} /* attack rock END */
 }
 
