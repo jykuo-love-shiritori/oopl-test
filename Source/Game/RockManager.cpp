@@ -26,6 +26,18 @@ void RockManager::loadBMP(){
         "Resources/Minerals/emeraldNode.bmp",   //14
         "Resources/Minerals/fireQuartz.bmp",    //15
         "Resources/Minerals/rubyNode.bmp",      //16
+
+        /* break animation */
+        "Resources/Minerals/break0",
+        "Resources/Minerals/break1",
+        "Resources/Minerals/break2",
+        "Resources/Minerals/break3",
+        "Resources/Minerals/break4",
+        "Resources/Minerals/break5",
+        "Resources/Minerals/break6",
+        "Resources/Minerals/break7",
+        "Resources/Minerals/break8",
+        "Resources/Minerals/break9"
     },RGB(255,255,255));  
 }
 
