@@ -25,6 +25,7 @@
 #include "RockManager.h"
 #include "Bittermap.h"
 #include "UI.h"
+#include "Bomb.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -85,6 +86,7 @@ namespace game_framework {	namespace stage {
 
 		RockManager rockManager;
 		Bittermap testExit;
+		Bomb bombAnime;
 	};
 
 	class GameOver : public CGameState {

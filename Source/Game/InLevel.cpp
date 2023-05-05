@@ -71,6 +71,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
+	bombAnime.init(0);
+
 	Bittermap::CameraPosition = &player.position;
 }
 
@@ -238,6 +240,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				userInterface.alterScore(1);
 			}
 			break;
+		case 'B':
+			bombAnime.useBomb(player.position); //FIXME: no show pls help WIP
+			break;
 		case 'E': // randomly create exit
 			testExit.SetShow();
 			auto pps = map.getPlaceablePositions();
@@ -302,6 +307,7 @@ void InLevel::OnShow()
 
 	rockManager.drawRocks();
 	testExit.Draw();
+	bombAnime.drawBomb();
 	player.Draw();
 	playerAttack.Draw();
 
