@@ -75,6 +75,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	bug2.load();
 
 	Bittermap::CameraPosition = &player.position;
+	userInterface.setHealth(&playerHP);
 }
 
 void InLevel::OnBeginState()
@@ -168,6 +169,16 @@ void InLevel::OnMove()							// 移動遊戲元素
 	bug.pursuit(player.position);
 	bug2.pursuit(player.position);
 	/*bug pursuit END */
+	{/*bug collision BEGIN */
+		const auto p = bug.getPosition();
+		const auto p2 = bug2.getPosition();
+		if (
+			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p, {50,50})) ||
+			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p2, {50,50}))
+			) {
+				playerHP--;
+			}
+	}/*bug collision END */
 
 	{ /* player attack timer BEGIN */
 		if(playerAttackTimer > 0) {

@@ -11,6 +11,9 @@ class Bug{
         void pursuit(Vector2i playerLocation);
         void drawBug();
 
+        /*getter */
+        Vector2i getPosition() const { return _sprite.position; }
+
     private:
         game_framework::Bittermap _sprite;
         int _health;
