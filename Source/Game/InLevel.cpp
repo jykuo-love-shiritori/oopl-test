@@ -71,7 +71,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
-	bombAnime.init(0);
+	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
 }
@@ -148,6 +148,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
 	
+	// #define NO_COLLISION
+
 	// player moving speed
 	const int speed=20;
 	{ /* player move and collision BEGIN */
@@ -156,7 +158,11 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
 		for (int i = 0; i < speed; i++) {
+			#ifndef NO_COLLISION
 			player.MoveWithCollision(moveVec, collisionPool);
+			#else /* NO_COLLISION */
+			player.Move(moveVec);
+			#endif /* NO_COLLISION */
 		}
 	} /* player move and collision END */
 
@@ -199,6 +205,35 @@ void InLevel::OnMove()							// 移動遊戲元素
 			testExit.SetShow();
 		}
 	} /* attack rock END */
+
+	{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
+
+		if ( bombAnime.getFuse()==1 ) { /* is bombimg */
+
+			const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * TILE_SIZE * SCALE_SIZE);
+			// Loop through all the rocks that collide with the bomb area
+			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
+			for (auto& 🗿 : 🗿🗿🗿) {
+
+				🗿->health -= damage;
+				if ( 🗿->health <= 0 ) {
+					if( 🗿->timer == -1) {
+						🗿->timer = 7;
+					}
+				}
+			}
+		}
+		/* play animation and break rock and show exit */
+		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
+		if ( isExitRock ) {
+			testExit.SetShow();
+		}
+	} /* bomb rock END */
+	
+	/* bomb fuse */
+	if(bombAnime.getFuse()){
+		bombAnime.update();
+	}
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -241,7 +276,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
-			bombAnime.useBomb(player.position); //FIXME: no show pls help WIP
+			if(bombAnime.getFuse()>0) break;
+			bombAnime.useBomb(player.position,0);
 			break;
 		case 'E': // randomly create exit
 			testExit.SetShow();

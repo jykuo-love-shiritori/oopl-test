@@ -11,17 +11,17 @@ class Bomb{
         int getDamage() const {return _damage;}
         int getBlastRadius() const {return _blastRadius;}
         int getFuse() const {return _fuse;}
-        Vector2i getPosition() const {return _position;}
+        bool isShown() const {return _sprite.isShown();}
+        Vector2i getCenter() const {return _sprite.GetHitbox().getCenter();};
 
-
-        void init(int type);
-        void useBomb(Vector2i playerLocation);
+        void init();
+        void useBomb(Vector2i playerLocation,int type);
+        void update();
         void drawBomb();
 
     private:
         int _blastRadius;
         int _damage;
         int _fuse;
-        Vector2i _position;
         game_framework::Bittermap _sprite;
 };

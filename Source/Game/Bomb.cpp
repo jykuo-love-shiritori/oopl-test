@@ -4,7 +4,7 @@
 #include "../Config/scaler.h"
 
 
-void Bomb::init(int type){
+void Bomb::init(){
     _sprite.LoadBitmapByString({
         "./Resources/Bomb/cherryBomb.bmp",
         "./Resources/Bomb/50.bmp",
@@ -16,31 +16,28 @@ void Bomb::init(int type){
         "./Resources/Bomb/56.bmp",
         "./Resources/Bomb/57.bmp"
     },RGB(0,0,0));
+    _sprite.SetHitBox({
+        _sprite.GetWidth(),
+        _sprite.GetHeight()
+        });
 
-    if(type==0){
-        _blastRadius=3;
-        _damage=5;
-        _fuse=28;
-    }
-    else if(type==1){
-        _blastRadius=5;
-        _damage=10;
-        _fuse=48;
-    }
-    else if(type==2){
-        _blastRadius=8;
-        _damage=15;
-        _fuse=68;
-    }
+    _fuse=-1;
+    _sprite.SetShow(false);
 }
 
-void Bomb::useBomb(Vector2i playerLocation){
-    _position=playerLocation * TILE_SIZE * SCALE_SIZE;
+void Bomb::useBomb(Vector2i placeLocation,int type){
+    _sprite.position = placeLocation;
+    _sprite.SetFrameIndexOfBitmap(0);
     _sprite.SetShow();
-    if(_fuse>0){
-        if(_fuse<8) _sprite.SetFrameIndexOfBitmap(_fuse);
-        _fuse--;
-    }
+    if(type==0){_fuse=28;}
+    else if(type==1){_fuse=68;}
+    else{_fuse=108;}
+}
+
+void Bomb::update(){
+    if(_fuse<8) _sprite.SetFrameIndexOfBitmap(_fuse);
+    _fuse--;
+    if(_fuse==0){_sprite.SetShow(false);}
 }
 
 void Bomb::drawBomb(){
