@@ -26,6 +26,16 @@ void RockManager::loadBMP(){
         "Resources/Minerals/emeraldNode.bmp",   //14
         "Resources/Minerals/fireQuartz.bmp",    //15
         "Resources/Minerals/rubyNode.bmp",      //16
+
+        /* break animation */
+        "Resources/Minerals/0.bmp",
+        "Resources/Minerals/1.bmp",
+        "Resources/Minerals/2.bmp",
+        "Resources/Minerals/3.bmp",
+        "Resources/Minerals/4.bmp",
+        "Resources/Minerals/5.bmp",
+        "Resources/Minerals/6.bmp",
+        "Resources/Minerals/7.bmp"
     },RGB(255,255,255));  
 }
 
@@ -104,6 +114,26 @@ void RockManager::remove(std::set<Rock*> ptrs) {
     }
     _rocks = newRocks;
     _rocks.shrink_to_fit();
+}
+
+bool RockManager::playBreakAnimation(Vector2i exit){
+	std::set<Rock*> brokenRockPtrs = {};
+    bool a = false;
+
+    for (auto& 🗿 : _rocks) {
+        if(🗿.timer==-1) continue;
+        🗿.type=17+(7-🗿.timer);
+        🗿.timer--;
+        if(🗿.timer==0) {
+			brokenRockPtrs.insert(&🗿);
+            if ( 🗿.position * TILE_SIZE * SCALE_SIZE == exit ) {
+                a = true;
+            }
+        }
+    }
+    remove(brokenRockPtrs);
+
+    return a;
 }
 
 std::vector<Vector2i> RockManager::getPositions() const {

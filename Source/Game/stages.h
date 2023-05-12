@@ -26,6 +26,7 @@
 #include "Bug.h"
 #include "Bittermap.h"
 #include "UI.h"
+#include "Bomb.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -89,6 +90,7 @@ namespace game_framework {	namespace stage {
 		Bittermap testExit;
 		Bug bug;
 		Bug bug2;
+		Bomb bombAnime;
 	};
 
 	class GameOver : public CGameState {
