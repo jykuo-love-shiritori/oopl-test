@@ -13,12 +13,14 @@ void Bug::load() {
 
 void Bug::init(Vector2i startLocation) {
     _currentMomentum = Vector2f(0,0);
-    _health=22;
+    _health=40;
     _sprite.position=startLocation * TILE_SIZE * SCALE_SIZE;
 }
 
 void Bug::drawBug(){
-    _sprite.Draw();
+    if( getHealth() > 0) {
+        _sprite.Draw();
+    }
 }
 
 void Bug::alterHealth(int damage) {

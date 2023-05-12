@@ -39,7 +39,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.LoadBitmapByString({
-        "resources/giraffe.bmp"
+        "resources/giraffe.bmp",
+        "resources/giraffe-hit.bmp",
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
 	player.SetHitBox(regularBoxSize * 0.7);
@@ -88,6 +89,7 @@ void InLevel::OnBeginState()
 	SetupLevel(mapInfo);
 
 	bug.init(Vector2i(100,100));
+	playerHP=143;
 }
 
 /* helper functions BEGIN */
@@ -143,6 +145,7 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 		testExit.position = rocksPositions[std::rand() % rocksPositions.size()];
 		testExit.SetShow(false);
 	}
+	bug.init(Vector2i(1000,1000));
 }
 /* helper functions END */
 
@@ -170,17 +173,22 @@ void InLevel::OnMove()							// 移動遊戲元素
 		}
 	} /* player move and collision END */
 
-	/*bug pursuit BEGIN */
-	bug.pursuit(player.position);
-	/*bug pursuit END */
-	{/*bug collision BEGIN */
+	player.SetFrameIndexOfBitmap(0);
+	if ( bug.getHealth() > 0 ) { /*bug move BEGIN */
+		/*bug pursuit BEGIN */
+		bug.pursuit(player.position);
+		/*bug pursuit END */
+		/*bug collision BEGIN */
 		const auto p = bug.getPosition();
 		if (
 			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p, {50,50}))
 		) {
+			//player.SetFrameIndexOfBitmap(1);
 			playerHP--;
+			if(playerHP<0) playerHP=0;
 		}
-	}/*bug collision END */
+		/*bug collision END */
+	} /*bug move END */
 
 	{ /* player attack timer BEGIN */
 		if(playerAttackTimer > 0) {
@@ -228,7 +236,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 		if ( bombAnime.getFuse()==1 ) { /* is bombimg */
 
-			const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * TILE_SIZE * SCALE_SIZE);
+			const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
 			// Loop through all the rocks that collide with the bomb area
 			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 			for (auto& 🗿 : 🗿🗿🗿) {
@@ -312,9 +320,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			bombAnime.useBomb(player.position,0);
 			break;
 		case 'E': // randomly create exit
-			testExit.SetShow();
-			auto pps = map.getPlaceablePositions();
-			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+			{
+				testExit.SetShow();
+				auto pps = map.getPlaceablePositions();
+				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+			}
+			break;
+		case 'R':
+			GotoGameState(GAME_STATE_INIT);
+			break;
+		case 'H':
+			playerHP += 20;
 			break;
 	}
 	#endif /* DEBUG_KEY */

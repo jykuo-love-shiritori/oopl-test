@@ -17,6 +17,7 @@ class Bug{
 
         /*getter */
         Vector2i getPosition() const { return _sprite.position; }
+        int getHealth() { return _health; }
 
     private:
         game_framework::Bittermap _sprite;
