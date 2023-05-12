@@ -31,5 +31,7 @@ void Bug::pursuit(Vector2i playerLocation){
 	_currentMomentum = (_currentMomentum + deltaVec/10).normalized() * deltaVec.norm() / 10;
 	if (_currentMomentum.norm() < 20)
 		_currentMomentum = _currentMomentum.normalized() * 20;
+    float r3 = 0.2 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(1.2-0.2)));
+    _currentMomentum = _currentMomentum * r3;
     _sprite.Move(_currentMomentum);
 }
