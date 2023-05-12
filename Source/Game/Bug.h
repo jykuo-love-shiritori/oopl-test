@@ -11,6 +11,10 @@ class Bug{
         void pursuit(Vector2i playerLocation);
         void drawBug();
 
+        /* setter */
+        void alterHealth(int damage);
+        void setHit(bool isHitting) { _sprite.SetFrameIndexOfBitmap(isHitting ? 1 : 0); }
+
         /*getter */
         Vector2i getPosition() const { return _sprite.position; }
 

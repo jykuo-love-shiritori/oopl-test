@@ -116,7 +116,7 @@ void RockManager::remove(std::set<Rock*> ptrs) {
     _rocks.shrink_to_fit();
 }
 
-bool RockManager::playBreakAnimation(Vector2i exit){
+bool RockManager::playBreakAnimation(Vector2i exit, unsigned int *score){
 	std::set<Rock*> brokenRockPtrs = {};
     bool a = false;
 
@@ -131,6 +131,7 @@ bool RockManager::playBreakAnimation(Vector2i exit){
             }
         }
     }
+    *score=brokenRockPtrs.size();
     remove(brokenRockPtrs);
 
     return a;

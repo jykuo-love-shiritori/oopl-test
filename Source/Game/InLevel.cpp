@@ -72,7 +72,6 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
 	bug.load();
-	bug2.load();
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
@@ -83,13 +82,12 @@ void InLevel::OnBeginState()
 {
 	map.setLevel(1);
 
-	userInterface.setScore(1234067);
+	userInterface.setScore(0);
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
 
-	bug.init(Vector2i(10,8));
-	bug2.init(Vector2i(15,4));
+	bug.init(Vector2i(100,100));
 }
 
 /* helper functions BEGIN */
@@ -174,17 +172,14 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	/*bug pursuit BEGIN */
 	bug.pursuit(player.position);
-	bug2.pursuit(player.position);
 	/*bug pursuit END */
 	{/*bug collision BEGIN */
 		const auto p = bug.getPosition();
-		const auto p2 = bug2.getPosition();
 		if (
-			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p, {50,50})) ||
-			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p2, {50,50}))
-			) {
-				playerHP--;
-			}
+			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p, {50,50}))
+		) {
+			playerHP--;
+		}
 	}/*bug collision END */
 
 	{ /* player attack timer BEGIN */
@@ -221,7 +216,9 @@ void InLevel::OnMove()							// 移動遊戲元素
 			markedRocks.clear();
 		}
 		/* play animation and break rock and show exit */
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
+		unsigned int scoreModify;
+		bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
+		userInterface.alterScore(scoreModify);
 		if ( isExitRock ) {
 			testExit.SetShow();
 		}
@@ -245,11 +242,25 @@ void InLevel::OnMove()							// 移動遊戲元素
 			}
 		}
 		/* play animation and break rock and show exit */
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
+		unsigned int scoreModify;
+		bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
+		userInterface.alterScore(scoreModify);
 		if ( isExitRock ) {
 			testExit.SetShow();
 		}
 	} /* bomb rock END */
+
+	{ /* attack bug BEGIN */
+		const auto p = bug.getPosition();
+		bool isHitting =
+			Rect::isOverlay(playerAttack.GetHitbox(), Rect::FromTopLeft(p, {50,50}))
+			&& playerAttack.isShown();
+
+		bug.setHit(isHitting);
+		if ( isHitting ) { /* if isHitting */
+			bug.alterHealth(-5);
+		}
+	} /* attack bug END */
 	
 	/* bomb fuse */
 	if(bombAnime.getFuse()){
@@ -371,7 +382,6 @@ void InLevel::OnShow()
 	map.drawFront();
 	
 	bug.drawBug();
-	bug2.drawBug();
 	
 	userInterface.showUI();
 	/* top layer */

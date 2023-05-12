@@ -29,7 +29,7 @@ class RockManager{
         std::vector<Vector2i> getPositions() const;
 
         void remove(std::set<Rock*> ptrs);
-        bool playBreakAnimation(Vector2i exit);
+        bool playBreakAnimation(Vector2i exit, unsigned int *score);
         void clear();
     private:
         // TODO: bind map in manager but read-only

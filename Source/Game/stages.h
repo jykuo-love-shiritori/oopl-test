@@ -89,7 +89,6 @@ namespace game_framework {	namespace stage {
 		RockManager rockManager;
 		Bittermap testExit;
 		Bug bug;
-		Bug bug2;
 		Bomb bombAnime;
 	};
 

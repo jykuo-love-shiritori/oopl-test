@@ -6,7 +6,8 @@
 
 void Bug::load() {
     _sprite.LoadBitmapByString({
-        "Resources/bug.bmp"
+        "Resources/bug.bmp",
+        "Resources/bug-hit.bmp",
     },RGB(255,255,255));
 }
 
@@ -18,6 +19,10 @@ void Bug::init(Vector2i startLocation) {
 
 void Bug::drawBug(){
     _sprite.Draw();
+}
+
+void Bug::alterHealth(int damage) {
+    _health += damage;
 }
 
 void Bug::pursuit(Vector2i playerLocation){
