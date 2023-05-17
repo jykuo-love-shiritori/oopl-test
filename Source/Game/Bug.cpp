@@ -23,10 +23,6 @@ void Bug::drawBug(){
     }
 }
 
-void Bug::alterHealth(int damage) {
-    _health += damage;
-}
-
 void Bug::pursuit(Vector2i playerLocation){
     Vector2f deltaVec=playerLocation-_sprite.position;
 	const auto origin = _currentMomentum.norm();

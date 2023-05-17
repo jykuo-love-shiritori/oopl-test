@@ -12,12 +12,12 @@ class Bug{
         void drawBug();
 
         /* setter */
-        void alterHealth(int damage);
+        void alterHealth(int damage) { _health += damage; }
         void setHit(bool isHitting) { _sprite.SetFrameIndexOfBitmap(isHitting ? 1 : 0); }
 
         /*getter */
-        Vector2i getPosition() const { return _sprite.position; }
-        int getHealth() { return _health; }
+        Rect GetHitbox() const { return Rect::FromTopLeft(_sprite.position, {50,50}); }
+        bool isAlive() const { return _health > 0; }
 
     private:
         game_framework::Bittermap _sprite;

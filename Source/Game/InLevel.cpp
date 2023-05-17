@@ -174,23 +174,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 		}
 	} /* player move and collision END */
 
-	player.SetFrameIndexOfBitmap(0);
-	if ( bug.getHealth() > 0 ) { /*bug move BEGIN */
-		/*bug pursuit BEGIN */
-		bug.pursuit(player.position);
-		/*bug pursuit END */
-		/*bug collision BEGIN */
-		const auto p = bug.getPosition();
-		if (
-			Rect::isOverlay(player.GetHitbox(), Rect::FromTopLeft(p, {50,50}))
-		) {
-			//player.SetFrameIndexOfBitmap(1);
-			playerHP--;
-			if(playerHP<0) playerHP=0;
-		}
-		/*bug collision END */
-	} /*bug move END */
-
 	{ /* player attack timer BEGIN */
 		if(playerAttackTimer > 0) {
 			playerAttackTimer--;
@@ -239,17 +222,28 @@ void InLevel::OnMove()							// 移動遊戲元素
 		}
 	} /* break rock END */
 
-	{ /* attack bug BEGIN */
-		const auto p = bug.getPosition();
-		bool isHitting =
-			Rect::isOverlay(playerAttack.GetHitbox(), Rect::FromTopLeft(p, {50,50}))
-			&& playerAttack.isShown();
+	if ( bug.isAlive() ) { /* bug update BEGIN */
+		bug.pursuit(player.position);
+		{ /* bug collide player BEGIN */
+			//player.SetFrameIndexOfBitmap(0);
+			if ( Rect::isOverlay(player.GetHitbox(), bug.GetHitbox() ))
+			{
+				//player.SetFrameIndexOfBitmap(1);
+				playerHP--;
+				if(playerHP<0) playerHP=0; //FIXME: easy for modify
+			}
+		} /* bug collide player END */
+		{ /* player attack bug BEGIN */
+			bool isHitting =
+				Rect::isOverlay(playerAttack.GetHitbox(), bug.GetHitbox())
+				&& playerAttack.isShown();
 
-		bug.setHit(isHitting);
-		if ( isHitting ) { /* if isHitting */
-			bug.alterHealth(-5);
-		}
-	} /* attack bug END */
+			bug.setHit(isHitting);
+			if ( isHitting ) { /* if isHitting */
+				bug.alterHealth(-5);
+			}
+		} /* player attack bug END */
+	} /*bug update END */
 	
 	/* bomb fuse */
 	if(bombAnime.getFuse()){
