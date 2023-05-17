@@ -18,7 +18,7 @@ void Bug::init(Vector2i startLocation) {
 }
 
 void Bug::drawBug(){
-    if( getHealth() > 0) {
+    if( isAlive() ) {
         _sprite.Draw();
     }
 }
