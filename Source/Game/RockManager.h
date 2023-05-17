@@ -14,7 +14,7 @@ struct Rock {
     Vector2i position = {0, 0};
     unsigned int type = 0;
     int health = 1; // negative number for over damage handle
-    int timer=-1;
+    int timer=-1; // for animation. -1 mean not broken
 };
 
 class RockManager{

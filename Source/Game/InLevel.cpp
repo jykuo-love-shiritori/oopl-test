@@ -161,6 +161,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	const int speed=20;
 	{ /* player move and collision BEGIN */
 		const Vector2i moveVec = getMoveVecByKeys();
+		// Update player facing
 		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
 		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
@@ -198,65 +199,45 @@ void InLevel::OnMove()							// 移動遊戲元素
 		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
 	} /* player attack counter END */
 
-	// Damage value caused by the attack.
+	// Damage value caused by the attack. //FIXME: and bomb
 	const int damage = 1;
-	{ /* attack rock BEGIN */
-		// A static set can be used to keep track of marked rocks until the end of the round of attack
-		static std::set<Rock*> markedRocks = {};
+	{ /* break rock BEGIN */
+		{ /* attack rock BEGIN */
+			// A static set can be used to keep track of marked rocks until the end of the round of attack
+			static std::set<Rock*> markedRocks = {};
 
-		if ( playerAttack.isShown() ) { /* is attacking */
-
-			const auto 🗡️ = playerAttack.GetHitbox();
-			// Loop through all the rocks that collide with the attack area
-			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
-			for (auto& 🗿 : 🗿🗿🗿) {
-				if (markedRocks.count(🗿) != 0) continue;
-				markedRocks.insert(🗿);
-
-				🗿->health -= damage;
-				if ( 🗿->health <= 0 ) {
-					if( 🗿->timer == -1) {
-						🗿->timer = 7;
-					}
+			if ( playerAttack.isShown() ) { /* is attacking */
+				const auto 🗡️ = playerAttack.GetHitbox();
+				// Enumerate all the rocks that collide with the attack area
+				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
+				for (auto& 🗿 : 🗿🗿🗿) {
+					if (markedRocks.count(🗿) != 0) continue;
+					markedRocks.insert(🗿);
+					🗿->health -= damage;
+				}
+			} else { /* is not attacking */
+				markedRocks.clear();
+			}
+		} /* attack rock END */
+		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
+			if ( bombAnime.getFuse()==1 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+				// Enumerate all the rocks that collide with the bomb area
+				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
+				for (auto& 🗿 : 🗿🗿🗿) {
+					🗿->health -= damage;
 				}
 			}
-		} else { /* is not attacking */
-			markedRocks.clear();
-		}
-		/* play animation and break rock and show exit */
-		unsigned int scoreModify;
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-		userInterface.alterScore(scoreModify);
-		if ( isExitRock ) {
-			testExit.SetShow();
-		}
-	} /* attack rock END */
-
-	{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-
-		if ( bombAnime.getFuse()==1 ) { /* is bombimg */
-
-			const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
-			// Loop through all the rocks that collide with the bomb area
-			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
-			for (auto& 🗿 : 🗿🗿🗿) {
-
-				🗿->health -= damage;
-				if ( 🗿->health <= 0 ) {
-					if( 🗿->timer == -1) {
-						🗿->timer = 7;
-					}
-				}
+		} /* bomb rock END */
+		{ /* play animation and break rock and show exit */
+			unsigned int scoreModify;
+			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
+			userInterface.alterScore(scoreModify);
+			if ( isExitRock ) {
+				testExit.SetShow();
 			}
 		}
-		/* play animation and break rock and show exit */
-		unsigned int scoreModify;
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-		userInterface.alterScore(scoreModify);
-		if ( isExitRock ) {
-			testExit.SetShow();
-		}
-	} /* bomb rock END */
+	} /* break rock END */
 
 	{ /* attack bug BEGIN */
 		const auto p = bug.getPosition();
