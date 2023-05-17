@@ -16,9 +16,6 @@
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
 
-#define PLAYER_ATTACK_CD	15
-#define PLAYER_ATTACK_TIME	5
-
 using namespace game_framework;
 using namespace game_framework::stage;
 
@@ -38,28 +35,12 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
-	player.LoadBitmapByString({
-        "resources/giraffe.bmp",
-        "resources/giraffe-hit.bmp",
-	}, RGB(255, 255, 255));
-	player.SetScale(1);
-	player.SetHitBox(regularBoxSize * 0.7);
-
-	playerAttack.LoadBitmapByString({
-        "resources/slashLeft.bmp",
-        "resources/slashDown.bmp",
-        "resources/slashRight.bmp",
-        "resources/slashUp.bmp"
-	}, RGB(25, 28, 36));
-	playerAttack.SetScale(1);
-	playerAttack.SetHitBox(regularBoxSize * 1.0);
-	playerAttack.SetShow(false);
+	player.Init();
 
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
 	map.setLevel(1);
-	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	userInterface.load();
 
@@ -82,6 +63,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 void InLevel::OnBeginState()
 {
 	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	userInterface.setScore(0);
 
@@ -89,7 +71,7 @@ void InLevel::OnBeginState()
 	SetupLevel(mapInfo);
 
 	bug.init(Vector2i(100,100));
-	playerHP=143;
+	player.health=143;
 }
 
 /* helper functions BEGIN */
@@ -112,22 +94,6 @@ Vector2i getMoveVecByKeys() {
 		moveVec.y = 1;
 	}
 	return moveVec;
-}
-
-unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
-	if(attackDirection==Vector2i(0,1)){
-		return 1; // Down
-	}
-	if(attackDirection==Vector2i(0,-1)){
-		return 3; // Up
-	}
-	if(attackDirection.x == -1){
-		return 2; // Left
-	}
-	if(attackDirection.x == 1){
-		return 0; // Right
-	}
-	throw "wtf";
 }
 
 void InLevel::SetupLevel(Map::Info mapInfo) {
@@ -174,13 +140,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		}
 	} /* player move and collision END */
 
-	{ /* player attack timer BEGIN */
-		if(playerAttackTimer > 0) {
-			playerAttackTimer--;
-			playerAttack.SetShow(playerAttackTimer > PLAYER_ATTACK_CD);
-		}
-		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
-	} /* player attack counter END */
+	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
 	const int damage = 1;
@@ -189,8 +149,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 			// A static set can be used to keep track of marked rocks until the end of the round of attack
 			static std::set<Rock*> markedRocks = {};
 
-			if ( playerAttack.isShown() ) { /* is attacking */
-				const auto 🗡️ = playerAttack.GetHitbox();
+			if ( player.isAttacking() ) { /* is attacking */
+				const auto 🗡️ = player.getAttackBox();
 				// Enumerate all the rocks that collide with the attack area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
 				for (auto& 🗿 : 🗿🗿🗿) {
@@ -226,17 +186,17 @@ void InLevel::OnMove()							// 移動遊戲元素
 		bug.pursuit(player.position);
 		{ /* bug collide player BEGIN */
 			//player.SetFrameIndexOfBitmap(0);
-			if ( Rect::isOverlay(player.GetHitbox(), bug.GetHitbox() ))
+			if ( Rect::isOverlay(player.getHitBox(), bug.GetHitbox() ))
 			{
 				//player.SetFrameIndexOfBitmap(1);
-				playerHP--;
-				if(playerHP<0) playerHP=0; //FIXME: easy for modify
+				player.health--;
+				if(player.health<0) player.health=0; //FIXME: easy for modify
 			}
 		} /* bug collide player END */
 		{ /* player attack bug BEGIN */
 			bool isHitting =
-				Rect::isOverlay(playerAttack.GetHitbox(), bug.GetHitbox())
-				&& playerAttack.isShown();
+				Rect::isOverlay(player.getAttackBox();, bug.GetHitbox())
+				&& player.isAttacking()
 
 			bug.setHit(isHitting);
 			if ( isHitting ) { /* if isHitting */
@@ -305,7 +265,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
-			playerHP += 20;
+			player.health += 20;
 			break;
 	}
 	#endif /* DEBUG_KEY */
@@ -324,12 +284,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'P': // player attack
-			if(playerAttackTimer > 0) break; // cd-ing
-
-			playerAttack.SetFrameIndexOfBitmap(
-				getFrameIndexOfBitmapBy(attackDirection)
-			);
-			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
+			if( player.canAttack() ) {
+				player.attack();
+			}
 			break;
 	}
 }
@@ -368,7 +325,6 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
-	playerAttack.Draw();
 
 	map.drawFront();
 	
