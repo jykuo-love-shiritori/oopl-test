@@ -243,11 +243,13 @@
     <ClCompile Include="Source\Core\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Game\bag.cpp" />
     <ClCompile Include="Source\Game\Bittermap.cpp" />
     <ClCompile Include="Source\Game\Bug.cpp" />
     <ClCompile Include="Source\Game\Bomb.cpp" />
     <ClCompile Include="Source\Game\Map.cpp" />
     <ClCompile Include="Source\Game\RockManager.cpp" />
+    <ClCompile Include="Source\Game\ShopKeeper.cpp" />
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />

@@ -77,6 +77,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	Bittermap::CameraPosition = &player.position;
 	userInterface.setHealth(&playerHP);
+
+	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 }
 
 void InLevel::OnBeginState()
@@ -291,7 +293,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
-			if(bombAnime.getFuse()>0) break;
+			if(bombAnime.getFuse()>0 || !b.useBomb()) break;
 			bombAnime.useBomb(player.position,0);
 			break;
 		case 'E': // randomly create exit
@@ -306,6 +308,19 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'H':
 			playerHP += 20;
+			break;
+		case 'T': /* trade */
+			if(true) {
+				auto m = userInterface.getScore();
+				clint.trade(&m, &b);
+				userInterface.setScore(m);
+			}
+			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
+			// 	dwarf.trade();
+			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
+			// 	gus.trade();
+			// }
+			// /* ... */
 			break;
 	}
 	#endif /* DEBUG_KEY */

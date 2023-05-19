@@ -24,9 +24,11 @@
 #include "Map.h"
 #include "RockManager.h"
 #include "Bug.h"
+#include "Bag.h"
 #include "Bittermap.h"
 #include "UI.h"
 #include "Bomb.h"
+#include "ShopKeeper.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -90,6 +92,12 @@ namespace game_framework {	namespace stage {
 		Bittermap testExit;
 		Bug bug;
 		Bomb bombAnime;
+
+		BombShop clint;
+		Bittermap X;
+
+		int m = 0;
+		Bag b;
 	};
 
 	class GameOver : public CGameState {
