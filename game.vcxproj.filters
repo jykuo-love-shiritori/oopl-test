@@ -67,6 +67,7 @@
     <ClCompile Include="Source\Game\RockManager.cpp" />
     <ClCompile Include="Source\Unity\Hitbox.cpp" />
     <ClCompile Include="Source\Unity\Rect.cpp" />
+    <ClCompile Include="Source\Game\Bug.cpp" />
     <ClCompile Include="Source\Game\UI.cpp" />
     <ClCompile Include="Source\Game\Bomb.cpp" />
   </ItemGroup>
@@ -115,6 +116,7 @@
     <ClInclude Include="Source\Unity\Hitbox.h" />
     <ClInclude Include="Source\Unity\Rect.h" />
     <ClInclude Include="Source\Unity\Vector2.h" />
+    <ClInclude Include="Source\Game\Bug.h" />
     <ClInclude Include="Source\Game\UI.h" />
     <ClInclude Include="Source\Game\Bomb.h" />
   </ItemGroup>

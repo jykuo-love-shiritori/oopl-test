@@ -116,21 +116,32 @@ void RockManager::remove(std::set<Rock*> ptrs) {
     _rocks.shrink_to_fit();
 }
 
-bool RockManager::playBreakAnimation(Vector2i exit){
+bool RockManager::playBreakAnimation(Vector2i exit, unsigned int *score){
 	std::set<Rock*> brokenRockPtrs = {};
     bool a = false;
 
     for (auto& 🗿 : _rocks) {
-        if(🗿.timer==-1) continue;
-        🗿.type=17+(7-🗿.timer);
+        // not broken
+        if(🗿.timer == -1) {
+            if ( 🗿.health <= 0 ) {
+                🗿.timer = 7; // make it broken, and start play animation
+            }
+            continue;
+        }
+
+        // broken, animation playing
+        🗿.type=17+(7-🗿.timer); // 17 ~ 24 is animation textures
         🗿.timer--;
-        if(🗿.timer==0) {
-			brokenRockPtrs.insert(&🗿);
+
+        // animation finished
+        if (🗿.timer==0) {
+            brokenRockPtrs.insert(&🗿);
             if ( 🗿.position * TILE_SIZE * SCALE_SIZE == exit ) {
                 a = true;
             }
         }
     }
+    *score=brokenRockPtrs.size();
     remove(brokenRockPtrs);
 
     return a;

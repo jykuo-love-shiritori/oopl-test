@@ -23,6 +23,7 @@
 
 #include "Map.h"
 #include "RockManager.h"
+#include "Bug.h"
 #include "Bittermap.h"
 #include "UI.h"
 #include "Bomb.h"
@@ -75,6 +76,7 @@ namespace game_framework {	namespace stage {
 	private:
 		Bittermap player;
 		Bittermap playerAttack;
+		long int playerHP=143;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
@@ -86,6 +88,7 @@ namespace game_framework {	namespace stage {
 
 		RockManager rockManager;
 		Bittermap testExit;
+		Bug bug;
 		Bomb bombAnime;
 	};
 

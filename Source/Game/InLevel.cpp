@@ -39,7 +39,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.LoadBitmapByString({
-        "resources/giraffe.bmp"
+        "resources/giraffe.bmp",
+        "resources/giraffe-hit.bmp",
 	}, RGB(255, 255, 255));
 	player.SetScale(1);
 	player.SetHitBox(regularBoxSize * 0.7);
@@ -71,19 +72,24 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
+	bug.load();
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
+	userInterface.setHealth(&playerHP);
 }
 
 void InLevel::OnBeginState()
 {
 	map.setLevel(1);
 
-	userInterface.setScore(1234067);
+	userInterface.setScore(0);
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
+
+	bug.init(Vector2i(100,100));
+	playerHP=143;
 }
 
 /* helper functions BEGIN */
@@ -139,6 +145,7 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 		testExit.position = rocksPositions[std::rand() % rocksPositions.size()];
 		testExit.SetShow(false);
 	}
+	bug.init(Vector2i(1000,1000));
 }
 /* helper functions END */
 
@@ -154,6 +161,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	const int speed=20;
 	{ /* player move and collision BEGIN */
 		const Vector2i moveVec = getMoveVecByKeys();
+		// Update player facing
 		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
 		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
@@ -174,61 +182,68 @@ void InLevel::OnMove()							// 移動遊戲元素
 		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
 	} /* player attack counter END */
 
-	// Damage value caused by the attack.
+	// Damage value caused by the attack. //FIXME: and bomb
 	const int damage = 1;
-	{ /* attack rock BEGIN */
-		// A static set can be used to keep track of marked rocks until the end of the round of attack
-		static std::set<Rock*> markedRocks = {};
+	{ /* break rock BEGIN */
+		{ /* attack rock BEGIN */
+			// A static set can be used to keep track of marked rocks until the end of the round of attack
+			static std::set<Rock*> markedRocks = {};
 
-		if ( playerAttack.isShown() ) { /* is attacking */
-
-			const auto 🗡️ = playerAttack.GetHitbox();
-			// Loop through all the rocks that collide with the attack area
-			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
-			for (auto& 🗿 : 🗿🗿🗿) {
-				if (markedRocks.count(🗿) != 0) continue;
-				markedRocks.insert(🗿);
-
-				🗿->health -= damage;
-				if ( 🗿->health <= 0 ) {
-					if( 🗿->timer == -1) {
-						🗿->timer = 7;
-					}
+			if ( playerAttack.isShown() ) { /* is attacking */
+				const auto 🗡️ = playerAttack.GetHitbox();
+				// Enumerate all the rocks that collide with the attack area
+				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
+				for (auto& 🗿 : 🗿🗿🗿) {
+					if (markedRocks.count(🗿) != 0) continue;
+					markedRocks.insert(🗿);
+					🗿->health -= damage;
+				}
+			} else { /* is not attacking */
+				markedRocks.clear();
+			}
+		} /* attack rock END */
+		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
+			if ( bombAnime.getFuse()==1 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+				// Enumerate all the rocks that collide with the bomb area
+				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
+				for (auto& 🗿 : 🗿🗿🗿) {
+					🗿->health -= damage;
 				}
 			}
-		} else { /* is not attacking */
-			markedRocks.clear();
-		}
-		/* play animation and break rock and show exit */
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
-		if ( isExitRock ) {
-			testExit.SetShow();
-		}
-	} /* attack rock END */
-
-	{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-
-		if ( bombAnime.getFuse()==1 ) { /* is bombimg */
-
-			const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * TILE_SIZE * SCALE_SIZE);
-			// Loop through all the rocks that collide with the bomb area
-			const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
-			for (auto& 🗿 : 🗿🗿🗿) {
-
-				🗿->health -= damage;
-				if ( 🗿->health <= 0 ) {
-					if( 🗿->timer == -1) {
-						🗿->timer = 7;
-					}
-				}
+		} /* bomb rock END */
+		{ /* play animation and break rock and show exit */
+			unsigned int scoreModify;
+			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
+			userInterface.alterScore(scoreModify);
+			if ( isExitRock ) {
+				testExit.SetShow();
 			}
 		}
-		/* play animation and break rock and show exit */
-		bool isExitRock = rockManager.playBreakAnimation(testExit.position);
-		if ( isExitRock ) {
-			testExit.SetShow();
-		}
-	} /* bomb rock END */
+	} /* break rock END */
+
+	if ( bug.isAlive() ) { /* bug update BEGIN */
+		bug.pursuit(player.position);
+		{ /* bug collide player BEGIN */
+			//player.SetFrameIndexOfBitmap(0);
+			if ( Rect::isOverlay(player.GetHitbox(), bug.GetHitbox() ))
+			{
+				//player.SetFrameIndexOfBitmap(1);
+				playerHP--;
+				if(playerHP<0) playerHP=0; //FIXME: easy for modify
+			}
+		} /* bug collide player END */
+		{ /* player attack bug BEGIN */
+			bool isHitting =
+				Rect::isOverlay(playerAttack.GetHitbox(), bug.GetHitbox())
+				&& playerAttack.isShown();
+
+			bug.setHit(isHitting);
+			if ( isHitting ) { /* if isHitting */
+				bug.alterHealth(-5);
+			}
+		} /* player attack bug END */
+	} /*bug update END */
 	
 	/* bomb fuse */
 	if(bombAnime.getFuse()){
@@ -280,9 +295,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			bombAnime.useBomb(player.position,0);
 			break;
 		case 'E': // randomly create exit
-			testExit.SetShow();
-			auto pps = map.getPlaceablePositions();
-			testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+			{
+				testExit.SetShow();
+				auto pps = map.getPlaceablePositions();
+				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
+			}
+			break;
+		case 'R':
+			GotoGameState(GAME_STATE_INIT);
+			break;
+		case 'H':
+			playerHP += 20;
 			break;
 	}
 	#endif /* DEBUG_KEY */
@@ -348,6 +371,9 @@ void InLevel::OnShow()
 	playerAttack.Draw();
 
 	map.drawFront();
+	
+	bug.drawBug();
+	
 	userInterface.showUI();
 	/* top layer */
 }
