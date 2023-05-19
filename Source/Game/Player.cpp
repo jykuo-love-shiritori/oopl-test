@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "../Game/Player.h"
 
 void Player::Init() {
@@ -27,6 +29,7 @@ void Player::Draw() {
 
 /* helper BEGIN */
 unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
+	return 0; //FIXME: attackDirection not work yet
 	if(attackDirection==Vector2i(0,1)){
 		return 1; // Down
 	}

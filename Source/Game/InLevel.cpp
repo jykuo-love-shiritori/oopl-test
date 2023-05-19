@@ -195,8 +195,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 		} /* bug collide player END */
 		{ /* player attack bug BEGIN */
 			bool isHitting =
-				Rect::isOverlay(player.getAttackBox();, bug.GetHitbox())
-				&& player.isAttacking()
+				Rect::isOverlay(player.getAttackBox(), bug.GetHitbox())
+				&& player.isAttacking();
 
 			bug.setHit(isHitting);
 			if ( isHitting ) { /* if isHitting */
@@ -232,7 +232,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
 			} else {
-				const Rect playerHitbox = player.GetHitbox();
+				const Rect playerHitbox = player.getHitBox();
 				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					rockManager.createRocksOn(pps);
@@ -272,7 +272,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = player.GetHitbox();
+			const Rect playerHitbox = player.getHitBox();
 			const Rect exitHitbox = testExit.GetHitbox();
 			if (testExit.isShown() && Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level

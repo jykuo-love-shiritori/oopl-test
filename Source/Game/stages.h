@@ -28,6 +28,7 @@
 #include "UI.h"
 #include "Bomb.h"
 #include "../Unity/Vector2.h"
+#include "../Game/Player.h"
 
 #include "../Config/config.h"
 
@@ -74,8 +75,7 @@ namespace game_framework {	namespace stage {
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
-		Bittermap player;
-		Bittermap playerAttack;
+		Player player;
 		long int playerHP=143;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
