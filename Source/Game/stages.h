@@ -99,10 +99,11 @@ namespace game_framework {	namespace stage {
 		Bomb bombAnime;
 
 		BombShop clint;
+		FoodShop gus;
 		X X;
 
 		int m = 0;
-		Bag b;
+		Bag bag;
 		std::vector<Updatable*> skillOrAnime = {
 			&bombAnime,
 			&X,

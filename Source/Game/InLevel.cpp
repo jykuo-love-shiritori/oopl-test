@@ -1,3 +1,4 @@
+#include "Item.h"
 #include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
@@ -298,7 +299,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
-			if(!b.useBomb()){
+			if(!bag.use<Item::Bomb>()){
 				X.Play();
 				break;
 			}
@@ -319,9 +320,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.health += 20;
 			break;
 		case 'T': /* trade */
-			if(true) {
+			if(true) { // FIXME: need to determine whether there is a shop
 				auto m = userInterface.getScore();
-				clint.trade(&m, &b);
+				clint.trade(&m, &bag);
 				userInterface.setScore(m);
 			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
@@ -330,6 +331,18 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// 	gus.trade();
 			// }
 			// /* ... */
+			break;
+		case 'F': /* bug and eat food */
+			if(true) { // FIXME: need to determine whether there is a shop
+				auto m = userInterface.getScore();
+				gus.trade(&m, &bag);
+				userInterface.setScore(m);
+			}
+			if(!bag.use<Item::Food>()){
+				X.Play();
+				break;
+			}
+			playerStatus.energy += 400;
 			break;
 	}
 	#endif /* DEBUG_KEY */
@@ -358,7 +371,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				getFrameIndexOfBitmapBy(attackDirection)
 			);
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
-			playerStatus.energy -= 2.5;
+			playerStatus.energy -= 10;
 			break;
 	}
 }

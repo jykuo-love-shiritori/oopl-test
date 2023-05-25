@@ -36,4 +36,9 @@ public:
     void trade(int* money, Bag* bag) override;
 };
 
+class FoodShop : public ShopKeeper {
+public:
+    void trade(int* money, Bag* bag) override;
+};
+
 #endif /* SHOP_KEEPER_H */
