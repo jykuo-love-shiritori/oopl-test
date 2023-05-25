@@ -76,7 +76,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
-	userInterface.setHealth(&playerHP);
+	userInterface.eh.setHealth(&playerHP);
 
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 }

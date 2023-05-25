@@ -3,7 +3,11 @@
 #include "../Library/gameutil.h"
 #include "./Bittermap.h"
 
+#include "./UI/eh.h"
+
 class UI{
+    public:
+        EH eh;
     public:
         void load();
         void showUI();
@@ -14,12 +18,8 @@ class UI{
         /*setter*/
         void alterScore(int delta);
         void setScore(int score) { _score = score; }
-        void setHealth(long int* health) {_health = health;}
     private:
-        long int *_health;
         game_framework::Bittermap _UIsprite;
         game_framework::Bittermap _moneyNumbers;
-        game_framework::Bittermap _ehBar;
-        game_framework::Bittermap _innerBar;
         unsigned int _score = 0;
 };
