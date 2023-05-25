@@ -1,4 +1,4 @@
-#include "StdAfx.cpp"
+#include "StdAfx.h"
 #include "eh.h"
 #include "../../Config/config.h"
 
