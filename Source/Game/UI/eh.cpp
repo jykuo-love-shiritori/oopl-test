@@ -23,11 +23,11 @@ void EH::Init() {
 void EH::Show() {
     _frame.ShowBitmap();
 
-    for(int i=(FULL_HEIGHT**_health); i>=0; --i){
+    for(int i=(FULL_HEIGHT**_health*0.01); i>=0; --i){
         _innerBar.SetTopLeft(H_LEFT, BOTTOM-i);
         _innerBar.ShowBitmap();
     }
-    for(int i=(FULL_HEIGHT**_energy); i>=0; --i){
+    for(int i=(FULL_HEIGHT**_energy*0.01); i>=0; --i){
         _innerBar.SetTopLeft(E_LEFT, BOTTOM-i);
         _innerBar.ShowBitmap();
     }
