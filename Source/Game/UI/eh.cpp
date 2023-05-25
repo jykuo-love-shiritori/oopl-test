@@ -17,16 +17,16 @@ void EH::Init() {
 #define BOTTOM SIZE_Y-43
 #define H_LEFT SIZE_X-83
 #define E_LEFT SIZE_X-123
-// full bar height is 143 
+#define FULL_HEIGHT 143 
 
 void EH::Show() {
     _frame.ShowBitmap();
 
-    for(int i=0; i<*_health; ++i){
+    for(int i=(FULL_HEIGHT**_health); i>=0; --i){
         _innerBar.SetTopLeft(H_LEFT, BOTTOM-i);
         _innerBar.ShowBitmap();
     }
-    for(int i=0; i<*_energy; ++i){
+    for(int i=(FULL_HEIGHT**_energy); i>=0; --i){
         _innerBar.SetTopLeft(E_LEFT, BOTTOM-i);
         _innerBar.ShowBitmap();
     }

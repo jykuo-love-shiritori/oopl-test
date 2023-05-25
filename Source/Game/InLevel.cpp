@@ -76,7 +76,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
-	userInterface.eh.setHealth(&playerHP);
+	userInterface.eh.setHealth(&playerStatus.health);
+	userInterface.eh.setEnergy(&playerStatus.energy);
 
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 }
@@ -91,7 +92,9 @@ void InLevel::OnBeginState()
 	SetupLevel(mapInfo);
 
 	bug.init(Vector2i(100,100));
-	playerHP=143;
+
+	playerStatus.health=100;
+	playerStatus.energy=100;
 }
 
 /* helper functions BEGIN */
@@ -231,8 +234,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 			if ( Rect::isOverlay(player.GetHitbox(), bug.GetHitbox() ))
 			{
 				//player.SetFrameIndexOfBitmap(1);
-				playerHP--;
-				if(playerHP<0) playerHP=0; //FIXME: easy for modify
+				playerStatus.health -= 0.5;
 			}
 		} /* bug collide player END */
 		{ /* player attack bug BEGIN */
@@ -250,6 +252,10 @@ void InLevel::OnMove()							// 移動遊戲元素
 	for (auto u : skillOrAnime) {
 		u->Update();
 	}
+
+	//FIXME: easy for modify
+	if (playerStatus.health < 0 ) playerStatus.health = 0;
+	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -310,7 +316,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
-			playerHP += 20;
+			playerStatus.health += 20;
 			break;
 		case 'T': /* trade */
 			if(true) {
@@ -342,12 +348,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'P': // player attack
+			if(playerStatus.energy == 0){
+				X.Play();
+				break;
+			}
 			if(playerAttackTimer > 0) break; // cd-ing
 
 			playerAttack.SetFrameIndexOfBitmap(
 				getFrameIndexOfBitmapBy(attackDirection)
 			);
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
+			playerStatus.energy -= 2.5;
 			break;
 	}
 }
