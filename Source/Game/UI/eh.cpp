@@ -1,3 +1,4 @@
+#include "StdAfx.cpp"
 #include "eh.h"
 #include "../../Config/config.h"
 
