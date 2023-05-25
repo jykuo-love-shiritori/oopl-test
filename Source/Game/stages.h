@@ -29,6 +29,7 @@
 #include "UI.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
+#include "Updatable.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -98,6 +99,9 @@ namespace game_framework {	namespace stage {
 
 		int m = 0;
 		Bag b;
+		std::vector<Updatable*> skillOrAnime = {
+			&bombAnime,
+		};
 	};
 
 	class GameOver : public CGameState {

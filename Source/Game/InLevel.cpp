@@ -247,9 +247,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 		} /* player attack bug END */
 	} /*bug update END */
 	
-	/* bomb fuse */
-	if(bombAnime.getFuse()){
-		bombAnime.update();
+	for (auto u : skillOrAnime) {
+		u->Update();
 	}
 }
 
@@ -293,7 +292,12 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
-			if(bombAnime.getFuse()>0 || !b.useBomb()) break;
+			if(!b.useBomb()){
+				X.position=player.position+Vector2i(0,-5);
+				X.SetShow();
+				break;
+			}
+			if(bombAnime.getFuse()>0) break;
 			bombAnime.useBomb(player.position,0);
 			break;
 		case 'E': // randomly create exit
@@ -383,6 +387,7 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
+	X.Draw();
 	playerAttack.Draw();
 
 	map.drawFront();
