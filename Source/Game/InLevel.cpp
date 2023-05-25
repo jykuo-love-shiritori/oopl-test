@@ -293,8 +293,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'B':
 			if(!b.useBomb()){
-				X.position=player.position+Vector2i(0,-5);
-				X.SetShow();
+				X.Play();
 				break;
 			}
 			if(bombAnime.getFuse()>0) break;
@@ -387,8 +386,8 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
-	X.Draw();
 	playerAttack.Draw();
+	X.Show();
 
 	map.drawFront();
 	
