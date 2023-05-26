@@ -10,7 +10,7 @@ void UIs::alterScore(int delta){
 
 const auto LSB_LOCATION = Vector2i(SIZE_X-85, 193);
 
-void UIs::load() {
+void UIs::Init() {
     _UIsprite.LoadBitmapByString({
 		"resources/moneyUI.bmp"
 	},RGB(255,255,255));
@@ -19,15 +19,12 @@ void UIs::load() {
 
     _moneyNumbers.Init();
 
-    eh.Init();
 }
 
-void UIs::showUI() {
+void UIs::Show() {
     const int offset=21; // each digit offset
 
     _UIsprite.ShowBitmap();
 
     _moneyNumbers.Show();
-
-	eh.Show();
 }

@@ -3,15 +3,13 @@
 #include "../Library/gameutil.h"
 #include "./Bittermap.h"
 
-#include "./UI/eh.h"
+#include "./UI/UI.h"
 #include "./UI/Digit.h"
 
-class UIs{
+class UIs : public UI { //FIXME: remove this
     public:
-        EH eh;
-    public:
-        void load();
-        void showUI();
+        void Init() override;
+        void Show() override;
 
         /*getter*/
         int getScore() const { return _score; }

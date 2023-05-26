@@ -4,7 +4,7 @@
 #include "../Bittermap.h"
 #include "./UI.h"
 
-class EH : protected UI {
+class EH : public UI {
     float const  *_health;
     float const  *_energy;
 public:

@@ -4,7 +4,7 @@
 #include "./UI.h"
 #include "../Bittermap.h"
 
-class Digit : protected UI {
+class Digit : public UI {
     unsigned const  *_number;
     float _scalar;
 public:
