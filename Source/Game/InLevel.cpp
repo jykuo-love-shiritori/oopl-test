@@ -372,7 +372,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				getFrameIndexOfBitmapBy(attackDirection)
 			);
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
-			playerStatus.energy -= 10;
+			playerStatus.energy -= 1.5;
 			break;
 	}
 }
