@@ -299,7 +299,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
-			if(!bag.use<Item::Bomb>()){
+			if(!bag.use(Item::Bomb)){
 				X.Play();
 				break;
 			}
@@ -338,11 +338,12 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				gus.trade(&m, &bag);
 				userInterface.setScore(m);
 			}
-			if(!bag.use<Item::Food>()){
+			if(!bag.use(Item::Food)){
 				X.Play();
 				break;
 			}
 			playerStatus.energy += 400;
+			playerStatus.health += 400;
 			break;
 	}
 	#endif /* DEBUG_KEY */
