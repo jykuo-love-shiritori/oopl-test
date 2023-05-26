@@ -87,7 +87,7 @@ namespace game_framework {	namespace stage {
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
-		UI userInterface;
+		UIs userInterface;
 		int phase=0;
 
 		int playerAttackTimer=0; // use int for conveniently handle underflow

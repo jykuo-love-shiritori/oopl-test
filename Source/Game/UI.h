@@ -6,7 +6,7 @@
 #include "./UI/eh.h"
 #include "./UI/Digit.h"
 
-class UI{
+class UIs{
     public:
         EH eh;
     public:

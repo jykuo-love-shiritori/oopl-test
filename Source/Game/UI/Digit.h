@@ -1,9 +1,10 @@
 #ifndef DIGIT_H
 #define DIGIT_H
 
+#include "./UI.h"
 #include "../Bittermap.h"
 
-class Digit {
+class Digit : protected UI {
     unsigned const  *_number;
     float _scalar;
 public:
@@ -11,8 +12,8 @@ public:
 		_scalar(scalar),
 		_number(numptr)
 	{}
-    void Init();
-    void Show();
+    void Init() override;
+    void Show() override;
 private:
     static game_framework::Bittermap _n;
 };
