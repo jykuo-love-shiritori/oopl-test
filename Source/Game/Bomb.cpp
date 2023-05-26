@@ -34,10 +34,12 @@ void Bomb::useBomb(Vector2i placeLocation,int type){
     else{_fuse=108;}
 }
 
-void Bomb::update(){
-    if(_fuse<8) _sprite.SetFrameIndexOfBitmap(_fuse);
-    _fuse--;
-    if(_fuse==0){_sprite.SetShow(false);}
+void Bomb::Update(){
+    if(_fuse != 0){
+        if(_fuse<8) _sprite.SetFrameIndexOfBitmap(_fuse);
+        _fuse--;
+        if(_fuse==0){_sprite.SetShow(false);}
+	}
 }
 
 void Bomb::drawBomb(){

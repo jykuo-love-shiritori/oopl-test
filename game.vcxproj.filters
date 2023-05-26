@@ -70,6 +70,9 @@
     <ClCompile Include="Source\Game\Bug.cpp" />
     <ClCompile Include="Source\Game\UI.cpp" />
     <ClCompile Include="Source\Game\Bomb.cpp" />
+    <ClCompile Include="Source\Game\bag.cpp" />
+    <ClCompile Include="Source\Game\ShopKeeper.cpp" />
+    <ClCompile Include="Source\Game\X.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">

@@ -24,9 +24,13 @@
 #include "Map.h"
 #include "RockManager.h"
 #include "Bug.h"
+#include "Bag.h"
 #include "Bittermap.h"
 #include "UI.h"
 #include "Bomb.h"
+#include "ShopKeeper.h"
+#include "Updatable.h"
+#include "X.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -76,7 +80,10 @@ namespace game_framework {	namespace stage {
 	private:
 		Bittermap player;
 		Bittermap playerAttack;
-		long int playerHP=143;
+		struct {
+			float health;
+			float energy;
+		} playerStatus;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
@@ -90,6 +97,17 @@ namespace game_framework {	namespace stage {
 		Bittermap testExit;
 		Bug bug;
 		Bomb bombAnime;
+
+		BombShop clint;
+		FoodShop gus;
+		X X;
+
+		int m = 0;
+		Bag bag;
+		std::vector<Updatable*> skillOrAnime = {
+			&bombAnime,
+			&X,
+		};
 	};
 
 	class GameOver : public CGameState {

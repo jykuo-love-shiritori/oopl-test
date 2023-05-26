@@ -108,3 +108,34 @@ TEST(CppSyntaxTest, VectorOfPointers) {
     std::cout << *i<< std::endl;
   }
 }
+
+TEST(CppSyntaxTest, PointerConstant) {
+  int a = 10;
+  int b = 20;
+  int const * ptr;
+
+  ptr = &a;  
+  ASSERT_EQ(*ptr, 10);
+  ptr = &b;
+  ASSERT_EQ(*ptr, 20);
+  b = 30;
+  ASSERT_EQ(*ptr, 30);
+}
+
+namespace TMP {
+class A {
+public:
+  template<int I>
+  int use() {
+    return I;
+  }
+  int use1() { return use<1>(); }
+  int use2() { return use<2>(); }
+};
+
+TEST(CppSyntaxTest, TemplateFunction) {
+  A a;
+  ASSERT_EQ(a.use<1>(), 1);
+  ASSERT_EQ(a.use<2>(), 2);
+}
+} /* namespace TMP */
