@@ -17,7 +17,7 @@ void EH::Init() {
 
 #define BOTTOM SIZE_Y-43
 #define H_LEFT SIZE_X-83
-#define E_LEFT SIZE_X-123
+#define E_LEFT SIZE_X-126
 #define FULL_HEIGHT 143 
 
 void EH::Show() {

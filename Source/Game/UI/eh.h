@@ -12,6 +12,7 @@ public:
     void Show() override;
     void setHealth(float const  *health) {_health = health;}
     void setEnergy(float const  *energy) {_energy = energy;}
+private:
     game_framework::Bittermap _frame;
     game_framework::Bittermap _innerBar;
 };
