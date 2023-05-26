@@ -4,6 +4,7 @@
 #include "./Bittermap.h"
 
 #include "./UI/eh.h"
+#include "./UI/Digit.h"
 
 class UI{
     public:
@@ -20,6 +21,6 @@ class UI{
         void setScore(int score) { _score = score; }
     private:
         game_framework::Bittermap _UIsprite;
-        game_framework::Bittermap _moneyNumbers;
         unsigned int _score = 0;
+        Digit _moneyNumbers = Digit(&_score, 1.5);
 };
