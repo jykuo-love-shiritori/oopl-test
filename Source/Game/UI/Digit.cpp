@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define LSB_LOCATION {SIZE_X-85, 193}
+//#define LSB_LOCATION {SIZE_X-85, 193}
 #define OFFSET 14 // each digit offset for scaler 1
 
 game_framework::Bittermap Digit::_n;
@@ -29,7 +29,7 @@ void Digit::Show() {
     _n.SetScale(_scalar);
     std::string result = std::to_string(*_number);
     for (unsigned int i = 0; i < result.length(); ++i) {
-        const auto pos = Vector2i(LSB_LOCATION) - Vector2i(OFFSET*_scalar*i, 0);
+        const auto pos = lsb_location - Vector2i(OFFSET*_scalar*i, 0);
         const auto num = result[result.length()-1 -i] - '0';
         _n.ShowBitmap(pos.x, pos.y, num);
     }

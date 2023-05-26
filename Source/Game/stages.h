@@ -29,6 +29,7 @@
 #include "./UI.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
+#include "./UI/Toolbar.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
 #include "Updatable.h"
@@ -115,10 +116,12 @@ namespace game_framework {	namespace stage {
 
 		struct {
 			EH eh;
+			Toolbar tb;
 		} uis;
 		std::vector<UI*> ouioui = {
 			&userInterface,
 			&uis.eh,
+			&uis.tb,
 		};
 	};
 

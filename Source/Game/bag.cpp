@@ -27,3 +27,7 @@ void Bag::append(Item item) {
     _items.push_back(item);
     calculateWeight();
 }
+
+unsigned int Bag::getCount(Item itemType) const {
+    return std::count(_items.begin(),_items.end(), itemType);
+}

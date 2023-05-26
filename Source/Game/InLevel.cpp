@@ -83,6 +83,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	uis.eh.setEnergy(&playerStatus.energy);
 
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+
+	uis.tb._bag = &bag;
 }
 
 void InLevel::OnBeginState()

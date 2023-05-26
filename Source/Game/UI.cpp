@@ -18,7 +18,7 @@ void UIs::Init() {
 	_UIsprite.SetTopLeft(SIZE_X-300,20);
 
     _moneyNumbers.Init();
-
+    _moneyNumbers.lsb_location = {SIZE_X-85, 193};
 }
 
 void UIs::Show() {
