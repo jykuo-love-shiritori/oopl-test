@@ -26,7 +26,10 @@
 #include "Bug.h"
 #include "Bag.h"
 #include "Bittermap.h"
-#include "UI.h"
+#include "./UI.h"
+#include "./UI/UI.h"
+#include "./UI/eh.h"
+#include "./UI/Toolbar.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
 #include "Updatable.h"
@@ -80,14 +83,14 @@ namespace game_framework {	namespace stage {
 	private:
 		Bittermap player;
 		Bittermap playerAttack;
-		struct {
+		struct __ps__ {
 			float health;
 			float energy;
 		} playerStatus;
 		Unity::Vector2i playerMoving;
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
-		UI userInterface;
+
 		int phase=0;
 
 		int playerAttackTimer=0; // use int for conveniently handle underflow
@@ -107,6 +110,18 @@ namespace game_framework {	namespace stage {
 		std::vector<Updatable*> skillOrAnime = {
 			&bombAnime,
 			&X,
+		};
+
+		UIs userInterface;
+
+		struct {
+			EH eh;
+			Toolbar tb;
+		} uis;
+		std::vector<UI*> ouioui = {
+			&userInterface,
+			&uis.eh,
+			&uis.tb,
 		};
 	};
 

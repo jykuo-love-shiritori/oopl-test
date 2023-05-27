@@ -17,6 +17,7 @@ class Bag {
 
         /* getter */
         unsigned int getWeight() const { return _weight; }
+        unsigned int getCount(Item itemType) const;
         
         /* helper */
         unsigned int calculateWeight() const;

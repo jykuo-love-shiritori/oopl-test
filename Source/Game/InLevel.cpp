@@ -62,7 +62,9 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	userInterface.load();
+	for (auto oui : ouioui) {
+		oui->Init();
+	}
 
 	rockManager.loadBMP();
 
@@ -77,10 +79,12 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
-	userInterface.eh.setHealth(&playerStatus.health);
-	userInterface.eh.setEnergy(&playerStatus.energy);
+	uis.eh.setHealth(&playerStatus.health);
+	uis.eh.setEnergy(&playerStatus.energy);
 
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+
+	uis.tb._bag = &bag;
 }
 
 void InLevel::OnBeginState()
@@ -360,6 +364,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				auto mapInfo = map.getInfo();
 				SetupLevel(mapInfo);
 			}
+			// static unsigned int enterFloor = -1;
+			// if (phase == 10 && Rect::isOverlay(playerHitbox, exitHitbox))
 			break;
 		case 'P': // player attack
 			if(playerStatus.energy == 0){
@@ -418,6 +424,8 @@ void InLevel::OnShow()
 	
 	bug.drawBug();
 	
-	userInterface.showUI();
+	for (auto oui : ouioui) {
+		oui->Show();
+	}
 	/* top layer */
 }
