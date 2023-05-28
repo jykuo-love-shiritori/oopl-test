@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "X.h"
 
-#include "../Config/config.h"
+#include "../../Config/config.h"
 
 void X::Update() {
     this->SetShow(_timer>0);

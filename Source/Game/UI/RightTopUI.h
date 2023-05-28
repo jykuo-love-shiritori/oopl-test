@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../Library/gameutil.h"
-#include "./Bittermap.h"
+#include "../Bittermap.h"
 
-#include "./UI/UI.h"
-#include "./UI/Digit.h"
+#include "../UI/UI.h"
+#include "../UI/Digit.h"
 
-class UIs : public UI { //FIXME: remove this
+class RightTopUI : public UI {
     public:
         void Init() override;
         void Show() override;

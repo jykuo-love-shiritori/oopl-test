@@ -26,14 +26,14 @@
 #include "Bug.h"
 #include "Bag.h"
 #include "Bittermap.h"
-#include "./UI.h"
+#include "./UI/RightTopUI.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
 #include "./UI/Toolbar.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
 #include "Updatable.h"
-#include "X.h"
+#include "./UI/X.h"
 #include "../Unity/Vector2.h"
 #include "../Game/Player.h"
 
@@ -112,14 +112,13 @@ namespace game_framework {	namespace stage {
 			&X,
 		};
 
-		UIs userInterface;
-
 		struct {
+			RightTopUI rtui;
 			EH eh;
 			Toolbar tb;
 		} uis;
 		std::vector<UI*> ouioui = {
-			&userInterface,
+			&uis.rtui,
 			&uis.eh,
 			&uis.tb,
 		};

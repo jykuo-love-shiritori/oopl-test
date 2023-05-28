@@ -73,7 +73,7 @@ void InLevel::OnBeginState()
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	userInterface.setScore(0);
+	uis.rtui.setScore(0);
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -185,7 +185,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		{ /* play animation and break rock and show exit */
 			unsigned int scoreModify;
 			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-			userInterface.alterScore(scoreModify);
+			uis.rtui.alterScore(scoreModify);
 			if ( isExitRock ) {
 				testExit.SetShow();
 			}
@@ -254,12 +254,12 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'N': //score--
 		case 'M': //score++
 			if(nChar=='N'){
-				if(userInterface.getScore()){
-					userInterface.alterScore(-1);
+				if(uis.rtui.getScore()){
+					uis.rtui.alterScore(-1);
 				}
 			}
 			else{
-				userInterface.alterScore(1);
+				uis.rtui.alterScore(1);
 			}
 			break;
 		case 'B':
@@ -285,9 +285,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'T': /* trade */
 			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
+				auto m = uis.rtui.getScore();
 				clint.trade(&m, &bag);
-				userInterface.setScore(m);
+				uis.rtui.setScore(m);
 			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
@@ -298,9 +298,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'F': /* bug and eat food */
 			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
+				auto m = uis.rtui.getScore();
 				gus.trade(&m, &bag);
-				userInterface.setScore(m);
+				uis.rtui.setScore(m);
 			}
 			if(!bag.use(Item::Food)){
 				X.Play();
