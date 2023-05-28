@@ -54,6 +54,7 @@ void RockManager::createRocksOn(const std::vector<Vector2i> placeablePositions) 
             Rock rock;
             rock.position = pos;
             rock.type = rockSelector();
+            rock.permaType = rock.type;
             _rocks.push_back(rock);
             _hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
@@ -141,7 +142,12 @@ bool RockManager::playBreakAnimation(Vector2i exit, unsigned int *score){
             }
         }
     }
-    *score=brokenRockPtrs.size();
+
+    int scoreTally=0;
+    for(auto& 🗿:brokenRockPtrs){
+        scoreTally+=🗿->rockScore[🗿->permaType];
+    }
+    *score=scoreTally;
     remove(brokenRockPtrs);
 
     return a;

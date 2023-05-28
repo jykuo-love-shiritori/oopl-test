@@ -3,10 +3,13 @@
 #include "../Library/gameutil.h"
 #include "./Bittermap.h"
 
-class UI{
+#include "./UI/UI.h"
+#include "./UI/Digit.h"
+
+class UIs : public UI { //FIXME: remove this
     public:
-        void load();
-        void showUI();
+        void Init() override;
+        void Show() override;
 
         /*getter*/
         int getScore() const { return _score; }
@@ -14,12 +17,8 @@ class UI{
         /*setter*/
         void alterScore(int delta);
         void setScore(int score) { _score = score; }
-        void setHealth(long int* health) {_health = health;}
     private:
-        long int *_health;
         game_framework::Bittermap _UIsprite;
-        game_framework::Bittermap _moneyNumbers;
-        game_framework::Bittermap _ehBar;
-        game_framework::Bittermap _innerBar;
         unsigned int _score = 0;
+        Digit _moneyNumbers = Digit(&_score, 1.5);
 };

@@ -1,3 +1,4 @@
+#include "Item.h"
 #include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
@@ -42,7 +43,9 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	map.setLevel(1);
 
-	userInterface.load();
+	for (auto oui : ouioui) {
+		oui->Init();
+	}
 
 	rockManager.loadBMP();
 
@@ -57,7 +60,12 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	bombAnime.init();
 
 	Bittermap::CameraPosition = &player.position;
-	userInterface.setHealth(&playerHP);
+	uis.eh.setHealth(&playerStatus.health);
+	uis.eh.setEnergy(&playerStatus.energy);
+
+	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+
+	uis.tb._bag = &bag;
 }
 
 void InLevel::OnBeginState()
@@ -71,7 +79,9 @@ void InLevel::OnBeginState()
 	SetupLevel(mapInfo);
 
 	bug.init(Vector2i(100,100));
-	player.health=143;
+
+	playerStatus.health=100;
+	playerStatus.energy=100;
 }
 
 /* helper functions BEGIN */
@@ -189,8 +199,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 			if ( Rect::isOverlay(player.getHitBox(), bug.GetHitbox() ))
 			{
 				//player.SetFrameIndexOfBitmap(1);
-				player.health--;
-				if(player.health<0) player.health=0; //FIXME: easy for modify
+				playerStatus.health -= 0.5;
 			}
 		} /* bug collide player END */
 		{ /* player attack bug BEGIN */
@@ -205,10 +214,13 @@ void InLevel::OnMove()							// 移動遊戲元素
 		} /* player attack bug END */
 	} /*bug update END */
 	
-	/* bomb fuse */
-	if(bombAnime.getFuse()){
-		bombAnime.update();
+	for (auto u : skillOrAnime) {
+		u->Update();
 	}
+
+	//FIXME: easy for modify
+	if (playerStatus.health < 0 ) playerStatus.health = 0;
+	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -251,6 +263,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 		case 'B':
+			if(!bag.use(Item::Bomb)){
+				X.Play();
+				break;
+			}
 			if(bombAnime.getFuse()>0) break;
 			bombAnime.useBomb(player.position,0);
 			break;
@@ -265,7 +281,33 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
-			player.health += 20;
+			playerStatus.health += 20;
+			break;
+		case 'T': /* trade */
+			if(true) { // FIXME: need to determine whether there is a shop
+				auto m = userInterface.getScore();
+				clint.trade(&m, &bag);
+				userInterface.setScore(m);
+			}
+			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
+			// 	dwarf.trade();
+			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
+			// 	gus.trade();
+			// }
+			// /* ... */
+			break;
+		case 'F': /* bug and eat food */
+			if(true) { // FIXME: need to determine whether there is a shop
+				auto m = userInterface.getScore();
+				gus.trade(&m, &bag);
+				userInterface.setScore(m);
+			}
+			if(!bag.use(Item::Food)){
+				X.Play();
+				break;
+			}
+			playerStatus.energy += 400;
+			playerStatus.health += 400;
 			break;
 	}
 	#endif /* DEBUG_KEY */
@@ -282,10 +324,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				auto mapInfo = map.getInfo();
 				SetupLevel(mapInfo);
 			}
+			// static unsigned int enterFloor = -1;
+			// if (phase == 10 && Rect::isOverlay(playerHitbox, exitHitbox))
 			break;
 		case 'P': // player attack
+			if(playerStatus.energy == 0){
+				X.Play();
+				break;
+			}
 			if( player.canAttack() ) {
 				player.attack();
+				playerStatus.energy -= 1.5;
 			}
 			break;
 	}
@@ -325,11 +374,14 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
+	X.Show();
 
 	map.drawFront();
 	
 	bug.drawBug();
 	
-	userInterface.showUI();
+	for (auto oui : ouioui) {
+		oui->Show();
+	}
 	/* top layer */
 }

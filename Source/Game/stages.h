@@ -24,9 +24,16 @@
 #include "Map.h"
 #include "RockManager.h"
 #include "Bug.h"
+#include "Bag.h"
 #include "Bittermap.h"
-#include "UI.h"
+#include "./UI.h"
+#include "./UI/UI.h"
+#include "./UI/eh.h"
+#include "./UI/Toolbar.h"
 #include "Bomb.h"
+#include "ShopKeeper.h"
+#include "Updatable.h"
+#include "X.h"
 #include "../Unity/Vector2.h"
 #include "../Game/Player.h"
 
@@ -76,11 +83,14 @@ namespace game_framework {	namespace stage {
 		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
 		Player player;
-		long int playerHP=143;
-		Unity::Vector2i playerMoving;
+		struct __ps__ {
+			float health;
+			float energy;
+		} playerStatus;
+
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
-		UI userInterface;
+
 		int phase=0;
 
 		int playerAttackTimer=0; // use int for conveniently handle underflow
@@ -90,6 +100,29 @@ namespace game_framework {	namespace stage {
 		Bittermap testExit;
 		Bug bug;
 		Bomb bombAnime;
+
+		BombShop clint;
+		FoodShop gus;
+		X X;
+
+		int m = 0;
+		Bag bag;
+		std::vector<Updatable*> skillOrAnime = {
+			&bombAnime,
+			&X,
+		};
+
+		UIs userInterface;
+
+		struct {
+			EH eh;
+			Toolbar tb;
+		} uis;
+		std::vector<UI*> ouioui = {
+			&userInterface,
+			&uis.eh,
+			&uis.tb,
+		};
 	};
 
 	class GameOver : public CGameState {

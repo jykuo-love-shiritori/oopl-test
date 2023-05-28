@@ -63,6 +63,12 @@ void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitbo
 	}
 }
 
+void Bittermap::Show() {
+	if (_isShow) {
+		ShowBitmap();
+	}
+}
+
 void Bittermap::Draw() {
 	if (_isShow) {
 		SetTopLeft(

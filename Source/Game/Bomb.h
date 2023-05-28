@@ -5,7 +5,9 @@
 #include "./Bittermap.h"
 #include "../Unity/Vector2.h"
 
-class Bomb{
+#include "Updatable.h"
+
+class Bomb : public Updatable {
     public:
         /* getter */
         int getDamage() const {return _damage;}
@@ -16,7 +18,7 @@ class Bomb{
 
         void init();
         void useBomb(Vector2i playerLocation,int type);
-        void update();
+        void Update() override;
         void drawBomb();
 
     private:
