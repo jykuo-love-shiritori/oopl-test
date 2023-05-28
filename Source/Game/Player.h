@@ -25,8 +25,8 @@ public:
     /* Method */
     // reset the attack timer to attacking state
     void attack();
-    void Move(Vector2i moveVec) { _sprite_player.Move(moveVec); }
-	void MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool) { _sprite_player.MoveWithCollision(moveVec, hitboxPool); }
+    void Move(Vector2i moveVec);
+	void MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool);
 
 private:
     int _attackTimer = 0;

@@ -20,6 +20,8 @@ void Player::Init() {
     }, RGB(25, 28, 36));
     _sprite_attack.SetScale(1);
     _sprite_attack.SetHitBox(regularBoxSize * 1.0);
+	_sprite_attack.SetShow(false);
+	_attackDirection = Vector2i(1, 0);
 }
 
 void Player::Draw() {
@@ -29,7 +31,6 @@ void Player::Draw() {
 
 /* helper BEGIN */
 unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
-	return 0; //FIXME: attackDirection not work yet
 	if(attackDirection==Vector2i(0,1)){
 		return 1; // Down
 	}
@@ -46,6 +47,15 @@ unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
 }
 /* helper END */
 
+void Player::Move(Vector2i moveVec) {
+    _sprite_player.Move(moveVec);
+    if (moveVec != Vector2i(0, 0)) _attackDirection = moveVec;
+}
+void Player::MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool) {
+    _sprite_player.MoveWithCollision(moveVec, hitboxPool);
+    if (moveVec != Vector2i(0, 0)) _attackDirection = moveVec;
+}
+
 void Player::attack() {
     _attackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 }
@@ -55,10 +65,10 @@ void Player::Update() {
         if(_attackTimer > 0) {
             _attackTimer--;
             _sprite_attack.SetShow(_attackTimer > PLAYER_ATTACK_CD);
+			_sprite_attack.position = _sprite_player.position + _attackDirection * TILE_SIZE * SCALE_SIZE;
+			_sprite_attack.SetFrameIndexOfBitmap(
+				getFrameIndexOfBitmapBy(_attackDirection)
+			);
         }
-        _sprite_attack.position = _sprite_player.position + _attackDirection * TILE_SIZE * SCALE_SIZE;
-        _sprite_attack.SetFrameIndexOfBitmap(
-            getFrameIndexOfBitmapBy(_attackDirection)
-        );
     } // attack timer END
 }
