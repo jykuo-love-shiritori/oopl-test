@@ -34,6 +34,7 @@
 #include "ShopKeeper.h"
 #include "Updatable.h"
 #include "X.h"
+#include "Fish.h"
 #include "../Unity/Vector2.h"
 
 #include "../Config/config.h"
@@ -104,6 +105,8 @@ namespace game_framework {	namespace stage {
 		BombShop clint;
 		FoodShop gus;
 		X X;
+		Fish fishgame;
+		int _fishgameStart;
 
 		int m = 0;
 		Bag bag;

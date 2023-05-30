@@ -247,6 +247,7 @@
     <ClCompile Include="Source\Game\Bittermap.cpp" />
     <ClCompile Include="Source\Game\Bug.cpp" />
     <ClCompile Include="Source\Game\Bomb.cpp" />
+    <ClCompile Include="Source\Game\Fish.cpp" />
     <ClCompile Include="Source\Game\Map.cpp" />
     <ClCompile Include="Source\Game\RockManager.cpp" />
     <ClCompile Include="Source\Game\ShopKeeper.cpp" />
@@ -278,6 +279,7 @@
     <ClInclude Include="Source\Game\Bomb.h" />
     <ClInclude Include="Source\Game\config.h" />
     <ClInclude Include="Source\Game\Bittermap.h" />
+    <ClInclude Include="Source\Game\Fish.h" />
     <ClInclude Include="Source\Game\Map.h" />
     <ClInclude Include="Source\Game\RockManager.h" />
     <ClInclude Include="Source\Game\stages.h" />

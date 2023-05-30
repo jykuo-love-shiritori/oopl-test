@@ -84,6 +84,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 
+	fishgame.init();
 	uis.tb._bag = &bag;
 }
 
@@ -261,13 +262,24 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//FIXME: easy for modify
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
+
+	switch (fishgame.GetFishState()) {
+		case Fish::infish:
+			fishgame.Update();
+			break;
+		case Fish::fishsuccess:
+				fishgame.fishReset();
+			break;
+		case Fish::fishfail:
+			fishgame.fishReset();
+			break;
+	}
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	#define DEBUG_KEY
 	#ifdef DEBUG_KEY
-
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
 		case 'J': // next map
@@ -380,11 +392,20 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			playerStatus.energy -= 1.5;
 			break;
+		case 'Z':
+			fishgame.SetFishState(Fish::infish);
+			if (isPress('Z')) {
+				fishgame.fishKeyDown(true);
+			}
+			break;
 	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	if (nChar =='Z'){
+		fishgame.fishKeyDown(false);
+	}
 }
 
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -419,6 +440,9 @@ void InLevel::OnShow()
 	player.Draw();
 	playerAttack.Draw();
 	X.Show();
+	if (fishgame.GetFishState()==Fish::infish){
+		fishgame.showFish();
+	}
 
 	map.drawFront();
 	
