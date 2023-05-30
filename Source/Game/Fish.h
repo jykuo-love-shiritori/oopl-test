@@ -34,7 +34,6 @@ class Fish{
 		int _colddown;
 		int _fishstate,_fishposition;
 		int _process;
-        int _randomMove;
 		int _presstime,_unpresstime;
 		int _fishprogress;
 		int _fishMove;
