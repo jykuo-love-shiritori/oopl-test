@@ -39,14 +39,12 @@ void Fish::init(){
 	_ispress = false;
 	_process = 0;
 	_fishprogress = 10;
-	_fishMove = Vector2f(0, 0);
-	_greenbarMove = Vector2f(0, 0);
+	_fishMove = 0;
+	_greenbarMove = 0;
+	_fishstate = fishcolddown;
+	_colddown = 0;
 }
 
-void Fish::useFishing(Vector2i placeLocation,int type){
-    _fish.position = placeLocation;
-	_greenbar.position = placeLocation;
-}
 
 void Fish::fishReset() {
 	_fishposition = rand() % 100;
@@ -56,14 +54,15 @@ void Fish::fishReset() {
 	_ispress = false;
 	_process = 0;
 	_fishprogress = 10;
-	_fishMove = Vector2f(0, 0);
-	_greenbarMove = Vector2f(0, 0);
+	_fishMove = 0;
+	_greenbarMove = 0;
+	_colddown = 0;
 }
 void Fish::Update() {
 	playercontrol();
 	fishMove();
-	_fish.SetTopLeft(527, 350 + _fishposition +_fishMove.y);
-	_greenbar.SetTopLeft(530,320+_greenbarMove.y);
+	_fish.SetTopLeft(527, 350 + _fishposition +_fishMove);
+	_greenbar.SetTopLeft(530,320+_greenbarMove);
 	fishOverlay();
 	fishSuccess();
 }
@@ -71,13 +70,13 @@ void Fish::fishKeyDown(bool ispress) {
 	_ispress = ispress;
 }
 void Fish::playercontrol() {
-	if (!_ispress && _greenbarMove.y <= 260 ) {
-		_greenbarMove = _greenbarMove + Vector2f(0, /*(_unpresstime % 10 + 1)**/3);
+	if (!_ispress && _greenbarMove <= 260 ) {
+		_greenbarMove = _greenbarMove + 3;
 		_unpresstime += 1;
 		_presstime = 0;
 	}
-	else if (_ispress && _greenbarMove.y >= 0) {
-		_greenbarMove = _greenbarMove + Vector2f(0,/* _presstime % 10 +*/ -3);
+	else if (_ispress && _greenbarMove >= 0) {
+		_greenbarMove = _greenbarMove + -3;
 		_presstime += 1;
 		_unpresstime = 0;
 	}
@@ -85,10 +84,10 @@ void Fish::playercontrol() {
 
 void Fish::fishMove() {
 	if (rand() % 2 ==0){
-		if (_fishMove.y <= 260) _fishMove = _fishMove + Vector2f(0, 2);
+		if (_fishMove <= 260) _fishMove = _fishMove + 2;
 	}
 	else {
-		if (_fishMove.y >= 0 ) _fishMove = _fishMove + Vector2f(0, -2);
+		if (_fishMove >= 0 ) _fishMove = _fishMove + -2;
 	}
 }
 void Fish::fishOverlay() {
@@ -129,4 +128,10 @@ void Fish::SetFishState(int state) {
 }
 int Fish::GetFishState() {
 	return _fishstate;
+}
+int Fish::GetFIshColddown() {
+	return _colddown;
+}
+void Fish::fishgameColddown() {
+	_colddown += 1;
 }

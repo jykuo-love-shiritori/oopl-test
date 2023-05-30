@@ -268,11 +268,15 @@ void InLevel::OnMove()							// 移動遊戲元素
 			fishgame.Update();
 			break;
 		case Fish::fishsuccess:
-				fishgame.fishReset();
+			fishgame.fishReset();
+			fishgame.SetFishState(Fish::fishcolddown);
 			break;
 		case Fish::fishfail:
 			fishgame.fishReset();
+			fishgame.SetFishState(Fish::fishcolddown);
 			break;
+		case Fish::fishcolddown:
+			fishgame.fishgameColddown();
 	}
 }
 
@@ -393,8 +397,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.energy -= 1.5;
 			break;
 		case 'Z':
-			fishgame.SetFishState(Fish::infish);
-			if (isPress('Z')) {
+			if (fishgame.GetFIshColddown()>=30){
+				fishgame.SetFishState(Fish::infish);
 				fishgame.fishKeyDown(true);
 			}
 			break;

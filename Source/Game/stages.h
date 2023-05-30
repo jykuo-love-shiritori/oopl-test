@@ -106,7 +106,6 @@ namespace game_framework {	namespace stage {
 		FoodShop gus;
 		X X;
 		Fish fishgame;
-		int _fishgameStart;
 
 		int m = 0;
 		Bag bag;
