@@ -75,6 +75,9 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
+	🐼.load();
+	🐼.init(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE, true, true, &player.position);
+
 	bug.load();
 	bombAnime.init();
 
@@ -167,6 +170,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	
 	// #define NO_COLLISION
 
+	
 	// player moving speed
 	const int speed=20;
 	{ /* player move and collision BEGIN */
@@ -182,6 +186,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 			player.Move(moveVec);
 			#endif /* NO_COLLISION */
 		}
+		🐼.move(collisionPool);
 	} /* player move and collision END */
 
 	{ /* player attack timer BEGIN */
@@ -279,6 +284,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			map.setLevel(mapIndex);
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+			🐼.setPosition(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE);
 			break;
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
@@ -390,6 +396,12 @@ void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
 }
+void InLevel::OnMButtonDown(UINT nFlags, CPoint point)
+{
+	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
+	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
+	🐼.setTarget({ point.x, point.y });
+}
 
 void InLevel::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
@@ -419,6 +431,8 @@ void InLevel::OnShow()
 	player.Draw();
 	playerAttack.Draw();
 	X.Show();
+
+	🐼.draw();
 
 	map.drawFront();
 	

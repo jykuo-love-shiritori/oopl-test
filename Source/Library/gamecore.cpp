@@ -206,7 +206,11 @@ namespace game_framework {
 		if (running)
 			gameState->OnRButtonUp(nFlags, point);
 	}
-
+	void CGame::OnMButtonDown(UINT nFlags, CPoint point)
+	{
+		if (running)
+			gameState->OnMButtonDown(nFlags, point);
+	}
 	void CGame::OnResume()
 	{
 		//

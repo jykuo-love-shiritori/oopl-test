@@ -251,6 +251,7 @@ namespace game_framework {
 		if(!once) isAnimation = true;
 		isOnce = once;
 		delayCount = delay;
+		isAnimationDone = false;
 	}
 	
 	//! 顯示圖片。

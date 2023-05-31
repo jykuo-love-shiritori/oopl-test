@@ -26,6 +26,7 @@
 #include "Bug.h"
 #include "Bag.h"
 #include "Bittermap.h"
+#include "Cavallo.h"
 #include "./UI.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
@@ -75,6 +76,7 @@ namespace game_framework {	namespace stage {
 		void OnMouseMove(UINT nFlags, CPoint point);	// 處理滑鼠的動作 
 		void OnRButtonDown(UINT nFlags, CPoint point);  // 處理滑鼠的動作
 		void OnRButtonUp(UINT nFlags, CPoint point);	// 處理滑鼠的動作
+		void OnMButtonDown(UINT nFlags, CPoint point);
 	protected:
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
@@ -104,7 +106,7 @@ namespace game_framework {	namespace stage {
 		BombShop clint;
 		FoodShop gus;
 		X X;
-
+		Cavallo 🐼;
 		int m = 0;
 		Bag bag;
 		std::vector<Updatable*> skillOrAnime = {

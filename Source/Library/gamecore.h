@@ -148,6 +148,7 @@ namespace game_framework {
 		virtual void OnMouseMove(UINT nFlags, CPoint point) {}  // 處理滑鼠的動作 
 		virtual void OnRButtonDown(UINT nFlags, CPoint point) {}// 處理滑鼠的動作
 		virtual void OnRButtonUp(UINT nFlags, CPoint point) {}	// 處理滑鼠的動作
+		virtual void OnMButtonDown(UINT nFlags, CPoint point) {}; // 處理滑鼠的動作
 	protected:
 		void GotoGameState(int state);							// 跳躍至指定的state
 		void ShowInitProgress(int percent, string message);						// 顯示初始化的進度
@@ -183,6 +184,7 @@ namespace game_framework {
 		void OnMouseMove(UINT nFlags, CPoint point);    // 處理滑鼠的動作 
 		void OnRButtonDown(UINT nFlags, CPoint point);	// 處理滑鼠的動作
 		void OnRButtonUp(UINT nFlags, CPoint point);	// 處理滑鼠的動作
+		void OnMButtonDown(UINT nFlags, CPoint point);	// 處理滑鼠的動作
 		void OnResume();								// 處理自「待命」還原的動作
 		void OnSetFocus();								// 處理Focus
 		void OnSuspend();								// 處理「待命」的動作
