@@ -32,12 +32,13 @@ void Cavallo::setPosition(Vector2i position) {
     _sprite.position = position;
     _sprite_mirror.position = position;
 }
-void Cavallo::Throw(Vector2f direction) {
+void Cavallo::Throw(Vector2f bombTarget) {
+    _bombTarget = bombTarget;
 	_cherryBomb.push_back(_baseCherryBomb);
-	_cherryBomb.back().init(_sprite.position, direction);
+	_cherryBomb.back().init(_sprite.position, Vector2f(bombTarget - _sprite.position).normalized()*2.0f);
 }
 void Cavallo::draw() {
-    if (_target.x - _sprite.position.x < 0.0f) {
+    if (_dest.x - _sprite.position.x < 0.0f) {
 		_sprite_mirror.Draw();
 	}
     else {
@@ -55,9 +56,9 @@ void Cavallo::draw() {
 void Cavallo::move(const HitboxPool hitboxPool) {
     if (_follow){
 	    _direction = Vector2f(*_playerPos - _sprite.position).normalized() * 2;
-        _target = *_playerPos;
+        _dest = *_playerPos;
     }
-    if ((_sprite.GetHitbox().getCenter() - _target).norm() < 40)
+    if ((_sprite.GetHitbox().getCenter() - _dest).norm() < 40)
     {
 		_direction = { 0, 0 };
 	}
@@ -76,16 +77,19 @@ void Cavallo::move(const HitboxPool hitboxPool) {
 	_sprite_mirror.MoveWithCollision(_direction * _speed, hitboxPool);
 	_sprite.MoveWithCollision(_direction * _speed, hitboxPool);
     if (_autoAttack && clock() - _lastAttack > _cooldown) {
-        Throw(Vector2f(_target - _sprite.position).normalized() * 2.0);
+        Throw(*_playerPos);
         _lastAttack = clock();
     }
     for (auto& cherryBomb : _cherryBomb) {
 		cherryBomb.move();
 	}
 }
-void Cavallo::setTarget(Vector2i target) {
-    _target = target;
-    _direction = Vector2f(_target - _sprite.position).normalized() * 2.0;
+void Cavallo::setDest(Vector2i dest) {
+    _dest = dest;
+    _direction = Vector2f(_dest - _sprite.position).normalized() * 2.0;
+}
+bool Cavallo::isAutoAttack() {
+    return _autoAttack;
 }
 void Cavallo::CherryBomb::load() {
 	auto BaseFilename = "Resources/Cavallo/CherryBomb/Cherry_r";

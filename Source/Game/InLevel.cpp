@@ -357,9 +357,16 @@ void InLevel::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
 	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
-	🐼.setTarget({ point.x, point.y });
+	🐼.setDest({ point.x, point.y });
 }
+void InLevel::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
+	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
+	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
+	if (!🐼.isAutoAttack() && zDelta < 0) {
+		🐼.Throw({ static_cast<float>(point.x), static_cast<float>(point.y) });
+	}
 
+}
 void InLevel::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
 }
