@@ -57,7 +57,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetHitBox(regularBoxSize * 1.0);
 
 	🐼.load();
-	🐼.init(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE, true, true, &player.position);
+	🐼.init(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE, false, false, &player.position);
 
 	bug.load();
 	bombAnime.init();
@@ -152,7 +152,9 @@ void InLevel::OnMove()							// 移動遊戲元素
 			player.Move(moveVec);
 			#endif /* NO_COLLISION */
 		}
+#ifndef NO_COLLISION
 		🐼.move(collisionPool);
+#endif
 	} /* player move and collision END */
 
 	player.Update();
