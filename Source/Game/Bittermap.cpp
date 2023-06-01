@@ -15,19 +15,15 @@ void Bittermap::Move(Unity::Vector2i vec)
 
 void Bittermap::MoveWithCollision(const Vector2i moveVec, const HitboxPool hitboxPool)
 {
-	this->position = this->position + moveVec;
-	while (true) {
-		auto thisHitbox = GetHitbox();
-		auto collisions = hitboxPool.Collide(thisHitbox);
-		if (collisions.size() == 0) break;
-		auto totalReaction = Vector2i(0, 0);
-		for (auto const &wallBox : collisions) {
-			auto currDist = thisHitbox.getCenter() - wallBox.getCenter();
-			totalReaction = (totalReaction + currDist) / 20; // base on giraffe speed
-			continue;
-		}
-		this->Move(totalReaction);
-	}
+	this->position.x += moveVec.x;
+	auto thisHitbox = GetHitbox();
+	auto collisions = hitboxPool.Collide(thisHitbox);
+	if (collisions.size() != 0) position.x -= moveVec.x;
+	this->position.y += moveVec.y;
+	thisHitbox = GetHitbox();
+	collisions = hitboxPool.Collide(thisHitbox);
+	if (collisions.size() != 0) position.y -= moveVec.y;
+	return;
 }
 
 void Bittermap::Show() {
