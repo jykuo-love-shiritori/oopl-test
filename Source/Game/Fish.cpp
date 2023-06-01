@@ -84,10 +84,10 @@ void Fish::playercontrol() {
 
 void Fish::fishMove() {
 	if (rand() % 2 ==0){
-		if (_fishMove <= 260) _fishMove = _fishMove + 2;
+		if (_fishMove <= 260) _fishMove = _fishMove + 3;
 	}
 	else {
-		if (_fishMove >= 0 ) _fishMove = _fishMove + -2;
+		if (_fishMove >= 0 ) _fishMove = _fishMove + -3;
 	}
 }
 void Fish::fishOverlay() {
@@ -129,7 +129,7 @@ void Fish::SetFishState(int state) {
 int Fish::GetFishState() {
 	return _fishstate;
 }
-int Fish::GetFIshColddown() {
+int Fish::GetFishColddown() {
 	return _colddown;
 }
 void Fish::fishgameColddown() {

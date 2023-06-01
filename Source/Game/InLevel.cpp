@@ -269,10 +269,12 @@ void InLevel::OnMove()							// 移動遊戲元素
 			break;
 		case Fish::fishsuccess:
 			fishgame.fishReset();
+			userInterface.alterScore(5);
 			fishgame.SetFishState(Fish::fishcolddown);
 			break;
 		case Fish::fishfail:
 			fishgame.fishReset();
+			userInterface.alterScore(-2);
 			fishgame.SetFishState(Fish::fishcolddown);
 			break;
 		case Fish::fishcolddown:
@@ -397,7 +399,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.energy -= 1.5;
 			break;
 		case 'Z':
-			if (fishgame.GetFIshColddown()>=30){
+			if (fishgame.GetFishColddown()>=30 && userInterface.getScore()>1){
 				fishgame.SetFishState(Fish::infish);
 				fishgame.fishKeyDown(true);
 			}
@@ -444,14 +446,15 @@ void InLevel::OnShow()
 	player.Draw();
 	playerAttack.Draw();
 	X.Show();
-	if (fishgame.GetFishState()==Fish::infish){
-		fishgame.showFish();
-	}
 
 	map.drawFront();
 	
 	bug.drawBug();
 	
+	if (fishgame.GetFishState()==Fish::infish){
+		fishgame.showFish();
+	}
+
 	for (auto oui : ouioui) {
 		oui->Show();
 	}

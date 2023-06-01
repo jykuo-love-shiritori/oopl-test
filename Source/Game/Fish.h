@@ -15,7 +15,7 @@ class Fish{
 		};
         /* getter */
 		int GetFishState();
-		int GetFIshColddown();
+		int GetFishColddown();
 		/* setter */
 		void SetFishState(int state);
 
