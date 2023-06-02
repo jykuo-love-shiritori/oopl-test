@@ -35,8 +35,8 @@ InLevel::~InLevel()
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
-	BIG_BLACK.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
-	BIG_BLACK.SetScale(2000);
+	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
+	BBC.SetScale(SIZE_X);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
@@ -410,7 +410,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-	BIG_BLACK.ShowBitmap();
+	BBC.ShowBitmap();
 	/* bottom layer */
 	map.drawBack();
 	map.drawBuilding();
