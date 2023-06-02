@@ -247,6 +247,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if(mapIndex != 1) mapIndex--;
 			}
 			map.setLevel(mapIndex);
+			rockManager.clear();
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
 #endif /* JUMP_LEVEL_DEBUG_KEY */
