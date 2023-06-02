@@ -69,6 +69,9 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 
 	uis.tb._bag = &bag;
+
+	clint.init({0,0});
+	//clint.init(player.position);
 }
 
 void InLevel::OnBeginState()
@@ -229,6 +232,11 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//FIXME: easy for modify
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
+
+	{
+		bool inLevel10 = map.getLevel() == 10u;
+		clint.inShop = inLevel10;
+	}
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -419,6 +427,9 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
+
+	clint.draw();
+
 	X.Show();
 
 	map.drawFront();

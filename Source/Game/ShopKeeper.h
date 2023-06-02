@@ -8,11 +8,19 @@
 
 class ShopKeeper {
     public:
+        bool inShop;
         /* game misc things */
-        void init();
-        void draw() {_sprite.Draw();}
+        void init(Vector2f p);
+        void draw() {
+            if ( ! inShop ) return;
+            _sprite.Draw();
+        }
+        /* setter */
+        void setPosition(Vector2f p) {
+            _sprite.position = p;
+        }
 
-        /*getter */
+        /* getter */
 		Rect GetHitbox() const { return _sprite.GetHitbox(); }
 
         /* methods */
