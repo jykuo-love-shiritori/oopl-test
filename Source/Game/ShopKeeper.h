@@ -9,18 +9,8 @@
 class ShopKeeper {
     public:
         /* game misc things */
-        void init() {
-            const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
-            
-            _sprite.LoadBitmapByString({
-                "resources/Clint.bmp",
-            }, RGB(255, 255, 255));
-            _sprite.SetScale(1);
-            _sprite.SetHitBox(regularBoxSize * 0.7);
-        }
-        void draw() {
-            _sprite.Draw();
-        }
+        void init();
+        void draw() {_sprite.Draw();}
 
         /*getter */
 		Rect GetHitbox() const { return _sprite.GetHitbox(); }

@@ -5,6 +5,16 @@
 #include "../Config/config.h"
 #include "../Config/scaler.h"
 
+void ShopKeeper::init() {
+    const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
+    
+    _sprite.LoadBitmapByString({
+        "resources/Clint.bmp",
+    }, RGB(255, 255, 255));
+    _sprite.SetScale(1);
+    _sprite.SetHitBox(regularBoxSize * 0.7);
+}
+
 // void MoneyShop::trade(Money* money, Bag* bag) {
 //     auto minerals = bag.popMinerals();
 //     for (auto m : minerals) {
