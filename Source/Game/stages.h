@@ -82,6 +82,7 @@ namespace game_framework {	namespace stage {
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
+		CMovingBitmap BIG_BLACK;
 		bool DEATH = false;
 		Player player;
 		struct __ps__ {

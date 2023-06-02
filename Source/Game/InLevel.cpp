@@ -35,6 +35,8 @@ InLevel::~InLevel()
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
+	BIG_BLACK.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
+	BIG_BLACK.SetScale(2000);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
@@ -132,10 +134,10 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
 	if(playerStatus.health == 0) DEATH = true;
-	if(DEATH) {
-		/* TODO: triggerGameOver(); */
-		return;
-	}
+	// if(DEATH) {
+	// 	/* TODO: triggerGameOver(); */
+	// 	return;
+	// }
 	
 	// #define NO_COLLISION
 
@@ -407,6 +409,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	BIG_BLACK.ShowBitmap();
 	/* bottom layer */
 	map.drawBack();
 	map.drawBuilding();
