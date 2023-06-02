@@ -131,6 +131,11 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
+	if(playerStatus.health == 0) DEATH = true;
+	if(DEATH) {
+		/* TODO: triggerGameOver(); */
+		return;
+	}
 	
 	// #define NO_COLLISION
 

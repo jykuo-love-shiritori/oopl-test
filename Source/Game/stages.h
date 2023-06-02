@@ -82,6 +82,7 @@ namespace game_framework {	namespace stage {
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
+		bool DEATH = false;
 		Player player;
 		struct __ps__ {
 			float health;
