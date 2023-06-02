@@ -262,28 +262,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				}
 			}
 			else{
-				uis.rtui.alterScore(1);
+				uis.rtui.alterScore(100);
 			}
 			break;
-		case '1':
-		case '2':
-		case '3':
-			if(isPress(VK_SHIFT)){
-				if(true) { // FIXME: need to determine whether there is a shop
-				auto m = uis.rtui.getScore();
-				clint.trade(&m, &bag);
-				uis.rtui.setScore(m);
-				}
-				break;
-			}
-			if(!bag.use(Item::Bomb)){
-				X.Play();
-				break;
-			}
-			if(bombAnime.getFuse()>0) break;
-			if(nChar=='1'){bombAnime.useBomb(player.position,0);}
-			if(nChar=='2'){bombAnime.useBomb(player.position,1);}
-			if(nChar=='3'){bombAnime.useBomb(player.position,2);}
+		case 'B': /* place cherry bomb */
+			bombAnime.useBomb(player.position,0);
 			break;
 #ifdef SPAWN_LADDER
 		case 'E': // randomly create exit
@@ -310,13 +293,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 #endif /* ELEVATOR */
-		case 'R':
+		case 'R': /* BACK TO START SCREEN */
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
 			playerStatus.health += 20;
 			break;
-		case 'T': /* trade */
+		case 'T': /* buy bomb */
 			if(true) { // FIXME: need to determine whether there is a shop
 				auto m = uis.rtui.getScore();
 				clint.trade(&m, &bag);
@@ -342,7 +325,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.energy += 400;
 			playerStatus.health += 400;
 			break;
-	}
+	} /* switch (nChar) */
 #endif /* DEBUG_KEY */
 
 	switch (nChar) {
@@ -369,6 +352,26 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				player.attack();
 				playerStatus.energy -= 1.5;
 			}
+			break;
+		case '1':
+		case '2':
+		case '3':
+			if(isPress(VK_SHIFT)){
+				if(true) { // FIXME: need to determine whether there is a shop
+				auto m = uis.rtui.getScore();
+				clint.trade(&m, &bag);
+				uis.rtui.setScore(m);
+				}
+				break;
+			}
+			if(!bag.use(Item::Bomb)){
+				X.Play();
+				break;
+			}
+			if(bombAnime.getFuse()>0) break;
+			if(nChar=='1'){bombAnime.useBomb(player.position,0);}
+			if(nChar=='2'){bombAnime.useBomb(player.position,1);}
+			if(nChar=='3'){bombAnime.useBomb(player.position,2);}
 			break;
 	}
 }
