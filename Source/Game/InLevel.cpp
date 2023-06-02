@@ -16,6 +16,7 @@
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
+#include "../Config/Debug.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -173,8 +174,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 			}
 		} /* attack rock END */
 		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-			if ( bombAnime.getFuse()==1 ) { /* is bombing */
-				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+			if ( bombAnime.getFuse()==3 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * bombAnime.getBlastRadius() * TILE_SIZE * SCALE_SIZE);
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
@@ -225,11 +226,12 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	#define DEBUG_KEY
-	#ifdef DEBUG_KEY
+//#define DEBUG_KEY
+#ifdef DEBUG_KEY
 
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
+#ifdef JUMP_LEVEL_DEBUG_KEY
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
@@ -240,6 +242,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			map.setLevel(mapIndex);
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
+#endif /* JUMP_LEVEL_DEBUG_KEY */
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
@@ -262,14 +265,27 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				uis.rtui.alterScore(1);
 			}
 			break;
-		case 'B':
+		case '1':
+		case '2':
+		case '3':
+			if(isPress(VK_SHIFT)){
+				if(true) { // FIXME: need to determine whether there is a shop
+				auto m = uis.rtui.getScore();
+				clint.trade(&m, &bag);
+				uis.rtui.setScore(m);
+				}
+				break;
+			}
 			if(!bag.use(Item::Bomb)){
 				X.Play();
 				break;
 			}
 			if(bombAnime.getFuse()>0) break;
-			bombAnime.useBomb(player.position,0);
+			if(nChar=='1'){bombAnime.useBomb(player.position,0);}
+			if(nChar=='2'){bombAnime.useBomb(player.position,1);}
+			if(nChar=='3'){bombAnime.useBomb(player.position,2);}
 			break;
+#ifdef SPAWN_LADDER
 		case 'E': // randomly create exit
 			{
 				testExit.SetShow();
@@ -277,6 +293,23 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			}
 			break;
+#endif /* SPAWN_LADDER */
+#ifdef ELEVATOR
+		case 'E': // randomly create exit
+			{
+				static auto wasAt = -1;
+				if(wasAt == -1) {
+					wasAt = map.getLevel();
+					map.setLevel(10);
+				} else {
+					map.setLevel(wasAt);
+					wasAt = -1;
+				}
+				rockManager.clear();
+				player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+			}
+			break;
+#endif /* ELEVATOR */
 		case 'R':
 			GotoGameState(GAME_STATE_INIT);
 			break;
@@ -310,7 +343,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.health += 400;
 			break;
 	}
-	#endif /* DEBUG_KEY */
+#endif /* DEBUG_KEY */
 
 	switch (nChar) {
 		case KEY_DO_ACTION: // Check/Do Action

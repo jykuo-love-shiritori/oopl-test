@@ -21,9 +21,11 @@ void FoodShop::trade(int* money, Bag* bag) {
 }
 
 void BombShop::trade(int* money, Bag* bag) {
-    const int bombPrice = 20;
-    if (*money >= bombPrice) {
-        *money -= bombPrice;
+    const int bombPrice1 = 15;
+    const int bombPrice2 = 50;
+    const int bombPrice3 = 200;
+    if (*money >= bombPrice1) {
+        *money -= bombPrice1;
         bag->append(Item::Bomb);
     }
 }
