@@ -135,7 +135,22 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// #define NO_COLLISION
 
 	// player moving speed
-	const int speed=20;
+	const int highSpeed = 20;
+	const int lowSpeed = 10;
+	const int tiredSpeed = 5;
+	int speed = lowSpeed;
+	if (isPress(VK_SHIFT)) {
+		if (playerStatus.energy > 0) {
+			speed = highSpeed;
+			playerStatus.energy -= 0.4;
+		} else {
+			X.Play();
+		}
+	}
+	if (playerStatus.energy <= 0) {
+		speed = tiredSpeed;
+	}
+
 	{ /* player move and collision BEGIN */
 		const Vector2i moveVec = getMoveVecByKeys();
 		// Update player facing
