@@ -66,6 +66,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
 
 	uis.tb._bag = &bag;
+	uis.rtui.setMoneyPtr(&bag._money);
 }
 
 void InLevel::OnBeginState()
@@ -73,7 +74,7 @@ void InLevel::OnBeginState()
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	uis.rtui.setScore(0);
+	bag._money = 0;
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -185,7 +186,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		{ /* play animation and break rock and show exit */
 			unsigned int scoreModify;
 			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-			uis.rtui.alterScore(scoreModify);
+			bag._money += scoreModify;
 			if ( isExitRock ) {
 				testExit.SetShow();
 			}
@@ -251,16 +252,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'N': //score--
-		case 'M': //score++
-			if(nChar=='N'){
-				if(uis.rtui.getScore()){
-					uis.rtui.alterScore(-1);
-				}
-			}
-			else{
-				uis.rtui.alterScore(1);
-			}
+		case 'N': // money++
+			bag._money += 10000;
 			break;
 		case 'B':
 			if(!bag.use(Item::Bomb)){
@@ -285,9 +278,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'T': /* trade */
 			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = uis.rtui.getScore();
-				clint.trade(&m, &bag);
-				uis.rtui.setScore(m);
+				if(!bag.trade(Item::Bomb, 20)){
+					X.Play();
+					break;
+				}
 			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
@@ -297,17 +291,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// /* ... */
 			break;
 		case 'F': /* bug and eat food */
-			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = uis.rtui.getScore();
-				gus.trade(&m, &bag);
-				uis.rtui.setScore(m);
-			}
-			if(!bag.use(Item::Food)){
-				X.Play();
-				break;
-			}
-			playerStatus.energy += 400;
-			playerStatus.health += 400;
+			if(isPress(VK_SHIFT)) { // buy
+				if(true) { // FIXME: need to determine whether there is a shop
+					if(!bag.trade(Item::Food, 20)){
+						X.Play();
+						break;
+					}
+				}
+			} else { //use
+				if(!bag.use(Item::Food)){
+					X.Play();
+					break;
+				}
+				playerStatus.energy += 400;
+				playerStatus.health += 400;
+			} /* is press shift */
 			break;
 	}
 	#endif /* DEBUG_KEY */

@@ -4,10 +4,6 @@
 
 #include <string>
 
-void RightTopUI::alterScore(int delta){
-    _score+=delta;
-}
-
 const auto LSB_LOCATION = Vector2i(SIZE_X-85, 193);
 
 void RightTopUI::Init() {

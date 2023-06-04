@@ -101,8 +101,8 @@ namespace game_framework {	namespace stage {
 		Bug bug;
 		Bomb bombAnime;
 
-		BombShop clint;
-		FoodShop gus;
+		// BombShop clint;
+		// FoodShop gus;
 		X X;
 
 		int m = 0;

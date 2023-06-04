@@ -6,6 +6,7 @@
 
 #include "../Config/scaler.h"
 
+// TODO: merge to bag and game manager, maybe removed
 class ShopKeeper {
     public:
         /* game misc things */
@@ -29,16 +30,6 @@ class ShopKeeper {
         virtual void trade(int* money, Bag* bag) = 0;
     private:
         game_framework::Bittermap _sprite;
-};
-
-class BombShop : public ShopKeeper {
-public:
-    void trade(int* money, Bag* bag) override;
-};
-
-class FoodShop : public ShopKeeper {
-public:
-    void trade(int* money, Bag* bag) override;
 };
 
 #endif /* SHOP_KEEPER_H */
