@@ -134,37 +134,41 @@ void InLevel::OnMove()							// 移動遊戲元素
 	
 	// #define NO_COLLISION
 
-	// player moving speed
-	const int highSpeed = 20;
-	const int lowSpeed = 10;
-	const int tiredSpeed = 5;
-	int speed = lowSpeed;
-	if (isPress(VK_SHIFT)) {
-		if (playerStatus.energy > 0) {
-			speed = highSpeed;
-			playerStatus.energy -= 0.4;
-		} else {
-			X.Play();
-		}
-	}
-	if (playerStatus.energy <= 0) {
-		speed = tiredSpeed;
-	}
+	const Vector2i moveVec = getMoveVecByKeys();
+	if( moveVec!=Vector2i(0,0) ) { // is moving
+		// player moving speed
+		int speed = 0;
+		{ /* running and tried BEGIN */
+			const int highSpeed = 20;
+			const int lowSpeed = 10;
+			const int tiredSpeed = 5;
+			speed = lowSpeed;
+			if (isPress(VK_SHIFT)) { // run
+				if (playerStatus.energy > 0) {
+					speed = highSpeed;
+					playerStatus.energy -= 0.4;
+				} else {
+					X.Play();
+				}
+			}
+			if (playerStatus.energy <= 0) {
+				speed = tiredSpeed;
+			}
+		} /* running and tried END */
+		{ /* player move and collision BEGIN */
+			// Update player facing
+			if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-	{ /* player move and collision BEGIN */
-		const Vector2i moveVec = getMoveVecByKeys();
-		// Update player facing
-		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
-
-		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
-		for (int i = 0; i < speed; i++) {
-			#ifndef NO_COLLISION
-			player.MoveWithCollision(moveVec, collisionPool);
-			#else /* NO_COLLISION */
-			player.Move(moveVec);
-			#endif /* NO_COLLISION */
-		}
-	} /* player move and collision END */
+			const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+			for (int i = 0; i < speed; i++) {
+				#ifndef NO_COLLISION
+				player.MoveWithCollision(moveVec, collisionPool);
+				#else /* NO_COLLISION */
+				player.Move(moveVec);
+				#endif /* NO_COLLISION */
+			}
+		} /* player move and collision END */
+	}
 
 	player.Update();
 
