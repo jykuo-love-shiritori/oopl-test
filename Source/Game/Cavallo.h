@@ -30,6 +30,35 @@ private:
 		game_framework::Bittermap _sprite;
 		game_framework::Bittermap _explosionSprite;
 	};
+	class Gun {
+	public:
+		void load();
+		void init(Vector2i startLocation, Vector2f direction);
+		bool draw();
+		void move();
+	protected:
+		class Bullet {
+		public:
+			void load();
+			void init(Vector2i startLocation, Vector2f direction);
+			bool draw();
+			void move();
+		private:
+			int _damage;
+			clock_t _spawnTime;
+			clock_t _duration;
+			double _speed;
+			Vector2f _position;
+			Vector2f _direction;
+			Vector2f _target;
+			game_framework::Bittermap _sprite;
+		};
+		double _speed;
+		Vector2f _position;
+		Vector2f _direction;
+		Vector2f _target;
+		game_framework::Bittermap _sprite;
+	};
 	double _speed;
 	bool _autoAttack;
 	bool _follow;
@@ -42,6 +71,7 @@ private:
 	Vector2i* _playerPos;
 	CherryBomb _baseCherryBomb;
 	vector<CherryBomb> _cherryBomb;
+	Gun _baseGun;
 	game_framework::Bittermap _sprite;
 	game_framework::Bittermap _sprite_mirror;
 };

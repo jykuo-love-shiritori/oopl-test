@@ -129,3 +129,12 @@ bool Cavallo::CherryBomb::draw() {
 void Cavallo::CherryBomb::move() {
 	_sprite.Move(_direction * _speed);
 }
+void Cavallo::Gun::load() {
+	auto BaseFilename = "Resources/Cavallo/Gun/Gun_";
+	vector<string> filenames;
+    for (int i = 0; i < 4; i++) {
+		filenames.emplace_back(BaseFilename + to_string(i + 1) + ".bmp");
+	}
+	_sprite.LoadBitmapByString(filenames, RGB(1, 11, 111));
+	_sprite.SetAnimation(100, 0);
+}
