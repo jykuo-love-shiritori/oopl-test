@@ -103,6 +103,7 @@ namespace game_framework {	namespace stage {
 
 		// BombShop clint;
 		// FoodShop gus;
+		bool DEATH;
 		X X;
 
 		int m = 0;

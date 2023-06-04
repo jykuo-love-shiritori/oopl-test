@@ -71,6 +71,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 void InLevel::OnBeginState()
 {
+	DEATH = false;
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
@@ -131,10 +132,16 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
+
+	if (playerStatus.health == 0) DEATH = true;
+	if (DEATH) {
+		player._sprite_player.SetShow(false);
+	}
 	
 	// #define NO_COLLISION
 
-	const Vector2i moveVec = getMoveVecByKeys();
+	Vector2i moveVec = getMoveVecByKeys();
+	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
 	if( moveVec!=Vector2i(0,0) ) { // is moving
 		// player moving speed
 		int speed = 0;
@@ -328,6 +335,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 	}
 	#endif /* DEBUG_KEY */
+
+	if(DEATH) return; // can't control
 
 	switch (nChar) { // attack and action(only enter exit for now)
 		case KEY_DO_ACTION: // Check/Do Action
