@@ -1,5 +1,6 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Cavallo.h"
+#include "functional"
 #include "../Config/config.h"
 #include "../Config/scaler.h"
 void Cavallo::load() {
@@ -20,13 +21,16 @@ void Cavallo::load() {
     _direction = { 0, 0 };
     _smoothMoving = { 0.0f, 0.0f };
 }
-void Cavallo::init(Vector2i startLocation, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
+void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
 	_sprite.position = startLocation;
 	_sprite_mirror.position = startLocation;
     _autoAttack = autoAttack;
     _follow = followPlayer;
     _playerPos = playerPos;
     _lastAttack = clock();
+    _hurtPlayer = hurtPlayer;
+    _sniperRifle.load(GunType::SNIPER_RIFLE, playerPos);
+    _sniperRifle.init(&_sprite.position, Vector2f(1.0f, 0.0f));
 }
 void Cavallo::setPosition(Vector2i position) { 
     _sprite.position = position;
@@ -52,6 +56,7 @@ void Cavallo::draw() {
 			it++;
 		}
     }
+    _sniperRifle.draw();
 }
 void Cavallo::move(const HitboxPool hitboxPool) {
     if (_follow){
@@ -76,8 +81,13 @@ void Cavallo::move(const HitboxPool hitboxPool) {
 	}
 	_sprite_mirror.MoveWithCollision(_direction * _speed, hitboxPool);
 	_sprite.MoveWithCollision(_direction * _speed, hitboxPool);
+   
+    _hurtPlayer(_sniperRifle.move());
+    if (_autoAttack)
+        setAttackTarget(*_playerPos);
     if (_autoAttack && clock() - _lastAttack > _cooldown) {
-        Throw(*_playerPos);
+        // Throw(*_playerPos);  // no CherryBomb :(
+        _sniperRifle.shoot(*_playerPos);
         _lastAttack = clock();
     }
     for (auto& cherryBomb : _cherryBomb) {
@@ -87,6 +97,9 @@ void Cavallo::move(const HitboxPool hitboxPool) {
 void Cavallo::setDest(Vector2i dest) {
     _dest = dest;
     _direction = Vector2f(_dest - _sprite.position).normalized() * 2.0;
+}
+void Cavallo::setAttackTarget(Vector2i target) {
+    _sniperRifle.setTarget(target);
 }
 bool Cavallo::isAutoAttack() {
     return _autoAttack;
@@ -129,12 +142,98 @@ bool Cavallo::CherryBomb::draw() {
 void Cavallo::CherryBomb::move() {
 	_sprite.Move(_direction * _speed);
 }
-void Cavallo::Gun::load() {
-	auto BaseFilename = "Resources/Cavallo/Gun/Gun_";
+void Cavallo::Gun::load(GunType type, Vector2i* playerPos) {
+    string BaseFilename = "Resources/Cavallo/Gun/";
+    string BaseBulletFilename = "Resources/Cavallo/Gun/";
+    switch (type) {
+        case GunType::SNIPER_RIFLE:
+            BaseFilename += "sniper_rifle/sniper_rifle_r";
+            BaseBulletFilename += "sniper_rifle/bullet/sniper_bullet_r";
+			_rof = 1400;
+			_damage = 100;
+			break;
+        // NOT IMPLEMENTED
+		case GunType::SHOTGUN:
+        case GunType::PISTOL:
+        throw "Not implemented";
+    }
 	vector<string> filenames;
-    for (int i = 0; i < 4; i++) {
-		filenames.emplace_back(BaseFilename + to_string(i + 1) + ".bmp");
+    vector<string> bulletFilenames;
+    for (int i = 0; i < 360; i += 10) {
+		filenames.emplace_back(BaseFilename + to_string(i) + ".bmp");
+        bulletFilenames.emplace_back(BaseBulletFilename + to_string(i) + ".bmp");
 	}
-	_sprite.LoadBitmapByString(filenames, RGB(1, 11, 111));
-	_sprite.SetAnimation(100, 0);
+    _sprite.LoadBitmapByString(filenames, RGB(255, 255, 255));
+	_baseBullet.load(bulletFilenames, RGB(1, 11, 111), _damage, playerPos);
+	_speed = 3;
+}
+void Cavallo::Gun::init(Vector2i* 🐼Pos, Vector2f direction) {
+    _🐼Pos = 🐼Pos;
+    _position = *(_🐼Pos);
+    _direction = direction;
+    _sprite.position = _position;
+    int rot = dir2rotation(direction);
+    _sprite.SetFrameIndexOfBitmap(static_cast<int>(((rot + 5) % 360) / 10));
+}
+void Cavallo::Gun::draw() {
+	_sprite.Draw();
+    for (auto it = _bullets.begin(); it != _bullets.end();) {
+        if (!it->draw()) {
+			it = _bullets.erase(it);
+		}
+        else {
+			it++;
+		}
+	}
+}
+int Cavallo::Gun::move() {
+    _direction = Vector2f(_target - _sprite.position).normalized() * 2;
+	_position = *_🐼Pos;
+	_sprite.position = _position;
+	_sprite.SetFrameIndexOfBitmap(static_cast<int>(((dir2rotation(Vector2f(_target - _sprite.position)) + 5) % 360) / 10));
+    int damageAll = 0;
+    for (auto& bullet : _bullets) {
+        if (bullet.move()) {
+			damageAll += _damage;
+		}
+	}
+    return damageAll;
+}
+void Cavallo::Gun::setTarget(Vector2f target) {
+	_target = target;
+}
+void Cavallo::Gun::shoot(Vector2f target) {
+    if (target != Vector2f{ 0.0f, 0.0f }) {
+        _target = target;
+    }
+	_baseBullet.init(_sprite.position, Vector2f(target - _sprite.position).normalized());
+	_bullets.push_back(_baseBullet);
+}
+void Cavallo::Gun::Bullet::load(const vector<string>& bullletFilename, COLORREF clr, int damage, Vector2i* target) {
+    _sprite.LoadBitmapByString(bullletFilename, clr);
+    _damage = damage;
+    _duration = 10000; // infinite
+    _target = target;
+}
+void Cavallo::Gun::Bullet::init(Vector2i position, Vector2f direction) {
+	_sprite.position = position;
+	_direction = direction;
+    _sprite.SetFrameIndexOfBitmap(static_cast<int>(((dir2rotation(direction) + 5) % 360) / 10));
+    _spawnTime = clock();
+    _speed = 20;
+}
+bool Cavallo::Gun::Bullet::draw() {
+    if (clock() - _spawnTime > _duration) {
+		return false;
+	}
+	_sprite.Draw();
+    return true;
+}
+bool Cavallo::Gun::Bullet::move() {
+	_sprite.Move(_direction * _speed);
+    if ((_sprite.position - *_target).norm() < 20) {
+        _duration = 0;
+        return true;
+    }
+    return false;
 }

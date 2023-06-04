@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include <functional>
 #include "../Library/gameutil.h"
 #include "Bittermap.h"
 #include "../Unity/Vector2.h"
@@ -6,14 +7,16 @@ class Cavallo
 {
 public:
 	void load();
-	void init(Vector2i startLocation, bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr);
+	void init(Vector2i startLocation, std::function<void(int)> hurtPlayer, bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr );
 	void Throw(Vector2f bombTarget);
 	void draw();
 	void move(const HitboxPool hitboxPool);
-	void setDest(Vector2i target);
+	void setDest(Vector2i dest);
+	void setAttackTarget(Vector2i target);
 	void setPosition(Vector2i position);
 	bool isAutoAttack();
 private:
+	std::function<void(int)> _hurtPlayer;
 	class CherryBomb {
 	public:
 		void load();
@@ -30,19 +33,26 @@ private:
 		game_framework::Bittermap _sprite;
 		game_framework::Bittermap _explosionSprite;
 	};
+	enum class GunType {
+		PISTOL,
+		SHOTGUN,
+		SNIPER_RIFLE
+	};
 	class Gun {
 	public:
-		void load();
-		void init(Vector2i startLocation, Vector2f direction);
-		bool draw();
-		void move();
+		void load(GunType type, Vector2i* playerPos);
+		void init(Vector2i* 🐼Pos, Vector2f direction);
+		void draw();
+		int  move();
+		void setTarget(Vector2f target);
+		void shoot(Vector2f target = {0.0f, 0.0f});
 	protected:
 		class Bullet {
 		public:
-			void load();
+			void load(const vector<string>& bullletFilename, COLORREF clr, int damage, Vector2i* _target);
 			void init(Vector2i startLocation, Vector2f direction);
 			bool draw();
-			void move();
+			bool move();
 		private:
 			int _damage;
 			clock_t _spawnTime;
@@ -50,15 +60,22 @@ private:
 			double _speed;
 			Vector2f _position;
 			Vector2f _direction;
-			Vector2f _target;
+			Vector2i* _target;
 			game_framework::Bittermap _sprite;
 		};
+		int _damage;
 		double _speed;
+		double _rof; // rate of fire
+		Bullet _baseBullet;
+		vector<Bullet> _bullets;
+		Vector2i* _🐼Pos;
 		Vector2f _position;
 		Vector2f _direction;
 		Vector2f _target;
+		
 		game_framework::Bittermap _sprite;
 	};
+	class SniperRifle : public Gun {};
 	double _speed;
 	bool _autoAttack;
 	bool _follow;
@@ -70,9 +87,15 @@ private:
 	Vector2f _smoothMoving;
 	Vector2i* _playerPos;
 	CherryBomb _baseCherryBomb;
+	SniperRifle _sniperRifle;
 	vector<CherryBomb> _cherryBomb;
 	Gun _baseGun;
 	game_framework::Bittermap _sprite;
 	game_framework::Bittermap _sprite_mirror;
 };
 
+const auto dir2rotation = [](Vector2f v) {
+	if (v.x == 0 && v.y == 0)
+		return 0;
+	return (-(static_cast<int>((atan2(v.y, v.x) * 180 / 3.1415926 + 0.5))) + 360) % 360;
+};

@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdlib>		// for std::rand()
 #include <winuser.h>	// for GetKeyState()
+#include <functional>
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
@@ -31,12 +32,13 @@ InLevel::InLevel(CGame *g) : CGameState(g)
 InLevel::~InLevel()
 {
 }
-
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
+	🐼.load();
+	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), true, true, &player.position);
 
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
@@ -55,9 +57,6 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	testExit.SetScale(4);
 	testExit.SetShow(false);
 	testExit.SetHitBox(regularBoxSize * 1.0);
-
-	🐼.load();
-	🐼.init(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE, false, false, &player.position);
 
 	bug.load();
 	bombAnime.init();
@@ -116,6 +115,8 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 
 	/* generate exit */
 	player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+	const auto ppps = map.getPlaceablePositions();
+	🐼.setPosition(ppps[rand() % static_cast<int>(ppps.size())] * TILE_SIZE * SCALE_SIZE);
 	if (mapInfo.hasPresetExit) {
 		testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
 		testExit.SetShow();
@@ -156,7 +157,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 		🐼.move(collisionPool);
 #endif
 	} /* player move and collision END */
-
+	playerStatus.health -= player.🔫💥 * 0.5;
+	player.🔫💥 = 0;
 	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
@@ -246,7 +248,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			map.setLevel(mapIndex);
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
-			🐼.setPosition(map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE);
+
 			break;
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
