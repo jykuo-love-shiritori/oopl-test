@@ -329,7 +329,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	#endif /* DEBUG_KEY */
 
-	switch (nChar) {
+	switch (nChar) { // attack and action(only enter exit for now)
 		case KEY_DO_ACTION: // Check/Do Action
 			const Rect playerHitbox = player.getHitBox();
 			const Rect exitHitbox = testExit.GetHitbox();
@@ -345,16 +345,57 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// if (phase == 10 && Rect::isOverlay(playerHitbox, exitHitbox))
 			break;
 		case 'P': // player attack
-			if(playerStatus.energy == 0){
-				X.Play();
-				break;
-			}
-			if( player.canAttack() ) {
-				player.attack();
-				playerStatus.energy -= 1.5;
-			}
+			if(playerStatus.energy == 0) goto actionFailed;
+			if( !player.canAttack() ) /* skip */;
+			player.attack();
+			playerStatus.energy -= 1.5;
 			break;
 	}
+	/* trade and use items */
+	#define BOMB_KEY '1'
+	#define FOOD_KEY '4'
+	bool isTradingKeyPress = isPress(VK_SHIFT);
+	if (isTradingKeyPress) { /* trading BEGIN */
+		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
+		switch (nChar) {
+			case BOMB_KEY:
+				if(!bag.trade(Item::Bomb, 20)) goto actionFailed;
+				if(!isTradingRoom) goto actionFailed;
+				break;
+			case FOOD_KEY:
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
+				if(!isTradingRoom) goto actionFailed;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} else { /* use item BEGIN */
+		switch (nChar) {
+			case BOMB_KEY:
+				if(!bag.use(Item::Bomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
+			case FOOD_KEY:
+				if(!bag.use(Item::Food)) goto actionFailed;
+				playerStatus.energy += 40;
+				playerStatus.health += 40;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} /* endif isTradingKeyPress */
+	return;
+/*
+ * YES this is a GOTO LABEL only be used in this scope(OnKeyDown()),
+ * because idk what's cpp goto statement ganna do.
+ * anyway, this goto label help me a lot,
+ * if you have any better idea plz fix it.
+ */
+actionFailed:
+	X.Play(); 
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
