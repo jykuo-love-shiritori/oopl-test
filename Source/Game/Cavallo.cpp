@@ -16,9 +16,10 @@ void Cavallo::load() {
 	_sprite_mirror.LoadBitmapByString(mirror_filenames, RGB(1, 11, 111));
     _sprite.SetAnimation(100, 0);
     _sprite_mirror.SetAnimation(100, 0);
-    _baseCherryBomb.load();
-    _cooldown = 3000;
-    _speed = 1.5;
+    _sprite.SetHitBox({_sprite.GetWidth(), _sprite.GetHeight()});
+    _sprite_mirror.SetHitBox({_sprite_mirror.GetWidth(), _sprite_mirror.GetHeight()});
+    _cooldown = CHERRY_BOMB_CD;
+    _speed = CAVALLO_SPEED;
     _direction = { 0, 0 };
     _smoothMoving = { 0.0f, 0.0f };
 }
@@ -29,6 +30,7 @@ void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, 
     _follow = followPlayer;
     _playerPos = playerPos;
     _lastAttack = clock();
+    _baseCherryBomb.load(getRocks);
     _sniperRifle.load(GunType::SNIPER_RIFLE, hurtPlayer, getRocks, playerPos);
     _sniperRifle.init(&_sprite.position, Vector2f(1.0f, 0.0f));
 }
@@ -83,11 +85,15 @@ void Cavallo::move(const HitboxPool hitboxPool) {
 	_sprite.MoveWithCollision(_direction * _speed, hitboxPool);
    
     _sniperRifle.move();
-    if (_autoAttack)
+    if (_autoAttack) {
         setAttackTarget(*_playerPos);
-    if (_autoAttack && clock() - _lastAttack > _cooldown) {
-        Throw(*_playerPos);  // yes CherryBomb :)
         _sniperRifle.shoot(*_playerPos);
+    }
+    if (_autoAttack && clock() - _lastAttack > _cooldown) {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<float> dis(-1000, 1000);
+        Throw({dis(gen), dis(gen)});  // yes CherryBomb :)
         _lastAttack = clock();
     }
     for (auto& cherryBomb : _cherryBomb) {
@@ -104,7 +110,7 @@ void Cavallo::setAttackTarget(Vector2i target) {
 bool Cavallo::isAutoAttack() {
     return _autoAttack;
 }
-void Cavallo::CherryBomb::load() {
+void Cavallo::CherryBomb::load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks) {
 	auto BaseFilename = "Resources/Cavallo/CherryBomb/Cherry_r";
     auto ExplosionFilename = "Resources/Cavallo/CherryBomb/Burst";
     vector<string> filenames;
@@ -117,10 +123,13 @@ void Cavallo::CherryBomb::load() {
 	}
     _sprite.LoadBitmapByString(filenames, RGB(1, 11, 111));
     _sprite.SetAnimation(30, 0);
+    _sprite.SetHitBox({ _sprite.GetWidth(), _sprite.GetHeight() });
     _explosionSprite.LoadBitmapByString(explosionFilenames, RGB(1, 11, 111));
     _explosionSprite.SetAnimation(100, 1);
-    _speed = 3;
-    _duration = 1250; // ms
+    _getRocks = getRocks;
+    _speed = CHERRY_BOMB_SPEED;
+    _damage = CHERRY_BOMB_DAMAGE;
+    _duration = CHERRY_BOMB_DURATION;
 }
 void Cavallo::CherryBomb::init(Vector2i startLocation, Vector2f direction) {
     _sprite.position = startLocation;
@@ -129,11 +138,12 @@ void Cavallo::CherryBomb::init(Vector2i startLocation, Vector2f direction) {
 }
 bool Cavallo::CherryBomb::draw() {
 	_sprite.Draw();
-    if (clock() - _spawnTime > _duration) {
+    if (_duration != -1 && clock() - _spawnTime > _duration) {
         _explosionSprite.position = _sprite.position;
         _sprite = _explosionSprite;
         _sprite.ToggleAnimation();
-        _duration = 99999;
+        _duration = -1;
+        _speed = 0.6f;
     }
     if (_sprite.IsAnimationDone())
         return false;
@@ -141,6 +151,14 @@ bool Cavallo::CherryBomb::draw() {
 }
 void Cavallo::CherryBomb::move() {
 	_sprite.Move(_direction * _speed);
+    const vector<Rock*> rocks = _getRocks(_sprite.GetHitbox());
+    if (rocks.size() > 0 && _duration != -1) {
+        _duration = 0;
+    }
+    for (auto rock : rocks) {
+        rock->health -= _damage * 10000;
+	}
+	
 }
 void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, Vector2i* playerPos) {
     string BaseFilename = "Resources/Cavallo/Gun/";
@@ -149,9 +167,10 @@ void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::
         case GunType::SNIPER_RIFLE:
             BaseFilename += "sniper_rifle/sniper_rifle_r";
             BaseBulletFilename += "sniper_rifle/bullet/sniper_bullet_r";
-			_rof = 1400;
-			_damage = 100;
-            _dev = 0.1f;
+			_rof = SNIPER_ROF;
+			_damage = SNIPER_BULLET_DAMAGE;
+            _dev = SNIPER_DEV;
+            _speed = SNIPER_BULLET_SPEED;
 			break;
         // NOT IMPLEMENTED
 		case GunType::SHOTGUN:
@@ -166,7 +185,6 @@ void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::
 	}
     _sprite.LoadBitmapByString(filenames, RGB(255, 255, 255));
 	_baseBullet.load(bulletFilenames, RGB(1, 11, 111), _damage, playerPos);
-	_speed = 3;
     _hurtPlayer = hurtPlayer;
     _getRocks = getRocks;
 }
@@ -205,7 +223,7 @@ void Cavallo::Gun::move() {
         if (🗿🗿🗿.size() != 0)
             bullet.reduceDuration(4000); // can pass 3 rocks
         for (auto 🗿 : 🗿🗿🗿) {
-			🗿->health -= _damage;
+			🗿->health -= _damage * 10000;
 		}
 	}
     _hurtPlayer(damageAll);
@@ -214,9 +232,12 @@ void Cavallo::Gun::setTarget(Vector2f target) {
 	_target = target;
 }
 void Cavallo::Gun::shoot(Vector2f target) {
+    if (clock() - _lastShootTime < _rof)
+		return;
     if (target != Vector2f{ 0.0f, 0.0f }) {
         _target = target;
     }
+    _lastShootTime = clock();
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_real_distribution<> dis(-_dev, _dev);
@@ -225,6 +246,7 @@ void Cavallo::Gun::shoot(Vector2f target) {
 }
 void Cavallo::Gun::Bullet::load(const vector<string>& bullletFilename, COLORREF clr, int damage, Vector2i* target) {
     _sprite.LoadBitmapByString(bullletFilename, clr);
+    _sprite.SetHitBox({ _sprite.GetWidth(), _sprite.GetHeight() });
     _damage = damage;
     _duration = 10000; // infinite
     _target = target;

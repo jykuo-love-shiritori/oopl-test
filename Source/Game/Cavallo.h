@@ -4,6 +4,16 @@
 #include "Bittermap.h"
 #include "RockManager.h"
 #include "../Unity/Vector2.h"
+
+#define CAVALLO_SPEED			1.0f
+#define CHERRY_BOMB_CD			10000
+#define CHERRY_BOMB_SPEED		3
+#define CHERRY_BOMB_DURATION	5250
+#define CHERRY_BOMB_DAMAGE		100
+#define SNIPER_ROF				3000
+#define SNIPER_DEV				0.1f	
+#define SNIPER_BULLET_SPEED		5.0f
+#define SNIPER_BULLET_DAMAGE	50
 class Cavallo
 {
 public:
@@ -19,17 +29,19 @@ public:
 private:
 	class CherryBomb {
 	public:
-		void load();
+		void load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks);
 		void init(Vector2i startLocation, Vector2f direction);
 		bool draw();
 		void move();
 	private:
+		std::function<std::vector<Rock*>(Rect hitbox)> _getRocks;
 		clock_t _spawnTime;
 		clock_t _duration;
 		double _speed;
 		Vector2f _position;
 		Vector2f _direction;
 		Vector2f _target;
+		int _damage;
 		game_framework::Bittermap _sprite;
 		game_framework::Bittermap _explosionSprite;
 	};
@@ -71,6 +83,7 @@ private:
 		double _speed;
 		double _rof; // rate of fire
 		double _dev; // deviation
+		clock_t _lastShootTime;
 		Bullet _baseBullet;
 		vector<Bullet> _bullets;
 		Vector2i* _🐼Pos;

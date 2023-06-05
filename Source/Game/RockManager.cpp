@@ -145,6 +145,7 @@ bool RockManager::playBreakAnimation(Vector2i exit, unsigned int *score){
 
     int scoreTally=0;
     for(auto& 🗿:brokenRockPtrs){
+        if (🗿->health < -1000) continue;
         scoreTally+=🗿->rockScore[🗿->permaType];
     }
     *score=scoreTally;
