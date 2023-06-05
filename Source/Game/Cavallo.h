@@ -2,12 +2,13 @@
 #include <functional>
 #include "../Library/gameutil.h"
 #include "Bittermap.h"
+#include "RockManager.h"
 #include "../Unity/Vector2.h"
 class Cavallo
 {
 public:
 	void load();
-	void init(Vector2i startLocation, std::function<void(int)> hurtPlayer, bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr );
+	void init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks,  bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr );
 	void Throw(Vector2f bombTarget);
 	void draw();
 	void move(const HitboxPool hitboxPool);
@@ -16,7 +17,6 @@ public:
 	void setPosition(Vector2i position);
 	bool isAutoAttack();
 private:
-	std::function<void(int)> _hurtPlayer;
 	class CherryBomb {
 	public:
 		void load();
@@ -40,19 +40,23 @@ private:
 	};
 	class Gun {
 	public:
-		void load(GunType type, Vector2i* playerPos);
+		void load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, Vector2i* playerPos);
 		void init(Vector2i* 🐼Pos, Vector2f direction);
 		void draw();
-		int  move();
+		void move();
 		void setTarget(Vector2f target);
 		void shoot(Vector2f target = {0.0f, 0.0f});
 	protected:
+		std::function<void(int)> _hurtPlayer;
+		std::function<std::vector<Rock*>(Rect hitbox)> _getRocks;
 		class Bullet {
 		public:
 			void load(const vector<string>& bullletFilename, COLORREF clr, int damage, Vector2i* _target);
 			void init(Vector2i startLocation, Vector2f direction);
 			bool draw();
 			bool move();
+			void reduceDuration(int duration);
+			Rect getAttackBox();
 		private:
 			int _damage;
 			clock_t _spawnTime;
@@ -66,6 +70,7 @@ private:
 		int _damage;
 		double _speed;
 		double _rof; // rate of fire
+		double _dev; // deviation
 		Bullet _baseBullet;
 		vector<Bullet> _bullets;
 		Vector2i* _🐼Pos;

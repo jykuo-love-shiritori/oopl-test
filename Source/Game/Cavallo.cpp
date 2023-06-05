@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Cavallo.h"
-#include "functional"
+#include <functional>
+#include <random>
 #include "../Config/config.h"
 #include "../Config/scaler.h"
 void Cavallo::load() {
@@ -16,20 +17,19 @@ void Cavallo::load() {
     _sprite.SetAnimation(100, 0);
     _sprite_mirror.SetAnimation(100, 0);
     _baseCherryBomb.load();
-    _cooldown = 1200;
+    _cooldown = 3000;
     _speed = 1.5;
     _direction = { 0, 0 };
     _smoothMoving = { 0.0f, 0.0f };
 }
-void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
+void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
 	_sprite.position = startLocation;
 	_sprite_mirror.position = startLocation;
     _autoAttack = autoAttack;
     _follow = followPlayer;
     _playerPos = playerPos;
     _lastAttack = clock();
-    _hurtPlayer = hurtPlayer;
-    _sniperRifle.load(GunType::SNIPER_RIFLE, playerPos);
+    _sniperRifle.load(GunType::SNIPER_RIFLE, hurtPlayer, getRocks, playerPos);
     _sniperRifle.init(&_sprite.position, Vector2f(1.0f, 0.0f));
 }
 void Cavallo::setPosition(Vector2i position) { 
@@ -82,11 +82,11 @@ void Cavallo::move(const HitboxPool hitboxPool) {
 	_sprite_mirror.MoveWithCollision(_direction * _speed, hitboxPool);
 	_sprite.MoveWithCollision(_direction * _speed, hitboxPool);
    
-    _hurtPlayer(_sniperRifle.move());
+    _sniperRifle.move();
     if (_autoAttack)
         setAttackTarget(*_playerPos);
     if (_autoAttack && clock() - _lastAttack > _cooldown) {
-        // Throw(*_playerPos);  // no CherryBomb :(
+        Throw(*_playerPos);  // yes CherryBomb :)
         _sniperRifle.shoot(*_playerPos);
         _lastAttack = clock();
     }
@@ -142,7 +142,7 @@ bool Cavallo::CherryBomb::draw() {
 void Cavallo::CherryBomb::move() {
 	_sprite.Move(_direction * _speed);
 }
-void Cavallo::Gun::load(GunType type, Vector2i* playerPos) {
+void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, Vector2i* playerPos) {
     string BaseFilename = "Resources/Cavallo/Gun/";
     string BaseBulletFilename = "Resources/Cavallo/Gun/";
     switch (type) {
@@ -151,6 +151,7 @@ void Cavallo::Gun::load(GunType type, Vector2i* playerPos) {
             BaseBulletFilename += "sniper_rifle/bullet/sniper_bullet_r";
 			_rof = 1400;
 			_damage = 100;
+            _dev = 0.1f;
 			break;
         // NOT IMPLEMENTED
 		case GunType::SHOTGUN:
@@ -166,6 +167,8 @@ void Cavallo::Gun::load(GunType type, Vector2i* playerPos) {
     _sprite.LoadBitmapByString(filenames, RGB(255, 255, 255));
 	_baseBullet.load(bulletFilenames, RGB(1, 11, 111), _damage, playerPos);
 	_speed = 3;
+    _hurtPlayer = hurtPlayer;
+    _getRocks = getRocks;
 }
 void Cavallo::Gun::init(Vector2i* 🐼Pos, Vector2f direction) {
     _🐼Pos = 🐼Pos;
@@ -186,7 +189,7 @@ void Cavallo::Gun::draw() {
 		}
 	}
 }
-int Cavallo::Gun::move() {
+void Cavallo::Gun::move() {
     _direction = Vector2f(_target - _sprite.position).normalized() * 2;
 	_position = *_🐼Pos;
 	_sprite.position = _position;
@@ -196,8 +199,16 @@ int Cavallo::Gun::move() {
         if (bullet.move()) {
 			damageAll += _damage;
 		}
+        auto 🚀 = bullet.getAttackBox();
+        // Enumerate all the rocks that collide with the attack area
+        const vector<Rock*> 🗿🗿🗿 = _getRocks(🚀);
+        if (🗿🗿🗿.size() != 0)
+            bullet.reduceDuration(4000); // can pass 3 rocks
+        for (auto 🗿 : 🗿🗿🗿) {
+			🗿->health -= _damage;
+		}
 	}
-    return damageAll;
+    _hurtPlayer(damageAll);
 }
 void Cavallo::Gun::setTarget(Vector2f target) {
 	_target = target;
@@ -206,7 +217,10 @@ void Cavallo::Gun::shoot(Vector2f target) {
     if (target != Vector2f{ 0.0f, 0.0f }) {
         _target = target;
     }
-	_baseBullet.init(_sprite.position, Vector2f(target - _sprite.position).normalized());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<> dis(-_dev, _dev);
+	_baseBullet.init(_sprite.position, Vector2f(target - _sprite.position).normalized() + Vector2f(dis(gen), dis(gen)));
 	_bullets.push_back(_baseBullet);
 }
 void Cavallo::Gun::Bullet::load(const vector<string>& bullletFilename, COLORREF clr, int damage, Vector2i* target) {
@@ -220,7 +234,7 @@ void Cavallo::Gun::Bullet::init(Vector2i position, Vector2f direction) {
 	_direction = direction;
     _sprite.SetFrameIndexOfBitmap(static_cast<int>(((dir2rotation(direction) + 5) % 360) / 10));
     _spawnTime = clock();
-    _speed = 20;
+    _speed = 30;
 }
 bool Cavallo::Gun::Bullet::draw() {
     if (clock() - _spawnTime > _duration) {
@@ -231,9 +245,15 @@ bool Cavallo::Gun::Bullet::draw() {
 }
 bool Cavallo::Gun::Bullet::move() {
 	_sprite.Move(_direction * _speed);
-    if ((_sprite.position - *_target).norm() < 20) {
+    if ((_sprite.position - *_target).norm() < 30) {
         _duration = 0;
         return true;
     }
     return false;
+}
+void Cavallo::Gun::Bullet::reduceDuration(int duration) {
+	_duration -= duration;
+}
+Rect Cavallo::Gun::Bullet::getAttackBox() {
+	return _sprite.GetHitbox();
 }

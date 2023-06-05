@@ -38,7 +38,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	
 	player.Init();
 	🐼.load();
-	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), true, true, &player.position);
+	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1), true, true, &player.position);
 
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
