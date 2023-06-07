@@ -254,10 +254,10 @@
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />
-    <ClCompile Include="Source\Game\UI.cpp" />
+    <ClCompile Include="Source\Game\UI\RightTopUI.cpp" />
     <ClCompile Include="Source\Game\UI\Digit.cpp" />
     <ClCompile Include="Source\Game\UI\Toolbar.cpp" />
-    <ClCompile Include="Source\Game\X.cpp" />
+    <ClCompile Include="Source\Game\UI\X.cpp" />
     <ClCompile Include="Source\Game\UI\eh.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />

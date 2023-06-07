@@ -63,17 +63,19 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	uis.eh.setHealth(&playerStatus.health);
 	uis.eh.setEnergy(&playerStatus.energy);
 
-	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+	X.Init();
 
 	uis.tb._bag = &bag;
+	uis.rtui.setMoneyPtr(&bag._money);
 }
 
 void InLevel::OnBeginState()
 {
+	DEATH = false;
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
-	userInterface.setScore(0);
+	bag._money = 0;
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -130,25 +132,50 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
+
+	if (playerStatus.health == 0) DEATH = true;
+	if (DEATH) {
+		player._sprite_player.SetShow(false);
+	}
 	
 	// #define NO_COLLISION
 
-	// player moving speed
-	const int speed=20;
-	{ /* player move and collision BEGIN */
-		const Vector2i moveVec = getMoveVecByKeys();
-		// Update player facing
-		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
+	Vector2i moveVec = getMoveVecByKeys();
+	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
+	if( moveVec!=Vector2i(0,0) ) { // is moving
+		// player moving speed
+		int speed = 0;
+		{ /* running and tried BEGIN */
+			const int highSpeed = 20;
+			const int lowSpeed = 10;
+			const int tiredSpeed = 5;
+			speed = lowSpeed;
+			if (isPress(VK_SHIFT)) { // run
+				if (playerStatus.energy > 0) {
+					speed = highSpeed;
+					playerStatus.energy -= 0.4;
+				} else {
+					X.Play();
+				}
+			}
+			if (playerStatus.energy <= 0) {
+				speed = tiredSpeed;
+			}
+		} /* running and tried END */
+		{ /* player move and collision BEGIN */
+			// Update player facing
+			if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
-		for (int i = 0; i < speed; i++) {
-			#ifndef NO_COLLISION
-			player.MoveWithCollision(moveVec, collisionPool);
-			#else /* NO_COLLISION */
-			player.Move(moveVec);
-			#endif /* NO_COLLISION */
-		}
-	} /* player move and collision END */
+			const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+			for (int i = 0; i < speed; i++) {
+				#ifndef NO_COLLISION
+				player.MoveWithCollision(moveVec, collisionPool);
+				#else /* NO_COLLISION */
+				player.Move(moveVec);
+				#endif /* NO_COLLISION */
+			}
+		} /* player move and collision END */
+	}
 
 	player.Update();
 
@@ -185,7 +212,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		{ /* play animation and break rock and show exit */
 			unsigned int scoreModify;
 			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-			userInterface.alterScore(scoreModify);
+			bag._money += scoreModify;
 			if ( isExitRock ) {
 				testExit.SetShow();
 			}
@@ -251,16 +278,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'N': //score--
-		case 'M': //score++
-			if(nChar=='N'){
-				if(userInterface.getScore()){
-					userInterface.alterScore(-1);
-				}
-			}
-			else{
-				userInterface.alterScore(1);
-			}
+		case 'N': // money++
+			bag._money += 10000;
 			break;
 		case 'B':
 			if(!bag.use(Item::Bomb)){
@@ -285,9 +304,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'T': /* trade */
 			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
-				clint.trade(&m, &bag);
-				userInterface.setScore(m);
+				if(!bag.trade(Item::Bomb, 20)){
+					X.Play();
+					break;
+				}
 			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
@@ -297,22 +317,28 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// /* ... */
 			break;
 		case 'F': /* bug and eat food */
-			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
-				gus.trade(&m, &bag);
-				userInterface.setScore(m);
-			}
-			if(!bag.use(Item::Food)){
-				X.Play();
-				break;
-			}
-			playerStatus.energy += 400;
-			playerStatus.health += 400;
+			if(isPress(VK_SHIFT)) { // buy
+				if(true) { // FIXME: need to determine whether there is a shop
+					if(!bag.trade(Item::Food, 20)){
+						X.Play();
+						break;
+					}
+				}
+			} else { //use
+				if(!bag.use(Item::Food)){
+					X.Play();
+					break;
+				}
+				playerStatus.energy += 400;
+				playerStatus.health += 400;
+			} /* is press shift */
 			break;
 	}
 	#endif /* DEBUG_KEY */
 
-	switch (nChar) {
+	if(DEATH) return; // can't control
+
+	switch (nChar) { // attack and action(only enter exit for now)
 		case KEY_DO_ACTION: // Check/Do Action
 			const Rect playerHitbox = player.getHitBox();
 			const Rect exitHitbox = testExit.GetHitbox();
@@ -328,16 +354,57 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// if (phase == 10 && Rect::isOverlay(playerHitbox, exitHitbox))
 			break;
 		case 'P': // player attack
-			if(playerStatus.energy == 0){
-				X.Play();
-				break;
-			}
-			if( player.canAttack() ) {
-				player.attack();
-				playerStatus.energy -= 1.5;
-			}
+			if(playerStatus.energy == 0) goto actionFailed;
+			if( !player.canAttack() ) /* skip */;
+			player.attack();
+			playerStatus.energy -= 1.5;
 			break;
 	}
+	/* trade and use items */
+	#define BOMB_KEY '1'
+	#define FOOD_KEY '4'
+	bool isTradingKeyPress = isPress(VK_SHIFT);
+	if (isTradingKeyPress) { /* trading BEGIN */
+		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
+		switch (nChar) {
+			case BOMB_KEY:
+				if(!bag.trade(Item::Bomb, 20)) goto actionFailed;
+				if(!isTradingRoom) goto actionFailed;
+				break;
+			case FOOD_KEY:
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
+				if(!isTradingRoom) goto actionFailed;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} else { /* use item BEGIN */
+		switch (nChar) {
+			case BOMB_KEY:
+				if(!bag.use(Item::Bomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
+			case FOOD_KEY:
+				if(!bag.use(Item::Food)) goto actionFailed;
+				playerStatus.energy += 40;
+				playerStatus.health += 40;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} /* endif isTradingKeyPress */
+	return;
+/*
+ * YES this is a GOTO LABEL only be used in this scope(OnKeyDown()),
+ * because idk what's cpp goto statement ganna do.
+ * anyway, this goto label help me a lot,
+ * if you have any better idea plz fix it.
+ */
+actionFailed:
+	X.Play(); 
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)

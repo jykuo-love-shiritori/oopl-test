@@ -23,9 +23,13 @@ std::vector<Rock> Bag::popMinerals() {
     return {};
 }
 
-void Bag::append(Item item) {
+bool Bag::trade(Item item, unsigned int price) {
+    const bool canBuy = _money >= price;
+    //const bool isOverweight = calculateWeight() //TODO: bag Overweight
+    if (!canBuy) return false;
+    _money -= price;
     _items.push_back(item);
-    calculateWeight();
+    return true;
 }
 
 unsigned int Bag::getCount(Item itemType) const {
