@@ -343,23 +343,6 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'L': /* kill bug */
 			bug.alterHealth(-999);
 			break;
-		case 'F': /* bug and eat food */
-			if(isPress(VK_SHIFT)) { // buy
-				if(true) { // FIXME: need to determine whether there is a shop
-					if(!bag.trade(Item::Food, 20)){
-						X.Play();
-						break;
-					}
-				}
-			} else { //use
-				if(!bag.use(Item::Food)){
-					X.Play();
-					break;
-				}
-				playerStatus.energy += 400;
-				playerStatus.health += 400;
-			} /* is press shift */
-			break;
 	} /* switch (nChar) */
 #endif /* DEBUG_KEY */
 
