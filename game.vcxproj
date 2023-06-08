@@ -254,6 +254,8 @@
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />
+    <ClCompile Include="Source\Game\Super.cpp" />
+    <ClCompile Include="Source\Game\Throwable.cpp" />
     <ClCompile Include="Source\Game\UI\RightTopUI.cpp" />
     <ClCompile Include="Source\Game\UI\Digit.cpp" />
     <ClCompile Include="Source\Game\UI\Toolbar.cpp" />
@@ -283,6 +285,8 @@
     <ClInclude Include="Source\Game\Player.h" />
     <ClInclude Include="Source\Game\RockManager.h" />
     <ClInclude Include="Source\Game\stages.h" />
+    <ClInclude Include="Source\Game\Super.h" />
+    <ClInclude Include="Source\Game\Throwable.h" />
     <ClInclude Include="Source\Game\UI.h" />
     <ClInclude Include="Source\Library\audio.h" />
     <ClInclude Include="Source\Library\gamecore.h" />

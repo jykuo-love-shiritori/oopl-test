@@ -129,6 +129,7 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	super.update(bug);
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
@@ -359,6 +360,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.attack();
 			playerStatus.energy -= 1.5;
 			break;
+		case 'S':
+			super.SetPosition (player.position);
 	}
 	/* trade and use items */
 	#define BOMB_KEY '1'
