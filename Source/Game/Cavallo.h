@@ -14,6 +14,11 @@
 #define SNIPER_DEV				0.1f	
 #define SNIPER_BULLET_SPEED		5.0f
 #define SNIPER_BULLET_DAMAGE	50
+/*
+*	usage: load and intialize with corresponding functions
+*	Move in OnMove()
+*	Draw in OnDraw()
+*/ 
 class Cavallo
 {
 public:

@@ -38,6 +38,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	
 	player.Init();
 	🐼.load();
+	// use bind to get the function for Covallo
 	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1), &map.hp, true, true, &player.position);
 
 	map.loadBMPs(datapath);
@@ -115,8 +116,9 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 
 	/* generate exit */
 	player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
-	const auto ppps = map.getPlaceablePositions();
-	🐼.setPosition(ppps[rand() % static_cast<int>(ppps.size())] * TILE_SIZE * SCALE_SIZE);
+	const auto ps = map.getPlaceablePositions();
+	// set position(random placeable position) when enter new level
+	🐼.setPosition(ps[rand() % static_cast<int>(ps.size())] * TILE_SIZE * SCALE_SIZE);
 	if (mapInfo.hasPresetExit) {
 		testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
 		testExit.SetShow();
@@ -153,9 +155,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 			player.Move(moveVec);
 			#endif /* NO_COLLISION */
 		}
-#ifndef NO_COLLISION
+		// move all Cavallo things with collision
 		🐼.move(collisionPool);
-#endif
 	} /* player move and collision END */
 	playerStatus.health -= player.🔫💥 * 0.5;
 	player.🔫💥 = 0;
@@ -361,12 +362,14 @@ void InLevel::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
 	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
+	// set destination of Cavallo when click mouse wheel (for not follow mode)
 	🐼.setDest({ point.x, point.y });
 }
 void InLevel::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
 	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
 	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
 	if (!🐼.isAutoAttack() && zDelta < 0) {
+		// if not auto attack throw bomb to mouse position
 		🐼.Throw({ static_cast<float>(point.x), static_cast<float>(point.y) });
 	}
 
@@ -398,7 +401,7 @@ void InLevel::OnShow()
 	bombAnime.drawBomb();
 	player.Draw();
 	X.Show();
-
+	// draw Cavallo and its things sprites
 	🐼.draw();
 
 	map.drawFront();
