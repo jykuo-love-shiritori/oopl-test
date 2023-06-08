@@ -326,13 +326,6 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'H':
 			playerStatus.health += 20;
 			break;
-		case 'T': /* buy bomb */
-			if(true) { // FIXME: need to determine whether there is a shop
-				if(!bag.trade(Item::Bomb, 20)){
-					X.Play();
-					break;
-				}
-			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
 			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
