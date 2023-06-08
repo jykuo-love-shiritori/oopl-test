@@ -11,9 +11,9 @@
 class Bag {
     public:
         std::vector<Rock> popMinerals();
-        void append(Item item);
 
         bool use(Item itemType);
+        bool trade(Item item, unsigned int price);
 
         /* getter */
         unsigned int getWeight() const { return _weight; }
@@ -21,6 +21,8 @@ class Bag {
         
         /* helper */
         unsigned int calculateWeight() const;
+    public:
+        unsigned int _money = 0;
     private:
         std::vector<Item> _items;
         unsigned int _weight;

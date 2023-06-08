@@ -32,13 +32,13 @@ public:
 private:
     int _attackTimer = 0;
     Vector2i _attackDirection;
-    game_framework::Bittermap _sprite_player;
-    game_framework::Bittermap _sprite_attack;
 public:
     int health;
     int 🔫💥 = 0;
     clock_t lastGotHitTime;
     Vector2i& position = _sprite_player.position;
+    game_framework::Bittermap _sprite_player;
+    game_framework::Bittermap _sprite_attack;
 };
 
 #endif /* PLAYER_H */
