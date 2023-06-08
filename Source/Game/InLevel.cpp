@@ -147,6 +147,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// #define NO_COLLISION
 
 	Vector2i moveVec = getMoveVecByKeys();
+	const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
 	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
 	if( moveVec!=Vector2i(0,0) ) { // is moving
 		// player moving speed
@@ -172,7 +173,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 			// Update player facing
 			if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-			const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
 			for (int i = 0; i < speed; i++) {
 				#ifndef NO_COLLISION
 				player.MoveWithCollision(moveVec, collisionPool);
@@ -181,9 +181,10 @@ void InLevel::OnMove()							// 移動遊戲元素
 				#endif /* NO_COLLISION */
 			}
 			// move all Cavallo things with collision
-			🐼.move(collisionPool); //FIXME: move out of this scope
 		} /* player move and collision END */
 	} // endif is moving
+
+	🐼.move(collisionPool); 
 	playerStatus.health -= player.🔫💥 * 0.5;
 	player.🔫💥 = 0;
 	player.Update();
