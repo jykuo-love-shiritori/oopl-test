@@ -4,11 +4,18 @@
 #include "../Bittermap.h"
 #include "../Updatable.h"
 
-class X : public Updatable, public game_framework::Bittermap {
-    int _timer = -1;
+#include <queue>
+
+class X : public Updatable {
+    std::vector<int> _timerQueue;
+    game_framework::Bittermap _sprite;
 public:
-    void Play() { _timer = 10; }
+    void Init() {
+        _sprite.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+    }
+    void Play();
     void Update() override;
+    void Show();
 };
 
 #endif /* X_H */

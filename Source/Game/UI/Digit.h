@@ -15,6 +15,7 @@ public:
 		_scalar(scalar),
 		_number(numptr)
 	{}
+    void setNumptr(unsigned const  *numptr) { _number = numptr; }
     void Init() override;
     void Show() override;
 private:

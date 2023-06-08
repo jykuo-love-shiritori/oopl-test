@@ -84,7 +84,6 @@ namespace game_framework {	namespace stage {
 	private:
 		/* BIG BLACK CANVAS */
 		CMovingBitmap BBC;
-		bool DEATH = false;
 		Player player;
 		struct __ps__ {
 			float health;
@@ -104,8 +103,9 @@ namespace game_framework {	namespace stage {
 		Bug bug;
 		Bomb bombAnime;
 
-		BombShop clint;
-		FoodShop gus;
+		// BombShop clint;
+		// FoodShop gus;
+		bool DEATH;
 		X X;
 
 		int m = 0;

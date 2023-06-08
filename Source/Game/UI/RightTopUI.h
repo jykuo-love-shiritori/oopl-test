@@ -10,14 +10,9 @@ class RightTopUI : public UI {
         void Init() override;
         void Show() override;
 
-        /*getter*/
-        int getScore() const { return _score; }
-
-        /*setter*/
-        void alterScore(int delta);
-        void setScore(int score) { _score = score; }
+        /* setter */
+        void setMoneyPtr(unsigned const  *money) { _moneyNumbers.setNumptr(money); }
     private:
         game_framework::Bittermap _UIsprite;
-        unsigned int _score = 0;
-        Digit _moneyNumbers = Digit(&_score, 1.5);
+        Digit _moneyNumbers = Digit(NULL, 1.5);
 };
