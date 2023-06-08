@@ -386,43 +386,31 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.attack();
 			playerStatus.energy -= 1.5;
 			break;
-		case '1':
-		case '2':
-		case '3':
-			if(isPress(VK_SHIFT)){
-				if(true) { // FIXME: need to determine whether there is a shop
-					if(nChar=='1'){bag.trade(Item::cherryBomb,20);}
-					if(nChar=='2'){bag.trade(Item::Bomb,80);}
-					if(nChar=='3'){bag.trade(Item::megaBomb,200);}
-				}
-				break;
-			}
-			if( nChar=='1' && (!bag.use(Item::cherryBomb)) ||
-				nChar=='2' && (!bag.use(Item::Bomb)) ||
-				nChar=='3' && (!bag.use(Item::megaBomb))){
-				X.Play();
-				break;
-			}
-			if(bombAnime.getFuse()>0) break;
-			if(nChar=='1'){bombAnime.useBomb(player.position,0);}
-			if(nChar=='2'){bombAnime.useBomb(player.position,1);}
-			if(nChar=='3'){bombAnime.useBomb(player.position,2);}
-			break;
 	}
 	/* trade and use items */
-	#define BOMB_KEY '1'
+	#define CHERRY_BOMB_KEY '1'
+	#define BOMB_KEY '2'
+	#define MEGA_BOMB_KEY '3'
 	#define FOOD_KEY '4'
 	bool isTradingKeyPress = isPress(VK_SHIFT);
 	if (isTradingKeyPress) { /* trading BEGIN */
 		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
-			case BOMB_KEY:
-				if(!bag.trade(Item::Bomb, 20)) goto actionFailed;
+			case CHERRY_BOMB_KEY:
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
+				break;
+			case BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
+				break;
+			case MEGA_BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
 				break;
 			case FOOD_KEY:
-				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				break;
 			// actionFailed:
 			// 	X.Play(); 
@@ -430,10 +418,20 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	} else { /* use item BEGIN */
 		switch (nChar) {
+			case CHERRY_BOMB_KEY:
+				if(!bag.use(Item::cherryBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
 			case BOMB_KEY:
 				if(!bag.use(Item::Bomb)) goto actionFailed;
 				if(bombAnime.getFuse()>0) goto actionFailed;
-				bombAnime.useBomb(player.position,0);
+				bombAnime.useBomb(player.position,1);
+				break;
+			case MEGA_BOMB_KEY:
+				if(!bag.use(Item::megaBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,2);
 				break;
 			case FOOD_KEY:
 				if(!bag.use(Item::Food)) goto actionFailed;
