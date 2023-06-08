@@ -18,7 +18,7 @@ class Cavallo
 {
 public:
 	void load();
-	void init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks,  bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr );
+	void init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, HitboxPool* mapHP, bool autoAttack = true, bool follow = true, Vector2i* playerPos = nullptr);
 	void Throw(Vector2f bombTarget);
 	void draw();
 	void move(const HitboxPool hitboxPool);
@@ -29,7 +29,7 @@ public:
 private:
 	class CherryBomb {
 	public:
-		void load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks);
+		void load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks, HitboxPool* mapHP);
 		void init(Vector2i startLocation, Vector2f direction);
 		bool draw();
 		void move();
@@ -41,6 +41,7 @@ private:
 		Vector2f _position;
 		Vector2f _direction;
 		Vector2f _target;
+		HitboxPool* _mapHP;
 		int _damage;
 		game_framework::Bittermap _sprite;
 		game_framework::Bittermap _explosionSprite;
@@ -52,7 +53,7 @@ private:
 	};
 	class Gun {
 	public:
-		void load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, Vector2i* playerPos);
+		void load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, HitboxPool* mapHP, Vector2i* playerPos);
 		void init(Vector2i* 🐼Pos, Vector2f direction);
 		void draw();
 		void move();
@@ -90,7 +91,7 @@ private:
 		Vector2f _position;
 		Vector2f _direction;
 		Vector2f _target;
-		
+		HitboxPool* _mapHP;
 		game_framework::Bittermap _sprite;
 	};
 	class SniperRifle : public Gun {};

@@ -24,15 +24,15 @@ void Cavallo::load() {
     _direction = { 0, 0 };
     _smoothMoving = { 0.0f, 0.0f };
 }
-void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
+void Cavallo::init(Vector2i startLocation, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, HitboxPool* mapHP, bool autoAttack, bool followPlayer, Vector2i* playerPos) {
 	_sprite.position = startLocation;
 	_sprite_mirror.position = startLocation;
     _autoAttack = autoAttack;
     _follow = followPlayer;
     _playerPos = playerPos;
     _lastAttack = clock();
-    _baseCherryBomb.load(getRocks);
-    _sniperRifle.load(GunType::SNIPER_RIFLE, hurtPlayer, getRocks, playerPos);
+    _baseCherryBomb.load(getRocks, mapHP);
+    _sniperRifle.load(GunType::SNIPER_RIFLE, hurtPlayer, getRocks, mapHP, playerPos);
     _sniperRifle.init(&_sprite.position, Vector2f(1.0f, 0.0f));
 }
 void Cavallo::setPosition(Vector2i position) { 
@@ -61,7 +61,7 @@ void Cavallo::draw() {
     }
     _sniperRifle.draw();
 }
-void Cavallo::move(const HitboxPool hitboxPool) {
+void Cavallo::move(HitboxPool hitboxPool) {
     if (_follow){
 	    _direction = Vector2f(*_playerPos - _sprite.position).normalized() * 2;
         _dest = *_playerPos;
@@ -111,7 +111,7 @@ void Cavallo::setAttackTarget(Vector2i target) {
 bool Cavallo::isAutoAttack() {
     return _autoAttack;
 }
-void Cavallo::CherryBomb::load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks) {
+void Cavallo::CherryBomb::load(std::function<std::vector<Rock*>(Rect hitbox)> getRocks, HitboxPool* mapHP) {
 	auto BaseFilename = "Resources/Cavallo/CherryBomb/Cherry_r";
     auto ExplosionFilename = "Resources/Cavallo/CherryBomb/Burst";
     vector<string> filenames;
@@ -128,6 +128,7 @@ void Cavallo::CherryBomb::load(std::function<std::vector<Rock*>(Rect hitbox)> ge
     _explosionSprite.LoadBitmapByString(explosionFilenames, RGB(1, 11, 111));
     _explosionSprite.SetAnimation(100, 1);
     _getRocks = getRocks;
+    _mapHP = mapHP;
     _speed = CHERRY_BOMB_SPEED;
     _damage = CHERRY_BOMB_DAMAGE;
     _duration = CHERRY_BOMB_DURATION;
@@ -153,7 +154,9 @@ bool Cavallo::CherryBomb::draw() {
 void Cavallo::CherryBomb::move() {
 	_sprite.Move(_direction * _speed);
     const vector<Rock*> rocks = _getRocks(_sprite.GetHitbox());
-    if (rocks.size() > 0 && _duration != -1) {
+
+    const vector<Rect> wallCollision = _mapHP->Collide(_sprite.GetHitbox());
+    if ((rocks.size() > 0 || wallCollision.size() > 0) && _duration != -1) {
         _duration = 0;
     }
     for (auto rock : rocks) {
@@ -161,7 +164,7 @@ void Cavallo::CherryBomb::move() {
 	}
 	
 }
-void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks, Vector2i* playerPos) {
+void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::function<std::vector<Rock*>(Rect hitbox)> getRocks , HitboxPool* mapHP, Vector2i* playerPos) {
     string BaseFilename = "Resources/Cavallo/Gun/";
     string BaseBulletFilename = "Resources/Cavallo/Gun/";
     switch (type) {
@@ -184,6 +187,7 @@ void Cavallo::Gun::load(GunType type, std::function<void(int)> hurtPlayer, std::
 		filenames.emplace_back(BaseFilename + to_string(i) + ".bmp");
         bulletFilenames.emplace_back(BaseBulletFilename + to_string(i) + ".bmp");
 	}
+    _mapHP = mapHP;
     _sprite.LoadBitmapByString(filenames, RGB(255, 255, 255));
 	_baseBullet.load(bulletFilenames, RGB(1, 11, 111), _damage, playerPos);
     _hurtPlayer = hurtPlayer;
@@ -219,9 +223,10 @@ void Cavallo::Gun::move() {
 			damageAll += _damage;
 		}
         auto 🚀 = bullet.getAttackBox();
+        const vector<Rect> wallCollision = _mapHP->Collide(🚀);
         // Enumerate all the rocks that collide with the attack area
         const vector<Rock*> 🗿🗿🗿 = _getRocks(🚀);
-        if (🗿🗿🗿.size() != 0)
+        if (🗿🗿🗿.size() != 0 || wallCollision.size() != 0)
             bullet.reduceDuration(4000); // can pass 3 rocks
         for (auto 🗿 : 🗿🗿🗿) {
 			🗿->health -= _damage * 10000;
