@@ -24,19 +24,19 @@ class ShopKeeper {
 		Rect GetHitbox() const { return _sprite.GetHitbox(); }
 
         /* methods */
-        virtual void trade(int* money, Bag* bag) = 0;
+        virtual void trade(int* money, Bag* bag, int type) = 0;
     private:
         game_framework::Bittermap _sprite;
 };
 
 class BombShop : public ShopKeeper {
 public:
-    void trade(int* money, Bag* bag) override;
+    void trade(int* money, Bag* bag, int type) override;
 };
 
 class FoodShop : public ShopKeeper {
 public:
-    void trade(int* money, Bag* bag) override;
+    void trade(int* money, Bag* bag, int type) override;
 };
 
 #endif /* SHOP_KEEPER_H */

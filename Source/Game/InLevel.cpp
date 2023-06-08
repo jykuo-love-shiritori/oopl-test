@@ -318,7 +318,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'T': /* buy bomb */
 			if(true) { // FIXME: need to determine whether there is a shop
 				auto m = uis.rtui.getScore();
-				clint.trade(&m, &bag);
+				clint.trade(&m, &bag,1);
 				uis.rtui.setScore(m);
 			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
@@ -328,18 +328,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// }
 			// /* ... */
 			break;
+		case 'L': /* kill bug */
+			bug.alterHealth(-999);
+			break;
 		case 'F': /* bug and eat food */
 			if(true) { // FIXME: need to determine whether there is a shop
 				auto m = uis.rtui.getScore();
-				gus.trade(&m, &bag);
+				gus.trade(&m, &bag,1);
 				uis.rtui.setScore(m);
 			}
 			if(!bag.use(Item::Food)){
 				X.Play();
 				break;
 			}
-			playerStatus.energy += 400;
-			playerStatus.health += 400;
+			playerStatus.energy += 50;
+			playerStatus.health += 50;
 			break;
 	} /* switch (nChar) */
 #endif /* DEBUG_KEY */
@@ -374,13 +377,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case '3':
 			if(isPress(VK_SHIFT)){
 				if(true) { // FIXME: need to determine whether there is a shop
-				auto m = uis.rtui.getScore();
-				clint.trade(&m, &bag);
-				uis.rtui.setScore(m);
+					auto m = uis.rtui.getScore();
+					if(nChar=='1'){clint.trade(&m, &bag,1);}
+					if(nChar=='2'){clint.trade(&m, &bag,2);}
+					if(nChar=='3'){clint.trade(&m, &bag,3);}
+					uis.rtui.setScore(m);
 				}
 				break;
 			}
-			if(!bag.use(Item::Bomb)){
+			if( nChar=='1' && (!bag.use(Item::cherryBomb)) ||
+				nChar=='2' && (!bag.use(Item::Bomb)) ||
+				nChar=='3' && (!bag.use(Item::megaBomb))){
 				X.Play();
 				break;
 			}

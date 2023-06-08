@@ -24,20 +24,34 @@ void ShopKeeper::init(Vector2f p) {
 //     }
 // }
 
-void FoodShop::trade(int* money, Bag* bag) {
-    const int hotgodPrice = 400;
+void FoodShop::trade(int* money, Bag* bag, int type) {
+    const int hotgodPrice = 50;
     if (*money >= hotgodPrice) {
         *money -= hotgodPrice;
         bag->append(Item::Food);
     }
 }
 
-void BombShop::trade(int* money, Bag* bag) {
+void BombShop::trade(int* money, Bag* bag, int type) {
     const int bombPrice1 = 15;
     const int bombPrice2 = 50;
     const int bombPrice3 = 200;
-    if (*money >= bombPrice1) {
-        *money -= bombPrice1;
-        bag->append(Item::Bomb);
+    if(type==1){
+        if (*money >= bombPrice1) {
+            *money -= bombPrice1;
+            bag->append(Item::cherryBomb);
+        }
+    }
+    else if(type==2){
+        if (*money >= bombPrice2) {
+            *money -= bombPrice2;
+            bag->append(Item::Bomb);
+        }
+    }
+    else{
+        if (*money >= bombPrice3) {
+            *money -= bombPrice3;
+            bag->append(Item::megaBomb);
+        }
     }
 }
