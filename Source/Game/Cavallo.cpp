@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Cavallo.h"
+#include "Map.h"
 #include <functional>
 #include <random>
 #include "../Config/config.h"
