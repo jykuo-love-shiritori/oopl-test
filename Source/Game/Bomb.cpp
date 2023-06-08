@@ -51,7 +51,7 @@ void Bomb::Update(){
     if(_fuse != 0){
         if(_fuse<10) _sprite.SetFrameIndexOfBitmap(_fuse);
         _fuse--;
-        if(_fuse==0){_sprite.SetShow(false);}
+        if(_fuse<3){_sprite.SetShow(false);}
 	}
 }
 
