@@ -8,6 +8,7 @@ class Fish{
     public:
 		enum fishState {
 			fishReady,
+			infish,
 			fishcolddown,
 		};
         /* getter */
@@ -15,10 +16,8 @@ class Fish{
 		int GetFishColddown();
 		bool GetFishSuccess();
 		bool isFishKeyDown();
-		bool isInFishGame();
 		/* setter */
 		void SetFishState(int state);
-		void SetinFishGame(bool ingame);
 
         void init();
 		void Update();
@@ -32,6 +31,7 @@ class Fish{
 		void fishgameColddown();
 
     private:
+		int _fishRange;
 		int _colddown;
 		int _fishstate;
 		int _process;
