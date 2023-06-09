@@ -263,22 +263,15 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 
-	switch (fishgame.GetFishState()) {
-		case Fish::infish:
-			fishgame.Update();
-			break;
-		case Fish::fishsuccess:
-			fishgame.fishReset();
-			userInterface.alterScore(5);
-			fishgame.SetFishState(Fish::fishcolddown);
-			break;
-		case Fish::fishfail:
-			fishgame.fishReset();
-			userInterface.alterScore(-2);
-			fishgame.SetFishState(Fish::fishcolddown);
-			break;
-		case Fish::fishcolddown:
-			fishgame.fishgameColddown();
+	fishgame.fishKeyDown(isPress('Z'));
+	if (fishgame.isInFishGame()/* && fishgame.GetFishColddown() >= 30*/ /*&& userInterface.getScore() > 1*/) {
+		fishgame.Update();
+	}
+	if (fishgame.GetFishSuccess() == 1){
+		userInterface.alterScore(5);
+	}
+	else if (fishgame.GetFishSuccess() == 0){
+		userInterface.alterScore(-2);
 	}
 }
 
@@ -368,6 +361,16 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.health += 400;
 			break;
 	}
+	if (nChar=='Z'&&!fishgame.isInFishGame()){ //when press other key stop fish game
+		fishgame.SetinFishGame(true);
+		fishgame.fishReset(player.position);
+		fishgame.SetFishState(Fish::infish);
+	}
+	else {
+		fishgame.SetinFishGame(false);
+		fishgame.SetFishState(Fish::fishcolddown);
+	}
+
 	#endif /* DEBUG_KEY */
 
 	switch (nChar) {
@@ -398,20 +401,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 			playerStatus.energy -= 1.5;
 			break;
-		case 'Z':
-			if (fishgame.GetFishColddown()>=30 && userInterface.getScore()>1){
-				fishgame.SetFishState(Fish::infish);
-				fishgame.fishKeyDown(true);
-			}
-			break;
 	}
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar =='Z'){
-		fishgame.fishKeyDown(false);
-	}
 }
 
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -451,9 +445,8 @@ void InLevel::OnShow()
 	
 	bug.drawBug();
 	
-	if (fishgame.GetFishState()==Fish::infish){
-		fishgame.showFish();
-	}
+	fishgame.showFish();
+	
 
 	for (auto oui : ouioui) {
 		oui->Show();
