@@ -367,6 +367,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 #endif /* ELEVATOR */
 		case 'R': /* BACK TO START SCREEN */
+			mp5->Stop(1);
+			mp5->Stop(5);
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
