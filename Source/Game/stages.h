@@ -81,6 +81,7 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
+		void GameOver();
 	private:
 		/* BIG BLACK CANVAS */
 		CMovingBitmap BBC;
@@ -127,6 +128,8 @@ namespace game_framework {	namespace stage {
 		};
 
 		CAudio* mp5=CAudio::Instance();
+
+		Bittermap resultScreen;
 	};
 
 	class GameOver : public CGameState {

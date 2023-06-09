@@ -76,6 +76,11 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	mp5->Load(2,"Resources/Audio/stoneCrack1.wav");
 	mp5->Load(3,"Resources/Audio/stoneCrack2.wav");
 	mp5->Load(4,"Resources/Audio/bombFuse.mp3");
+
+	resultScreen.LoadBitmapByString({
+		"Resources/resultScreenBG.bmp",
+		"Resources/resultScreen.bmp"
+	},RGB(255,255,255));
 }
 
 void InLevel::OnBeginState()
@@ -138,6 +143,17 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 }
 /* helper functions END */
 
+void InLevel::GameOver(){
+	resultScreen.SetScale(2);
+	resultScreen.SetTopLeft(0,0);
+	resultScreen.SetFrameIndexOfBitmap(0);
+	resultScreen.Show();
+	resultScreen.SetScale(1.5);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/2);
+	resultScreen.SetFrameIndexOfBitmap(1);
+	resultScreen.Show();
+}
+
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	//TODO: can change timer into cool thing
@@ -147,12 +163,15 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (playerStatus.health == 0) DEATH = true;
 	if (DEATH) {
 		player._sprite_player.SetShow(false);
+		mp5->Stop(1);
+		GameOver();
+		return;
 	}
 	
 	// #define NO_COLLISION
 
 	Vector2i moveVec = getMoveVecByKeys();
-	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
+	// if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
 	if( moveVec!=Vector2i(0,0) ) { // is moving
 		// player moving speed
 		int speed = 0;
@@ -372,6 +391,9 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			mp5->Play(0);
 			playerStatus.energy -= 1;
 			break;
+		case 'Q': // go to game over
+			playerStatus.health=0;
+			break;
 	}
 	/* trade and use items */
 	#define CHERRY_BOMB_KEY '1'
@@ -484,6 +506,10 @@ void InLevel::OnShow()
 	
 	for (auto oui : ouioui) {
 		oui->Show();
+	}
+
+	if(DEATH){
+		GameOver();
 	}
 	/* top layer */
 }
