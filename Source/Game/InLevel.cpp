@@ -88,6 +88,7 @@ void InLevel::OnBeginState()
 	DEATH = false;
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+	player._sprite_player.SetShow();
 
 	bag._money = 0;
 
@@ -176,14 +177,14 @@ void InLevel::OnMove()							// 移動遊戲元素
 		// player moving speed
 		int speed = 0;
 		{ /* running and tried BEGIN */
-			const int highSpeed = 20;
+			const int highSpeed = 15;
 			const int lowSpeed = 10;
 			const int tiredSpeed = 5;
 			speed = lowSpeed;
 			if (isPress(VK_SHIFT)) { // run
 				if (playerStatus.energy > 0) {
 					speed = highSpeed;
-					playerStatus.energy -= 0.4;
+					playerStatus.energy -= 0.2;
 				} else {
 					X.Play();
 				}
