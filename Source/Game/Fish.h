@@ -7,14 +7,14 @@
 class Fish{
     public:
 		enum fishState {
-			infish,
+			fishReady,
 			fishcolddown,
 		};
         /* getter */
 		int GetFishState();
 		int GetFishColddown();
+		bool GetFishSuccess();
 		bool isFishKeyDown();
-		int GetFishSuccess();
 		bool isInFishGame();
 		/* setter */
 		void SetFishState(int state);
@@ -23,6 +23,7 @@ class Fish{
         void init();
 		void Update();
 		void fishOverlay();
+		void FishResult();
 		void showFish();
 		void fishKeyDown(bool ispress);
 		void playercontrol();
@@ -32,11 +33,12 @@ class Fish{
 
     private:
 		int _colddown;
-		int _fishstate,_fishposition;
+		int _fishstate;
 		int _process;
 		int _QteTime;
 		bool _ispress;
 		bool _infishgame;
+		bool _fishsuccess;
 		game_framework::Bittermap _FishGameFrame;
 		game_framework::Bittermap _innerBar;
         game_framework::Bittermap _fish;

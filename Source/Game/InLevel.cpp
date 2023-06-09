@@ -264,13 +264,13 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 
 	fishgame.fishKeyDown(isPress('Z'));
-	if (fishgame.isInFishGame()/* && fishgame.GetFishColddown() >= 30*/ /*&& userInterface.getScore() > 1*/) {
-		fishgame.Update();
-	}
-	if (fishgame.GetFishSuccess() == 1){
+	//if (fishgame.isInFishGame()/* && userInterface.getScore() > 1*/) {
+	//}
+	fishgame.Update();
+	if (fishgame.GetFishSuccess()){
 		userInterface.alterScore(5);
 	}
-	else if (fishgame.GetFishSuccess() == 0){
+	else{
 		userInterface.alterScore(-2);
 	}
 }
@@ -361,10 +361,12 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			playerStatus.health += 400;
 			break;
 	}
-	if (nChar=='Z'&&!fishgame.isInFishGame()){ //when press other key stop fish game
-		fishgame.SetinFishGame(true);
-		fishgame.fishReset(player.position);
-		fishgame.SetFishState(Fish::infish);
+	if (nChar=='Z'){ //when press other key stop fish game
+		if (!fishgame.isInFishGame() && fishgame.GetFishState()==Fish::fishReady){
+			//when FishGame not start, press z init and start fishgame
+			fishgame.fishReset(player.position);
+			fishgame.SetinFishGame(true);
+		}
 	}
 	else {
 		fishgame.SetinFishGame(false);
