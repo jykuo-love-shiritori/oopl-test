@@ -9,25 +9,23 @@
 // TODO: merge to bag and game manager, maybe removed
 class ShopKeeper {
     public:
+        bool inShop;
         /* game misc things */
-        void init() {
-            const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
-            
-            _sprite.LoadBitmapByString({
-                "resources/Clint.bmp",
-            }, RGB(255, 255, 255));
-            _sprite.SetScale(1);
-            _sprite.SetHitBox(regularBoxSize * 0.7);
-        }
+        void init(Vector2f p);
         void draw() {
+            if ( ! inShop ) return;
             _sprite.Draw();
         }
+        /* setter */
+        void setPosition(Vector2f p) {
+            _sprite.position = p;
+        }
 
-        /*getter */
+        /* getter */
 		Rect GetHitbox() const { return _sprite.GetHitbox(); }
 
         /* methods */
-        virtual void trade(int* money, Bag* bag) = 0;
+        virtual void trade(int* money, Bag* bag, int type) = 0;
     private:
         game_framework::Bittermap _sprite;
 };

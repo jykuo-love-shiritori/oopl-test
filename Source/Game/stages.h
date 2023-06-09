@@ -82,6 +82,8 @@ namespace game_framework {	namespace stage {
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
 	private:
+		/* BIG BLACK CANVAS */
+		CMovingBitmap BBC;
 		Player player;
 		struct __ps__ {
 			float health;

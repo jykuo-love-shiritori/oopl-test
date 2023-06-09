@@ -16,6 +16,7 @@
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
+#include "../Config/Debug.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -34,6 +35,8 @@ InLevel::~InLevel()
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
+	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
+	BBC.SetScale(SIZE_X);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
@@ -200,8 +203,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 			}
 		} /* attack rock END */
 		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-			if ( bombAnime.getFuse()==1 ) { /* is bombing */
-				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+			if ( bombAnime.getFuse()==3 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * bombAnime.getBlastRadius() * TILE_SIZE * SCALE_SIZE);
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
@@ -248,15 +251,21 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//FIXME: easy for modify
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
+
+	// {
+	// 	bool inLevel10 = map.getLevel() == 10u;
+	// 	clint.inShop = inLevel10;
+	// }
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	#define DEBUG_KEY
-	#ifdef DEBUG_KEY
+//#define DEBUG_KEY
+#ifdef DEBUG_KEY
 
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
+#ifdef JUMP_LEVEL_DEBUG_KEY
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
@@ -265,8 +274,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if(mapIndex != 1) mapIndex--;
 			}
 			map.setLevel(mapIndex);
+			rockManager.clear();
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
+#endif /* JUMP_LEVEL_DEBUG_KEY */
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
@@ -281,14 +292,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'N': // money++
 			bag._money += 10000;
 			break;
-		case 'B':
-			if(!bag.use(Item::Bomb)){
-				X.Play();
-				break;
-			}
-			if(bombAnime.getFuse()>0) break;
+		case 'B': /* place cherry bomb */
 			bombAnime.useBomb(player.position,0);
 			break;
+#ifdef SPAWN_LADDER
 		case 'E': // randomly create exit
 			{
 				testExit.SetShow();
@@ -296,19 +303,29 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			}
 			break;
-		case 'R':
+#endif /* SPAWN_LADDER */
+#ifdef ELEVATOR
+		case 'E': // randomly create exit
+			{
+				static auto wasAt = -1;
+				if(wasAt == -1) {
+					wasAt = map.getLevel();
+					map.setLevel(10);
+				} else {
+					map.setLevel(wasAt);
+					wasAt = -1;
+				}
+				rockManager.clear();
+				player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+			}
+			break;
+#endif /* ELEVATOR */
+		case 'R': /* BACK TO START SCREEN */
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
 			playerStatus.health += 20;
 			break;
-		case 'T': /* trade */
-			if(true) { // FIXME: need to determine whether there is a shop
-				if(!bag.trade(Item::Bomb, 20)){
-					X.Play();
-					break;
-				}
-			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
 			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
@@ -316,25 +333,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// }
 			// /* ... */
 			break;
-		case 'F': /* bug and eat food */
-			if(isPress(VK_SHIFT)) { // buy
-				if(true) { // FIXME: need to determine whether there is a shop
-					if(!bag.trade(Item::Food, 20)){
-						X.Play();
-						break;
-					}
-				}
-			} else { //use
-				if(!bag.use(Item::Food)){
-					X.Play();
-					break;
-				}
-				playerStatus.energy += 400;
-				playerStatus.health += 400;
-			} /* is press shift */
+		case 'L': /* kill bug */
+			bug.alterHealth(-999);
 			break;
-	}
-	#endif /* DEBUG_KEY */
+	} /* switch (nChar) */
+#endif /* DEBUG_KEY */
 
 	if(DEATH) return; // can't control
 
@@ -361,19 +364,29 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 	}
 	/* trade and use items */
-	#define BOMB_KEY '1'
+	#define CHERRY_BOMB_KEY '1'
+	#define BOMB_KEY '2'
+	#define MEGA_BOMB_KEY '3'
 	#define FOOD_KEY '4'
 	bool isTradingKeyPress = isPress(VK_SHIFT);
 	if (isTradingKeyPress) { /* trading BEGIN */
 		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
-			case BOMB_KEY:
-				if(!bag.trade(Item::Bomb, 20)) goto actionFailed;
+			case CHERRY_BOMB_KEY:
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
+				break;
+			case BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
+				break;
+			case MEGA_BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
 				break;
 			case FOOD_KEY:
-				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				break;
 			// actionFailed:
 			// 	X.Play(); 
@@ -381,10 +394,20 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	} else { /* use item BEGIN */
 		switch (nChar) {
+			case CHERRY_BOMB_KEY:
+				if(!bag.use(Item::cherryBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
 			case BOMB_KEY:
 				if(!bag.use(Item::Bomb)) goto actionFailed;
 				if(bombAnime.getFuse()>0) goto actionFailed;
-				bombAnime.useBomb(player.position,0);
+				bombAnime.useBomb(player.position,1);
+				break;
+			case MEGA_BOMB_KEY:
+				if(!bag.use(Item::megaBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,2);
 				break;
 			case FOOD_KEY:
 				if(!bag.use(Item::Food)) goto actionFailed;
@@ -433,6 +456,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	BBC.ShowBitmap();
 	/* bottom layer */
 	map.drawBack();
 	map.drawBuilding();
@@ -441,6 +465,7 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
+
 	X.Show();
 
 	map.drawFront();
