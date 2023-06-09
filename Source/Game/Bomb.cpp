@@ -34,16 +34,19 @@ void Bomb::useBomb(Vector2i placeLocation,int type){
         _sprite.SetFrameIndexOfBitmap(0);
         _fuse=30;
         _blastRadius=1;
+        _damage=1;
     }
     else if(type==1){
         _sprite.SetFrameIndexOfBitmap(1);
         _fuse=70;
-        _blastRadius=4;
+        _blastRadius=3;
+        _damage=2;
     }
     else{
         _sprite.SetFrameIndexOfBitmap(2);
         _fuse=110;
-        _blastRadius=9;
+        _blastRadius=6;
+        _damage=3;
     }
 }
 

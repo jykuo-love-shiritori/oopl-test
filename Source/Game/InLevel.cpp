@@ -183,7 +183,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
-	const int damage = 1;
 	{ /* break rock BEGIN */
 		{ /* attack rock BEGIN */
 			// A static set can be used to keep track of marked rocks until the end of the round of attack
@@ -196,7 +195,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 				for (auto& 🗿 : 🗿🗿🗿) {
 					if (markedRocks.count(🗿) != 0) continue;
 					markedRocks.insert(🗿);
-					🗿->health -= damage;
+					🗿->health -= bombAnime.getDamage();
 				}
 			} else { /* is not attacking */
 				markedRocks.clear();
@@ -208,7 +207,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
-					🗿->health -= damage;
+					🗿->health -= bombAnime.getDamage();
 				}
 			}
 		} /* bomb rock END */
@@ -305,7 +304,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 #endif /* SPAWN_LADDER */
 #ifdef ELEVATOR
-		case 'E': // randomly create exit
+		case 'E': // go to trade room
 			{
 				static auto wasAt = -1;
 				if(wasAt == -1) {
@@ -316,7 +315,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 					wasAt = -1;
 				}
 				rockManager.clear();
-				player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+				SetupLevel(map.getInfo());
 			}
 			break;
 #endif /* ELEVATOR */
@@ -372,20 +371,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (isTradingKeyPress) { /* trading BEGIN */
 		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
+			if(!isTradingRoom) goto actionFailed;
 			case CHERRY_BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
 				break;
 			case BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
 				break;
 			case MEGA_BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
 				break;
 			case FOOD_KEY:
-				if(!isTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				break;
 			// actionFailed:
