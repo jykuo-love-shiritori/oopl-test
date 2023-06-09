@@ -76,16 +76,19 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	mp5->Load(2,"Resources/Audio/stoneCrack1.wav");
 	mp5->Load(3,"Resources/Audio/stoneCrack2.wav");
 	mp5->Load(4,"Resources/Audio/bombFuse.mp3");
+	mp5->Load(5,"Resources/Audio/Determination.mp3");
 
 	resultScreen.LoadBitmapByString({
 		"Resources/resultScreenBG.bmp",
-		"Resources/resultScreen.bmp"
+		"Resources/resultScreen.bmp",
+		"Resources/finalScoreText.bmp"
 	},RGB(255,255,255));
 }
 
 void InLevel::OnBeginState()
 {
 	DEATH = false;
+	mp5->Stop(5);
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 	player._sprite_player.SetShow();
@@ -149,10 +152,20 @@ void InLevel::GameOver(){
 	resultScreen.SetTopLeft(0,0);
 	resultScreen.SetFrameIndexOfBitmap(0);
 	resultScreen.Show();
+
 	resultScreen.SetScale(1.5);
-	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/2);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/4);
 	resultScreen.SetFrameIndexOfBitmap(1);
 	resultScreen.Show();
+
+	resultScreen.SetScale(1);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/3);
+	resultScreen.SetFrameIndexOfBitmap(2);
+	resultScreen.Show();
+
+	Digit finalScore =  Digit(&bag._money, 3);
+	finalScore.lsb_location={SIZE_X/2,SIZE_Y/2};
+	finalScore.Show();
 }
 
 void InLevel::OnMove()							// 移動遊戲元素
@@ -163,8 +176,12 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	if (playerStatus.health == 0) DEATH = true;
 	if (DEATH) {
+		static bool flag = false;
+		if (flag) return;
+		flag = true;
 		player._sprite_player.SetShow(false);
 		mp5->Stop(1);
+		mp5->Play(5,true);
 		GameOver();
 		return;
 	}
