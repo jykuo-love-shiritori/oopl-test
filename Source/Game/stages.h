@@ -125,6 +125,8 @@ namespace game_framework {	namespace stage {
 			&uis.eh,
 			&uis.tb,
 		};
+
+		CAudio* mp5=CAudio::Instance();
 	};
 
 	class GameOver : public CGameState {
