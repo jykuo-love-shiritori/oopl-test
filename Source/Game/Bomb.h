@@ -26,4 +26,5 @@ class Bomb : public Updatable {
         int _damage;
         int _fuse;
         game_framework::Bittermap _sprite;
+        game_framework::Bittermap _bigWhiteCover;
 };
