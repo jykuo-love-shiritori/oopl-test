@@ -35,7 +35,8 @@ InLevel::~InLevel()
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
-	
+
+	super.Init();
 	player.Init();
 
 	map.loadBMPs(datapath);
@@ -360,7 +361,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			player.attack();
 			playerStatus.energy -= 1.5;
 			break;
-		case 'S':
+		case 'Z':
 			super.SetPosition (player.position);
 	}
 	/* trade and use items */
@@ -449,6 +450,7 @@ void InLevel::OnShow()
 	map.drawFront();
 	
 	bug.drawBug();
+	super.draw();
 	
 	for (auto oui : ouioui) {
 		oui->Show();

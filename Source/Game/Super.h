@@ -10,8 +10,8 @@ class Super
    game_framework::Bittermap sprite;
     vector<Throwable> throwables ;
 public:
-   Super();
 
+    void Init();
    void draw();
 
    void update(Bug &b);

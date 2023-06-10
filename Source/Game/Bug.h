@@ -19,6 +19,7 @@ class Bug{
         Rect GetHitbox() const { return Rect::FromTopLeft(_sprite.position, {50,50}); }
         bool isAlive() const { return _health > 0; }
 
+        game_framework::Bittermap GetSprite() { return _sprite; }
     private:
         game_framework::Bittermap _sprite;
         int _health;
