@@ -28,6 +28,7 @@
 #include "Bittermap.h"
 #include "./UI/RightTopUI.h"
 #include "Cavallo.h"
+#include "Proxy.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
 #include "./UI/Toolbar.h"
@@ -109,6 +110,7 @@ namespace game_framework {	namespace stage {
 		bool DEATH;
 		X X;
 		Cavallo 🐼;
+		Proxy<Cavallo> 🐼Proxy;
 		int m = 0;
 		Bag bag;
 		std::vector<Updatable*> skillOrAnime = {

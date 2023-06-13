@@ -25,7 +25,7 @@ using namespace game_framework::stage;
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
 
-InLevel::InLevel(CGame *g) : CGameState(g)
+InLevel::InLevel(CGame *g) : CGameState(g), 🐼Proxy(🐼, false)
 {
 }
 
@@ -40,7 +40,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	🐼.load();
 	// use bind to get the function for Covallo
 	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1), &map.hp, true, true, &player.position);
-
+	
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
@@ -87,6 +87,7 @@ void InLevel::OnBeginState()
 
 	playerStatus.health=100;
 	playerStatus.energy=100;
+	🐼Proxy.SetEnable(false);
 }
 
 /* helper functions BEGIN */
@@ -184,7 +185,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		} /* player move and collision END */
 	} // endif is moving
 
-	🐼.move(collisionPool); 
+	🐼Proxy.Invoke(&Cavallo::move, Unity::HitboxPool(collisionPool));
 	playerStatus.health -= player.🔫💥 * 0.5;
 	player.🔫💥 = 0;
 	player.Update();
@@ -407,6 +408,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// 	break;
 		}
 	} /* endif isTradingKeyPress */
+	static string s = "";
+	s += static_cast<char>(nChar);
+	if (s.size() > 7) {
+		s = s.substr(1, 7);
+	}
+	if (s == "CAVALLO") {
+		🐼Proxy.SetEnable(true);
+	}
+	if (s == "DISABLE") {
+		🐼Proxy.SetEnable(false);
+	}
 	return;
 /*
  * YES this is a GOTO LABEL only be used in this scope(OnKeyDown()),
@@ -430,14 +442,14 @@ void InLevel::OnMButtonDown(UINT nFlags, CPoint point)
 	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
 	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
 	// set destination of Cavallo when click mouse wheel (for not follow mode)
-	🐼.setDest({ point.x, point.y });
+	🐼Proxy.Invoke(&Cavallo::setDest, Vector2i( point.x, point.y ));
 }
 void InLevel::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
 	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
 	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
 	if (!🐼.isAutoAttack() && zDelta < 0) {
 		// if not auto attack throw bomb to mouse position
-		🐼.Throw({ static_cast<float>(point.x), static_cast<float>(point.y) });
+		🐼Proxy.Invoke(&Cavallo::Throw, Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
 	}
 
 }
@@ -469,7 +481,7 @@ void InLevel::OnShow()
 	player.Draw();
 	X.Show();
 	// draw Cavallo and its things sprites
-	🐼.draw();
+	🐼Proxy.Invoke(&Cavallo::draw);
 
 	map.drawFront();
 	
