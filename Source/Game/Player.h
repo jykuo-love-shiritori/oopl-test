@@ -32,7 +32,7 @@ private:
     int _attackTimer = 0;
     Vector2i _attackDirection;
 public:
-    int health; //FIXME: why no use :pinched_fingers:
+    int health;
     Vector2i& position = _sprite_player.position;
     game_framework::Bittermap _sprite_player;
     game_framework::Bittermap _sprite_attack;
