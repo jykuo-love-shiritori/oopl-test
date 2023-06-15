@@ -29,17 +29,17 @@ void Toolbar::Init() {
     _d3.lsb_location = kLeftTop + Vector2i(55 + OFFSET*2, 55);
     _d4.lsb_location = kLeftTop + Vector2i(55 + OFFSET*3, 55);
 
-    _d1_price.lsb_location = kLeftTop + Vector2i(0 + OFFSET*0, 0);
-    _d2_price.lsb_location = kLeftTop + Vector2i(0 + OFFSET*1, 0);
-    _d3_price.lsb_location = kLeftTop + Vector2i(0 + OFFSET*2, 0);
-    _d4_price.lsb_location = kLeftTop + Vector2i(0 + OFFSET*3, 0);
+    _d1_price.lsb_location = kLeftTop + Vector2i(20 + OFFSET*0, 0);
+    _d2_price.lsb_location = kLeftTop + Vector2i(20 + OFFSET*1, 0);
+    _d3_price.lsb_location = kLeftTop + Vector2i(20 + OFFSET*2, 0);
+    _d4_price.lsb_location = kLeftTop + Vector2i(20 + OFFSET*3, 0);
 }
 
 void Toolbar::Show() {
     for (int i = 0; i<4; i++) {
         _itemSprite.SetTopLeft(LEFT+OFFSET*i, TOP);
         _itemSprite.SetFrameIndexOfBitmap(i);
-        _itemSprite.Show()
+		_itemSprite.Show();
     }
 
     _count1 = _bag->getCount(Item::cherryBomb);

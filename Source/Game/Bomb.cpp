@@ -30,7 +30,7 @@ void Bomb::init(){
 	_bigWhiteCover.LoadBitmapByString({"Resources/whiteatom.bmp"},RGB(0,0,0));
     _bigWhiteCover.position = {0,0};
     _bigWhiteCover.SetScale(SIZE_X);
-    _bigWhiteCover.SetShow(false);
+    _bigWhiteCover.SetShow();
 }
 
 void Bomb::useBomb(Vector2i placeLocation,int type){
@@ -59,13 +59,9 @@ void Bomb::Update(){
     // anime start
     if(_fuse<10) _sprite.SetFrameIndexOfBitmap(_fuse);
     // big white cover
-    _bigWhiteCover.SetShow(_fuse==5);
+    _bigWhiteCover.SetShow(_fuse==5 || _fuse==4);
     // cd
     if(_fuse<3){_sprite.SetShow(false);}
 
     _fuse--;
-}
-
-void Bomb::drawBomb(){
-    _sprite.Draw();
 }

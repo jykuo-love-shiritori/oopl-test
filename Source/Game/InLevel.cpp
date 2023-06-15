@@ -472,6 +472,8 @@ void InLevel::OnShow()
 	map.drawFront();
 	
 	bug.drawBug();
+
+	bombAnime.drawBigWhiteCover();
 	
 	for (auto oui : ouioui) {
 		oui->Show();

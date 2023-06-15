@@ -24,10 +24,10 @@ private:
 	Digit _d2 = Digit(&_count2, 1.2f);
 	Digit _d3 = Digit(&_count3, 1.2f);
 	Digit _d4 = Digit(&_count4, 1.2f);
-	const int kPrice1 = 20;
-	const int kPrice2 = 80;
-	const int kPrice3 = 200;
-	const int kPrice4 = 40;
+	const unsigned kPrice1 = 20;
+	const unsigned kPrice2 = 80;
+	const unsigned kPrice3 = 200;
+	const unsigned kPrice4 = 40;
 	Digit _d1_price = Digit(&kPrice1, 1.2f);
 	Digit _d2_price = Digit(&kPrice2, 1.2f);
 	Digit _d3_price = Digit(&kPrice3, 1.2f);
