@@ -42,7 +42,13 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	player.Init();
 	🐼.load();
 	// use bind to get the function for Covallo
-	🐼.init({0, 0}, std::bind(&Player::GotHit, &player ,std::placeholders::_1), std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1), &map.hp, true, true, &player.position);
+	🐼.init(
+	  {0, 0},
+	  std::bind(&Player::GotHit, &player ,std::placeholders::_1), 
+	  std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1),
+	  &map.hp,
+	  true, /*            autoAttack position v */
+	  true, /*follow position > */ &player.position);
 	
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
