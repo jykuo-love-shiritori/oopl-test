@@ -17,6 +17,7 @@
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
+#include "../Config/Debug.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -34,6 +35,8 @@ InLevel::~InLevel()
 }
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
+	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
+	BBC.SetScale(SIZE_X);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
@@ -70,13 +73,28 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	uis.tb._bag = &bag;
 	uis.rtui.setMoneyPtr(&bag._money);
+
+	mp5->Load(0,"Resources/Audio/brrrrr.mp3");
+	mp5->Load(1,"Resources/Audio/mineBGM.mp3");
+	mp5->Load(2,"Resources/Audio/stoneCrack1.wav");
+	mp5->Load(3,"Resources/Audio/stoneCrack2.wav");
+	mp5->Load(4,"Resources/Audio/bombFuse.mp3");
+	mp5->Load(5,"Resources/Audio/Determination.mp3");
+
+	resultScreen.LoadBitmapByString({
+		"Resources/resultScreenBG.bmp",
+		"Resources/resultScreen.bmp",
+		"Resources/finalScoreText.bmp"
+	},RGB(255,255,255));
 }
 
 void InLevel::OnBeginState()
 {
 	DEATH = false;
+	mp5->Stop(5);
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+	player._sprite_player.SetShow();
 
 	bag._money = 0;
 
@@ -87,6 +105,8 @@ void InLevel::OnBeginState()
 
 	playerStatus.health=100;
 	playerStatus.energy=100;
+
+	mp5->Play(1,true);
 	🐼Proxy.SetEnable(false);
 }
 
@@ -134,6 +154,27 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 }
 /* helper functions END */
 
+void InLevel::GameOver(){
+	resultScreen.SetScale(2);
+	resultScreen.SetTopLeft(0,0);
+	resultScreen.SetFrameIndexOfBitmap(0);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1.5);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/4);
+	resultScreen.SetFrameIndexOfBitmap(1);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/3);
+	resultScreen.SetFrameIndexOfBitmap(2);
+	resultScreen.Show();
+
+	Digit finalScore =  Digit(&bag._money, 3);
+	finalScore.lsb_location={SIZE_X/2,SIZE_Y/2};
+	finalScore.Show();
+}
+
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	//TODO: can change timer into cool thing
@@ -142,7 +183,14 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	if (playerStatus.health == 0) DEATH = true;
 	if (DEATH) {
+		static bool flag = false;
+		if (flag) return;
+		flag = true;
 		player._sprite_player.SetShow(false);
+		mp5->Stop(1);
+		mp5->Play(5,true);
+		GameOver();
+		return;
 	}
 	
 	// #define NO_COLLISION
@@ -154,14 +202,14 @@ void InLevel::OnMove()							// 移動遊戲元素
 		// player moving speed
 		int speed = 0;
 		{ /* running and tried BEGIN */
-			const int highSpeed = 20;
+			const int highSpeed = 15;
 			const int lowSpeed = 10;
 			const int tiredSpeed = 5;
 			speed = lowSpeed;
 			if (isPress(VK_SHIFT)) { // run
 				if (playerStatus.energy > 0) {
 					speed = highSpeed;
-					playerStatus.energy -= 0.4;
+					playerStatus.energy -= 0.2;
 				} else {
 					X.Play();
 				}
@@ -191,7 +239,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
-	const int damage = 1;
 	{ /* break rock BEGIN */
 		{ /* attack rock BEGIN */
 			// A static set can be used to keep track of marked rocks until the end of the round of attack
@@ -204,19 +251,27 @@ void InLevel::OnMove()							// 移動遊戲元素
 				for (auto& 🗿 : 🗿🗿🗿) {
 					if (markedRocks.count(🗿) != 0) continue;
 					markedRocks.insert(🗿);
-					🗿->health -= damage;
+					🗿->health -= 1;
+					if(std::rand()%2==0){mp5->Play(2);}
+					else{mp5->Play(3);}
 				}
 			} else { /* is not attacking */
 				markedRocks.clear();
 			}
 		} /* attack rock END */
 		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-			if ( bombAnime.getFuse()==1 ) { /* is bombing */
-				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+			if ( bombAnime.getFuse()==3 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * bombAnime.getBlastRadius() * TILE_SIZE * SCALE_SIZE);
+				if(Rect::isOverlay(player.getHitBox(),🧨)){
+					playerStatus.health-=bombAnime.getDamage()*5;
+				}
+				if(Rect::isOverlay(bug.GetHitbox(),🧨)){
+					bug.alterHealth(-bombAnime.getDamage()*10);
+				}
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
-					🗿->health -= damage;
+					🗿->health -= bombAnime.getDamage();
 				}
 			}
 		} /* bomb rock END */
@@ -259,15 +314,21 @@ void InLevel::OnMove()							// 移動遊戲元素
 	//FIXME: easy for modify
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
+
+	// {
+	// 	bool inLevel10 = map.getLevel() == 10u;
+	// 	clint.inShop = inLevel10;
+	// }
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	#define DEBUG_KEY
-	#ifdef DEBUG_KEY
+//#define DEBUG_KEY
+#ifdef DEBUG_KEY
 
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
+#ifdef JUMP_LEVEL_DEBUG_KEY
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
@@ -276,9 +337,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if(mapIndex != 1) mapIndex--;
 			}
 			map.setLevel(mapIndex);
+			rockManager.clear();
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 			break;
+#endif /* JUMP_LEVEL_DEBUG_KEY */
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
@@ -293,14 +356,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'N': // money++
 			bag._money += 10000;
 			break;
-		case 'B':
-			if(!bag.use(Item::Bomb)){
-				X.Play();
-				break;
-			}
-			if(bombAnime.getFuse()>0) break;
+		case 'B': /* place cherry bomb */
 			bombAnime.useBomb(player.position,0);
 			break;
+#ifdef SPAWN_LADDER
 		case 'E': // randomly create exit
 			{
 				testExit.SetShow();
@@ -308,19 +367,31 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			}
 			break;
-		case 'R':
+#endif /* SPAWN_LADDER */
+#ifdef ELEVATOR
+		case 'E': // go to trade room
+			{
+				static auto wasAt = -1;
+				if(wasAt == -1) {
+					wasAt = map.getLevel();
+					map.setLevel(10);
+				} else {
+					map.setLevel(wasAt);
+					wasAt = -1;
+				}
+				rockManager.clear();
+				SetupLevel(map.getInfo());
+			}
+			break;
+#endif /* ELEVATOR */
+		case 'R': /* BACK TO START SCREEN */
+			mp5->Stop(1);
+			mp5->Stop(5);
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
 			playerStatus.health += 20;
 			break;
-		case 'T': /* trade */
-			if(true) { // FIXME: need to determine whether there is a shop
-				if(!bag.trade(Item::Bomb, 20)){
-					X.Play();
-					break;
-				}
-			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
 			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
@@ -328,25 +399,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// }
 			// /* ... */
 			break;
-		case 'F': /* bug and eat food */
-			if(isPress(VK_SHIFT)) { // buy
-				if(true) { // FIXME: need to determine whether there is a shop
-					if(!bag.trade(Item::Food, 20)){
-						X.Play();
-						break;
-					}
-				}
-			} else { //use
-				if(!bag.use(Item::Food)){
-					X.Play();
-					break;
-				}
-				playerStatus.energy += 400;
-				playerStatus.health += 400;
-			} /* is press shift */
+		case 'L': /* kill bug */
+			bug.alterHealth(-999);
 			break;
-	}
-	#endif /* DEBUG_KEY */
+	} /* switch (nChar) */
+#endif /* DEBUG_KEY */
 
 	if(DEATH) return; // can't control
 
@@ -367,25 +424,39 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'P': // player attack
 			if(playerStatus.energy == 0) goto actionFailed;
-			if( !player.canAttack() ) /* skip */;
+			if( !player.canAttack() ) break;/* skip */;
 			player.attack();
-			playerStatus.energy -= 1.5;
+			mp5->Play(0);
+			playerStatus.energy -= 1;
+			break;
+		case 'Q': // go to game over
+			playerStatus.health=0;
 			break;
 	}
 	/* trade and use items */
-	#define BOMB_KEY '1'
+	#define CHERRY_BOMB_KEY '1'
+	#define BOMB_KEY '2'
+	#define MEGA_BOMB_KEY '3'
 	#define FOOD_KEY '4'
 	bool isTradingKeyPress = isPress(VK_SHIFT);
 	if (isTradingKeyPress) { /* trading BEGIN */
-		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
+		bool isTradingRoom = map.getLevel() == 10;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
-			case BOMB_KEY:
-				if(!bag.trade(Item::Bomb, 20)) goto actionFailed;
+			case CHERRY_BOMB_KEY:
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
+				break;
+			case BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
+				break;
+			case MEGA_BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
 				break;
 			case FOOD_KEY:
-				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				break;
 			// actionFailed:
 			// 	X.Play(); 
@@ -393,10 +464,20 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	} else { /* use item BEGIN */
 		switch (nChar) {
+			case CHERRY_BOMB_KEY:
+				if(!bag.use(Item::cherryBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
 			case BOMB_KEY:
 				if(!bag.use(Item::Bomb)) goto actionFailed;
 				if(bombAnime.getFuse()>0) goto actionFailed;
-				bombAnime.useBomb(player.position,0);
+				bombAnime.useBomb(player.position,1);
+				break;
+			case MEGA_BOMB_KEY:
+				if(!bag.use(Item::megaBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,2);
 				break;
 			case FOOD_KEY:
 				if(!bag.use(Item::Food)) goto actionFailed;
@@ -471,6 +552,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	BBC.ShowBitmap();
 	/* bottom layer */
 	map.drawBack();
 	map.drawBuilding();
@@ -479,6 +561,7 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
+
 	X.Show();
 	// draw Cavallo and its things sprites
 	🐼Proxy.Invoke(&Cavallo::draw);
@@ -489,6 +572,10 @@ void InLevel::OnShow()
 	
 	for (auto oui : ouioui) {
 		oui->Show();
+	}
+
+	if(DEATH){
+		GameOver();
 	}
 	/* top layer */
 }

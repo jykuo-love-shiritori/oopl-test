@@ -3,7 +3,7 @@
 
 enum class Item{
     //TODO: nothing here(Item) helpme
-    Bomb, Food, Rock
+    cherryBomb, Bomb, megaBomb, Food, Rock
 };
 
 #endif /*ITEM_H*/

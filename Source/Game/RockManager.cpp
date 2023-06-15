@@ -55,6 +55,7 @@ void RockManager::createRocksOn(const std::vector<Vector2i> placeablePositions) 
             rock.position = pos;
             rock.type = rockSelector();
             rock.permaType = rock.type;
+            rock.health=rock.rockInfos[rock.type].mohs;
             _rocks.push_back(rock);
             _hp.AddHitbox( Rect::FromTopLeft(
 				pos * TILE_SIZE * SCALE_SIZE,
@@ -146,7 +147,7 @@ bool RockManager::playBreakAnimation(Vector2i exit, unsigned int *score){
     int scoreTally=0;
     for(auto& 🗿:brokenRockPtrs){
         if (🗿->health < -1000) continue;
-        scoreTally+=🗿->rockScore[🗿->permaType];
+        scoreTally+=🗿->rockInfos[🗿->permaType].score;
     }
     *score=scoreTally;
     remove(brokenRockPtrs);
