@@ -71,6 +71,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	X.Init();
 
+	fishgame.init();
 	uis.tb._bag = &bag;
 	uis.rtui.setMoneyPtr(&bag._money);
 
@@ -315,10 +316,17 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 
-	// {
-	// 	bool inLevel10 = map.getLevel() == 10u;
-	// 	clint.inShop = inLevel10;
-	// }
+	fishgame.fishKeyDown(isPress('Z'));
+	fishgame.Update();
+	//when enter colddown get FishGame result 
+	if (fishgame.GetFishColddown() == 1){
+		if (fishgame.GetFishSuccess()){
+			bag._money += 5;
+		}
+		else {
+			bag._money -= 2;
+		}
+	}
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -403,7 +411,20 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			bug.alterHealth(-999);
 			break;
 	} /* switch (nChar) */
-#endif /* DEBUG_KEY */
+	
+	if (nChar=='Z'){ //when press other key stop fish game
+		if(bag._money < 2) goto actionFailed;
+		if (fishgame.GetFishState()==Fish::fishReady){
+			//when FishGame not start, press z init and start fishgame
+			fishgame.fishReset(player.position);
+			fishgame.SetFishState(Fish::infish);
+		}
+	}
+	else {
+		fishgame.SetFishState(Fish::fishcolddown);
+	}
+
+	#endif /* DEBUG_KEY */
 
 	if(DEATH) return; // can't control
 
@@ -570,6 +591,9 @@ void InLevel::OnShow()
 	
 	bug.drawBug();
 	
+	fishgame.showFish();
+	
+
 	for (auto oui : ouioui) {
 		oui->Show();
 	}

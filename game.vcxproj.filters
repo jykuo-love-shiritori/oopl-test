@@ -79,6 +79,7 @@
     <ClCompile Include="Source\Game\UI\Toolbar.cpp" />
     <ClCompile Include="Source\Game\Cavallo.cpp" />
     <ClCompile Include="Source\Game\Proxy.cpp" />
+    <ClCompile Include="Source\Game\Fish.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -128,6 +129,7 @@
     <ClInclude Include="Source\Game\Bug.h" />
     <ClInclude Include="Source\Game\UI.h" />
     <ClInclude Include="Source\Game\Bomb.h" />
+    <ClInclude Include="Source\Game\Fish.h" />
     <ClInclude Include="Source\Game\Player.h" />
     <ClInclude Include="Source\Game\Cavallo.h" />
     <ClInclude Include="Source\Game\Proxy.h" />
