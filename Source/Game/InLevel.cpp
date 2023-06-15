@@ -356,6 +356,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 			break;
 #endif /* JUMP_LEVEL_DEBUG_KEY */
+#ifdef RESPAWN_ROCKS_DEBUG_KEY
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
@@ -367,6 +368,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
+#endif /* RESPAWN_ROCKS_DEBUG_KEY*/
 		case 'N': // money++
 			bag._money += 10000;
 			break;
