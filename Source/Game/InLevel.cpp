@@ -38,7 +38,8 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
 	BBC.SetScale(SIZE_X);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
-	
+
+	super.Init();
 	player.Init();
 	🐼.load();
 	// use bind to get the function for Covallo
@@ -184,6 +185,7 @@ void InLevel::GameOver(){
 
 void InLevel::OnMove()							// 移動遊戲元素
 {
+	super.update(bug);
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
@@ -461,6 +463,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'Q': // go to game over
 			playerStatus.health=0;
 			break;
+		case 'Z':
+			super.SetPosition (player.position);
 	}
 	/* trade and use items */
 	#define CHERRY_BOMB_KEY '1'
@@ -598,6 +602,7 @@ void InLevel::OnShow()
 	map.drawFront();
 	
 	bug.drawBug();
+	super.draw();
 	
 	fishgame.showFish();
 	

@@ -34,6 +34,7 @@
 #include "./UI/Toolbar.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
+#include "Super.h"
 #include "Updatable.h"
 #include "./UI/X.h"
 #include "Fish.h"
@@ -98,6 +99,7 @@ namespace game_framework {	namespace stage {
 			float health;
 			float energy;
 		} playerStatus;
+		Super super;
 
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
