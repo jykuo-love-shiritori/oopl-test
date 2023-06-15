@@ -5,12 +5,12 @@ build
 Testing
 
 ### Map Resources ###
-Resources/MapTextures
-Resources/MapData
-Resources/Minerals
-Resources/Fonts
-Resources/Bomb
-Resources/Audio
+# Resources/MapTextures
+# Resources/MapData
+# Resources/Minerals
+# Resources/Fonts
+# Resources/Bomb
+# Resources/Audio
 
 ### VScode ###
 .vscode
