@@ -26,18 +26,22 @@
 #include "Bug.h"
 #include "Bag.h"
 #include "Bittermap.h"
-#include "./UI.h"
+#include "./UI/RightTopUI.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
 #include "./UI/Toolbar.h"
 #include "Bomb.h"
 #include "ShopKeeper.h"
 #include "Updatable.h"
-#include "X.h"
+#include "./UI/X.h"
 #include "Fish.h"
 #include "../Unity/Vector2.h"
+#include "../Game/Player.h"
 
 #include "../Config/config.h"
+
+#include "../Library/audio.h"
+using game_framework::CAudio;
 
 using temp_name::Map;
 
@@ -81,14 +85,16 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
+		void GameOver();
 	private:
-		Bittermap player;
-		Bittermap playerAttack;
+		/* BIG BLACK CANVAS */
+		CMovingBitmap BBC;
+		Player player;
 		struct __ps__ {
 			float health;
 			float energy;
 		} playerStatus;
-		Unity::Vector2i playerMoving;
+
 		std::string datapath="resources/MapTextures/mine"; //FIXME: hardcode textures files
 		Map map;
 
@@ -102,8 +108,9 @@ namespace game_framework {	namespace stage {
 		Bug bug;
 		Bomb bombAnime;
 
-		BombShop clint;
-		FoodShop gus;
+		// BombShop clint;
+		// FoodShop gus;
+		bool DEATH;
 		X X;
 		Fish fishgame;
 
@@ -114,17 +121,20 @@ namespace game_framework {	namespace stage {
 			&X,
 		};
 
-		UIs userInterface;
-
 		struct {
+			RightTopUI rtui;
 			EH eh;
 			Toolbar tb;
 		} uis;
 		std::vector<UI*> ouioui = {
-			&userInterface,
+			&uis.rtui,
 			&uis.eh,
 			&uis.tb,
 		};
+
+		CAudio* mp5=CAudio::Instance();
+
+		Bittermap resultScreen;
 	};
 
 	class GameOver : public CGameState {

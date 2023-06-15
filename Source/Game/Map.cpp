@@ -202,6 +202,10 @@ void Map::setLevel(unsigned int index) {
 }
 
 bool Map::nextLevel() {
+	auto next_map_index = (m_mapIndex+1) % kStartPosition.size();
+	setLevel(next_map_index);
+	return true;
+
 	// TODO: better exception handle
 	// file is start at 1 but vector start at 0 :(
 	if(!(m_mapIndex-1+1 < kStartPosition.size())) return false;

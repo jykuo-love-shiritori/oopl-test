@@ -16,9 +16,7 @@
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
-
-#define PLAYER_ATTACK_CD	15
-#define PLAYER_ATTACK_TIME	5
+#include "../Config/Debug.h"
 
 using namespace game_framework;
 using namespace game_framework::stage;
@@ -37,30 +35,16 @@ InLevel::~InLevel()
 
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
+	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
+	BBC.SetScale(SIZE_X);
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
-	player.LoadBitmapByString({
-        "resources/giraffe.bmp",
-        "resources/giraffe-hit.bmp",
-	}, RGB(255, 255, 255));
-	player.SetScale(1);
-	player.SetHitBox(regularBoxSize * 0.7);
-
-	playerAttack.LoadBitmapByString({
-        "resources/slashLeft.bmp",
-        "resources/slashDown.bmp",
-        "resources/slashRight.bmp",
-        "resources/slashUp.bmp"
-	}, RGB(25, 28, 36));
-	playerAttack.SetScale(1);
-	playerAttack.SetHitBox(regularBoxSize * 1.0);
-	playerAttack.SetShow(false);
+	player.Init();
 
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
 	map.setLevel(1);
-	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 
 	for (auto oui : ouioui) {
 		oui->Init();
@@ -82,17 +66,35 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	uis.eh.setHealth(&playerStatus.health);
 	uis.eh.setEnergy(&playerStatus.energy);
 
-	X.LoadBitmapByString({"Resources/x.bmp"}, RGB(31,31,31));
+	X.Init();
 
 	fishgame.init();
 	uis.tb._bag = &bag;
+	uis.rtui.setMoneyPtr(&bag._money);
+
+	mp5->Load(0,"Resources/Audio/brrrrr.mp3");
+	mp5->Load(1,"Resources/Audio/mineBGM.mp3");
+	mp5->Load(2,"Resources/Audio/stoneCrack1.wav");
+	mp5->Load(3,"Resources/Audio/stoneCrack2.wav");
+	mp5->Load(4,"Resources/Audio/bombFuse.mp3");
+	mp5->Load(5,"Resources/Audio/Determination.mp3");
+
+	resultScreen.LoadBitmapByString({
+		"Resources/resultScreenBG.bmp",
+		"Resources/resultScreen.bmp",
+		"Resources/finalScoreText.bmp"
+	},RGB(255,255,255));
 }
 
 void InLevel::OnBeginState()
 {
+	DEATH = false;
+	mp5->Stop(5);
 	map.setLevel(1);
+	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+	player._sprite_player.SetShow();
 
-	userInterface.setScore(0);
+	bag._money = 0;
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -101,6 +103,8 @@ void InLevel::OnBeginState()
 
 	playerStatus.health=100;
 	playerStatus.energy=100;
+
+	mp5->Play(1,true);
 }
 
 /* helper functions BEGIN */
@@ -125,22 +129,6 @@ Vector2i getMoveVecByKeys() {
 	return moveVec;
 }
 
-unsigned int getFrameIndexOfBitmapBy(Vector2i attackDirection) {
-	if(attackDirection==Vector2i(0,1)){
-		return 1; // Down
-	}
-	if(attackDirection==Vector2i(0,-1)){
-		return 3; // Up
-	}
-	if(attackDirection.x == -1){
-		return 2; // Left
-	}
-	if(attackDirection.x == 1){
-		return 0; // Right
-	}
-	throw "wtf";
-}
-
 void InLevel::SetupLevel(Map::Info mapInfo) {
 	/* generate rocks */
 	const auto pps = map.getPlaceablePositions();
@@ -160,73 +148,127 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 }
 /* helper functions END */
 
+void InLevel::GameOver(){
+	resultScreen.SetScale(2);
+	resultScreen.SetTopLeft(0,0);
+	resultScreen.SetFrameIndexOfBitmap(0);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1.5);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/4);
+	resultScreen.SetFrameIndexOfBitmap(1);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/3);
+	resultScreen.SetFrameIndexOfBitmap(2);
+	resultScreen.Show();
+
+	Digit finalScore =  Digit(&bag._money, 3);
+	finalScore.lsb_location={SIZE_X/2,SIZE_Y/2};
+	finalScore.Show();
+}
+
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	//TODO: can change timer into cool thing
 	// unsigned int deltaTime = CSpecialEffect::GetEllipseTime();
 	// CSpecialEffect::SetCurrentTime();
+
+	if (playerStatus.health == 0) DEATH = true;
+	if (DEATH) {
+		static bool flag = false;
+		if (flag) return;
+		flag = true;
+		player._sprite_player.SetShow(false);
+		mp5->Stop(1);
+		mp5->Play(5,true);
+		GameOver();
+		return;
+	}
 	
 	// #define NO_COLLISION
 
-	// player moving speed
-	const int speed=20;
-	{ /* player move and collision BEGIN */
-		const Vector2i moveVec = getMoveVecByKeys();
-		// Update player facing
-		if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
+	Vector2i moveVec = getMoveVecByKeys();
+	// if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
+	if( moveVec!=Vector2i(0,0) ) { // is moving
+		// player moving speed
+		int speed = 0;
+		{ /* running and tried BEGIN */
+			const int highSpeed = 15;
+			const int lowSpeed = 10;
+			const int tiredSpeed = 5;
+			speed = lowSpeed;
+			if (isPress(VK_SHIFT)) { // run
+				if (playerStatus.energy > 0) {
+					speed = highSpeed;
+					playerStatus.energy -= 0.2;
+				} else {
+					X.Play();
+				}
+			}
+			if (playerStatus.energy <= 0) {
+				speed = tiredSpeed;
+			}
+		} /* running and tried END */
+		{ /* player move and collision BEGIN */
+			// Update player facing
+			if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-		const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
-		for (int i = 0; i < speed; i++) {
-			#ifndef NO_COLLISION
-			player.MoveWithCollision(moveVec, collisionPool);
-			#else /* NO_COLLISION */
-			player.Move(moveVec);
-			#endif /* NO_COLLISION */
-		}
-	} /* player move and collision END */
+			const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+			for (int i = 0; i < speed; i++) {
+				#ifndef NO_COLLISION
+				player.MoveWithCollision(moveVec, collisionPool);
+				#else /* NO_COLLISION */
+				player.Move(moveVec);
+				#endif /* NO_COLLISION */
+			}
+		} /* player move and collision END */
+	}
 
-	{ /* player attack timer BEGIN */
-		if(playerAttackTimer > 0) {
-			playerAttackTimer--;
-			playerAttack.SetShow(playerAttackTimer > PLAYER_ATTACK_CD);
-		}
-		playerAttack.position = player.position + attackDirection * TILE_SIZE * SCALE_SIZE;
-	} /* player attack counter END */
+	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
-	const int damage = 1;
 	{ /* break rock BEGIN */
 		{ /* attack rock BEGIN */
 			// A static set can be used to keep track of marked rocks until the end of the round of attack
 			static std::set<Rock*> markedRocks = {};
 
-			if ( playerAttack.isShown() ) { /* is attacking */
-				const auto 🗡️ = playerAttack.GetHitbox();
+			if ( player.isAttacking() ) { /* is attacking */
+				const auto 🗡️ = player.getAttackBox();
 				// Enumerate all the rocks that collide with the attack area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🗡️);
 				for (auto& 🗿 : 🗿🗿🗿) {
 					if (markedRocks.count(🗿) != 0) continue;
 					markedRocks.insert(🗿);
-					🗿->health -= damage;
+					🗿->health -= 1;
+					if(std::rand()%2==0){mp5->Play(2);}
+					else{mp5->Play(3);}
 				}
 			} else { /* is not attacking */
 				markedRocks.clear();
 			}
 		} /* attack rock END */
 		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
-			if ( bombAnime.getFuse()==1 ) { /* is bombing */
-				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * 5 * TILE_SIZE * SCALE_SIZE);
+			if ( bombAnime.getFuse()==3 ) { /* is bombing */
+				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * bombAnime.getBlastRadius() * TILE_SIZE * SCALE_SIZE);
+				if(Rect::isOverlay(player.getHitBox(),🧨)){
+					playerStatus.health-=bombAnime.getDamage()*5;
+				}
+				if(Rect::isOverlay(bug.GetHitbox(),🧨)){
+					bug.alterHealth(-bombAnime.getDamage()*10);
+				}
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
-					🗿->health -= damage;
+					🗿->health -= bombAnime.getDamage();
 				}
 			}
 		} /* bomb rock END */
 		{ /* play animation and break rock and show exit */
 			unsigned int scoreModify;
 			bool isExitRock = rockManager.playBreakAnimation(testExit.position, &scoreModify);
-			userInterface.alterScore(scoreModify);
+			bag._money += scoreModify;
 			if ( isExitRock ) {
 				testExit.SetShow();
 			}
@@ -237,7 +279,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 		bug.pursuit(player.position);
 		{ /* bug collide player BEGIN */
 			//player.SetFrameIndexOfBitmap(0);
-			if ( Rect::isOverlay(player.GetHitbox(), bug.GetHitbox() ))
+			if ( Rect::isOverlay(player.getHitBox(), bug.GetHitbox() ))
 			{
 				//player.SetFrameIndexOfBitmap(1);
 				playerStatus.health -= 0.5;
@@ -245,8 +287,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 		} /* bug collide player END */
 		{ /* player attack bug BEGIN */
 			bool isHitting =
-				Rect::isOverlay(playerAttack.GetHitbox(), bug.GetHitbox())
-				&& playerAttack.isShown();
+				Rect::isOverlay(player.getAttackBox(), bug.GetHitbox())
+				&& player.isAttacking();
 
 			bug.setHit(isHitting);
 			if ( isHitting ) { /* if isHitting */
@@ -266,22 +308,24 @@ void InLevel::OnMove()							// 移動遊戲元素
 	fishgame.fishKeyDown(isPress('Z'));
 	fishgame.Update();
 	//when enter colddown get FishGame result 
-	if (fishgame.GetFishColddown() == 1){
+	if (fishgame.GetFishColddown() == 1 && bag._money > 2){
 		if (fishgame.GetFishSuccess()){
-			userInterface.alterScore(5);
+			bag._money += 5;
 		}
 		else {
-			userInterface.alterScore(-2);
+			bag._money -= 2;
 		}
 	}
 }
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	#define DEBUG_KEY
-	#ifdef DEBUG_KEY
+//#define DEBUG_KEY
+#ifdef DEBUG_KEY
+
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
+#ifdef JUMP_LEVEL_DEBUG_KEY
 		case 'J': // next map
 		case 'K': // previous map
 			if(nChar=='J'){
@@ -290,38 +334,28 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if(mapIndex != 1) mapIndex--;
 			}
 			map.setLevel(mapIndex);
+			rockManager.clear();
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 			break;
+#endif /* JUMP_LEVEL_DEBUG_KEY */
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
 			} else {
-				const Rect playerHitbox = player.GetHitbox();
+				const Rect playerHitbox = player.getHitBox();
 				const auto pps = map.getPlaceablePositions();
 				do { // FIXED: rock generate at player spawn point would break collision system
 					rockManager.createRocksOn(pps);
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
-		case 'N': //score--
-		case 'M': //score++
-			if(nChar=='N'){
-				if(userInterface.getScore()){
-					userInterface.alterScore(-1);
-				}
-			}
-			else{
-				userInterface.alterScore(1);
-			}
+		case 'N': // money++
+			bag._money += 10000;
 			break;
-		case 'B':
-			if(!bag.use(Item::Bomb)){
-				X.Play();
-				break;
-			}
-			if(bombAnime.getFuse()>0) break;
+		case 'B': /* place cherry bomb */
 			bombAnime.useBomb(player.position,0);
 			break;
+#ifdef SPAWN_LADDER
 		case 'E': // randomly create exit
 			{
 				testExit.SetShow();
@@ -329,18 +363,31 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			}
 			break;
-		case 'R':
+#endif /* SPAWN_LADDER */
+#ifdef ELEVATOR
+		case 'E': // go to trade room
+			{
+				static auto wasAt = -1;
+				if(wasAt == -1) {
+					wasAt = map.getLevel();
+					map.setLevel(10);
+				} else {
+					map.setLevel(wasAt);
+					wasAt = -1;
+				}
+				rockManager.clear();
+				SetupLevel(map.getInfo());
+			}
+			break;
+#endif /* ELEVATOR */
+		case 'R': /* BACK TO START SCREEN */
+			mp5->Stop(1);
+			mp5->Stop(5);
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
 			playerStatus.health += 20;
 			break;
-		case 'T': /* trade */
-			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
-				clint.trade(&m, &bag);
-				userInterface.setScore(m);
-			}
 			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
 			// 	dwarf.trade();
 			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
@@ -348,20 +395,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// }
 			// /* ... */
 			break;
-		case 'F': /* bug and eat food */
-			if(true) { // FIXME: need to determine whether there is a shop
-				auto m = userInterface.getScore();
-				gus.trade(&m, &bag);
-				userInterface.setScore(m);
-			}
-			if(!bag.use(Item::Food)){
-				X.Play();
-				break;
-			}
-			playerStatus.energy += 400;
-			playerStatus.health += 400;
+		case 'L': /* kill bug */
+			bug.alterHealth(-999);
 			break;
-	}
+	} /* switch (nChar) */
+	
 	if (nChar=='Z'){ //when press other key stop fish game
 		if (fishgame.GetFishState()==Fish::fishReady){
 			//when FishGame not start, press z init and start fishgame
@@ -375,9 +413,11 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	#endif /* DEBUG_KEY */
 
-	switch (nChar) {
+	if(DEATH) return; // can't control
+
+	switch (nChar) { // attack and action(only enter exit for now)
 		case KEY_DO_ACTION: // Check/Do Action
-			const Rect playerHitbox = player.GetHitbox();
+			const Rect playerHitbox = player.getHitBox();
 			const Rect exitHitbox = testExit.GetHitbox();
 			if (testExit.isShown() && Rect::isOverlay(playerHitbox, exitHitbox)) {
 				// switch to next level
@@ -391,19 +431,81 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// if (phase == 10 && Rect::isOverlay(playerHitbox, exitHitbox))
 			break;
 		case 'P': // player attack
-			if(playerStatus.energy == 0){
-				X.Play();
-				break;
-			}
-			if(playerAttackTimer > 0) break; // cd-ing
-
-			playerAttack.SetFrameIndexOfBitmap(
-				getFrameIndexOfBitmapBy(attackDirection)
-			);
-			playerAttackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
-			playerStatus.energy -= 1.5;
+			if(playerStatus.energy == 0) goto actionFailed;
+			if( !player.canAttack() ) break;/* skip */;
+			player.attack();
+			mp5->Play(0);
+			playerStatus.energy -= 1;
+			break;
+		case 'Q': // go to game over
+			playerStatus.health=0;
 			break;
 	}
+	/* trade and use items */
+	#define CHERRY_BOMB_KEY '1'
+	#define BOMB_KEY '2'
+	#define MEGA_BOMB_KEY '3'
+	#define FOOD_KEY '4'
+	bool isTradingKeyPress = isPress(VK_SHIFT);
+	if (isTradingKeyPress) { /* trading BEGIN */
+		bool isTradingRoom = map.getLevel() == 10;//map.getLevel() == 10; //FIXME: trading room
+		switch (nChar) {
+			case CHERRY_BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
+				break;
+			case BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
+				break;
+			case MEGA_BOMB_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
+				break;
+			case FOOD_KEY:
+				if(!isTradingRoom) goto actionFailed;
+				if(!bag.trade(Item::Food, 40)) goto actionFailed;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} else { /* use item BEGIN */
+		switch (nChar) {
+			case CHERRY_BOMB_KEY:
+				if(!bag.use(Item::cherryBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,0);
+				break;
+			case BOMB_KEY:
+				if(!bag.use(Item::Bomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,1);
+				break;
+			case MEGA_BOMB_KEY:
+				if(!bag.use(Item::megaBomb)) goto actionFailed;
+				if(bombAnime.getFuse()>0) goto actionFailed;
+				bombAnime.useBomb(player.position,2);
+				break;
+			case FOOD_KEY:
+				if(!bag.use(Item::Food)) goto actionFailed;
+				playerStatus.energy += 40;
+				playerStatus.health += 40;
+				break;
+			// actionFailed:
+			// 	X.Play(); 
+			// 	break;
+		}
+	} /* endif isTradingKeyPress */
+	return;
+/*
+ * YES this is a GOTO LABEL only be used in this scope(OnKeyDown()),
+ * because idk what's cpp goto statement ganna do.
+ * anyway, this goto label help me a lot,
+ * if you have any better idea plz fix it.
+ */
+actionFailed:
+	X.Play(); 
 }
 
 void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -432,6 +534,7 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
+	BBC.ShowBitmap();
 	/* bottom layer */
 	map.drawBack();
 	map.drawBuilding();
@@ -440,7 +543,7 @@ void InLevel::OnShow()
 	testExit.Draw();
 	bombAnime.drawBomb();
 	player.Draw();
-	playerAttack.Draw();
+
 	X.Show();
 
 	map.drawFront();
@@ -452,6 +555,10 @@ void InLevel::OnShow()
 
 	for (auto oui : ouioui) {
 		oui->Show();
+	}
+
+	if(DEATH){
+		GameOver();
 	}
 	/* top layer */
 }

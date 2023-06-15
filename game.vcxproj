@@ -249,15 +249,16 @@
     <ClCompile Include="Source\Game\Bomb.cpp" />
     <ClCompile Include="Source\Game\Fish.cpp" />
     <ClCompile Include="Source\Game\Map.cpp" />
+    <ClCompile Include="Source\Game\Player.cpp" />
     <ClCompile Include="Source\Game\RockManager.cpp" />
     <ClCompile Include="Source\Game\ShopKeeper.cpp" />
     <ClCompile Include="Source\Game\StartScreen.cpp" />
     <ClCompile Include="Source\Game\GameOver.cpp" />
     <ClCompile Include="Source\Game\InLevel.cpp" />
-    <ClCompile Include="Source\Game\UI.cpp" />
+    <ClCompile Include="Source\Game\UI\RightTopUI.cpp" />
     <ClCompile Include="Source\Game\UI\Digit.cpp" />
     <ClCompile Include="Source\Game\UI\Toolbar.cpp" />
-    <ClCompile Include="Source\Game\X.cpp" />
+    <ClCompile Include="Source\Game\UI\X.cpp" />
     <ClCompile Include="Source\Game\UI\eh.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="Source\Game\Bittermap.h" />
     <ClInclude Include="Source\Game\Fish.h" />
     <ClInclude Include="Source\Game\Map.h" />
+    <ClInclude Include="Source\Game\Player.h" />
     <ClInclude Include="Source\Game\RockManager.h" />
     <ClInclude Include="Source\Game\stages.h" />
     <ClInclude Include="Source\Game\UI.h" />

@@ -16,11 +16,15 @@ struct Rock {
     unsigned int permaType=0;
     int health = 1; // negative number for over damage handle
     int timer=-1;
-    std::map<int,int> rockScore{
-        {0,1},{1,1},{2,2},{3,3},{4,5},
-        {5,20},{6,7},{7,7},{8,3},{9,3},
-        {10,7},{11,4},{12,6},{13,15},{14,8},
-        {15,5},{16,9}
+    struct RockInfo {
+        int score;
+        int mohs;
+    };
+    std::map<int,RockInfo> rockInfos{
+        {0,{1,1}},{1,{1,1}},{2,{2,2}},{3,{3,2}},{4,{5,3}},
+        {5,{20,5}},{6,{7,4}},{7,{7,4}},{8,{3,2}},{9,{3,2}},
+        {10,{7,4}},{11,{4,2}},{12,{6,3}},{13,{15,5}},{14,{8,4}},
+        {15,{5,3}},{16,{9,4}}
     };
 };
 
