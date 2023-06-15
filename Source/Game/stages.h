@@ -39,6 +39,9 @@
 
 #include "../Config/config.h"
 
+#include "../Library/audio.h"
+using game_framework::CAudio;
+
 using temp_name::Map;
 
 namespace game_framework {	namespace stage {

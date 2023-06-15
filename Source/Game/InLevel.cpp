@@ -205,6 +205,12 @@ void InLevel::OnMove()							// 移動遊戲元素
 		{ /* bomb rock BEGIN */ //FIXME: bombing area is slightly off
 			if ( bombAnime.getFuse()==3 ) { /* is bombing */
 				const auto 🧨 = Rect::FromCenter(bombAnime.getCenter(), Vector2i(1,1) * bombAnime.getBlastRadius() * TILE_SIZE * SCALE_SIZE);
+				if(Rect::isOverlay(player.getHitBox(),🧨)){
+					playerStatus.health-=bombAnime.getDamage()*5;
+				}
+				if(Rect::isOverlay(bug.GetHitbox(),🧨)){
+					bug.alterHealth(-bombAnime.getDamage()*10);
+				}
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
