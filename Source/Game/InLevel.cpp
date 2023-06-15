@@ -308,7 +308,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 	fishgame.fishKeyDown(isPress('Z'));
 	fishgame.Update();
 	//when enter colddown get FishGame result 
-	if (fishgame.GetFishColddown() == 1 && bag._money > 2){
+	if (fishgame.GetFishColddown() == 1){
 		if (fishgame.GetFishSuccess()){
 			bag._money += 5;
 		}
@@ -401,6 +401,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	} /* switch (nChar) */
 	
 	if (nChar=='Z'){ //when press other key stop fish game
+		if(bag._money < 2) goto actionFailed;
 		if (fishgame.GetFishState()==Fish::fishReady){
 			//when FishGame not start, press z init and start fishgame
 			fishgame.fishReset(player.position);

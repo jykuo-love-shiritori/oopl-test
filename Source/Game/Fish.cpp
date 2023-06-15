@@ -22,7 +22,7 @@ void Fish::init(){
 		}, RGB(0, 0, 0));
 	_innerBar.SetScale(1.0);
 	_fishstate = fishReady;
-	_colddown = 0;
+	_colddown = 2; // skip 1, bc colddown 1 makes fishstate true
 }
 
 
