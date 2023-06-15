@@ -34,10 +34,14 @@
 #include "ShopKeeper.h"
 #include "Updatable.h"
 #include "./UI/X.h"
+#include "Fish.h"
 #include "../Unity/Vector2.h"
 #include "../Game/Player.h"
 
 #include "../Config/config.h"
+
+#include "../Library/audio.h"
+using game_framework::CAudio;
 
 using temp_name::Map;
 
@@ -81,6 +85,7 @@ namespace game_framework {	namespace stage {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private: /* helper */
 		void InLevel::SetupLevel(Map::Info mapInfo);
+		void GameOver();
 	private:
 		/* BIG BLACK CANVAS */
 		CMovingBitmap BBC;
@@ -108,6 +113,7 @@ namespace game_framework {	namespace stage {
 		bool DEATH;
 		bool isInTradingRoom;
 		X X;
+		Fish fishgame;
 
 		int m = 0;
 		Bag bag;
@@ -126,6 +132,10 @@ namespace game_framework {	namespace stage {
 			&uis.eh,
 			&uis.tb,
 		};
+
+		CAudio* mp5=CAudio::Instance();
+
+		Bittermap resultScreen;
 	};
 
 	class GameOver : public CGameState {
