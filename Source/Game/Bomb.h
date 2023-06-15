@@ -19,11 +19,13 @@ class Bomb : public Updatable {
         void init();
         void useBomb(Vector2i playerLocation,int type);
         void Update() override;
-        void drawBomb();
+		void drawBomb() { _sprite.Draw(); }
+		void drawBigWhiteCover() { _bigWhiteCover.Show(); }
 
     private:
         int _blastRadius;
         int _damage;
         int _fuse;
         game_framework::Bittermap _sprite;
+        game_framework::Bittermap _bigWhiteCover;
 };

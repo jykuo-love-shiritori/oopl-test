@@ -2,6 +2,7 @@
 #include "Bomb.h"
 
 #include "../Config/scaler.h"
+#include "../Config/config.h"
 #include "../Library/audio.h"
 
 
@@ -26,6 +27,11 @@ void Bomb::init(){
 
     _fuse=-1;
     _sprite.SetShow(false);
+
+	_bigWhiteCover.LoadBitmapByString({"Resources/whiteatom.bmp"},RGB(0,0,0));
+    _bigWhiteCover.position = {0,0};
+    _bigWhiteCover.SetScale(SIZE_X);
+    _bigWhiteCover.SetShow();
 }
 
 void Bomb::useBomb(Vector2i placeLocation,int type){
@@ -53,16 +59,19 @@ void Bomb::useBomb(Vector2i placeLocation,int type){
 }
 
 void Bomb::Update(){
-    if(_fuse != 0){
-        if(_fuse<10) _sprite.SetFrameIndexOfBitmap(_fuse);
-        _fuse--;
-        if(_fuse<3){
-			_sprite.SetShow(false);
-			game_framework::CAudio::Instance()->Stop(4);
-		}
-	}
-}
+    if(_fuse == 0) return;
+    
+    // anime start
+    if(_fuse<10) _sprite.SetFrameIndexOfBitmap(_fuse);
 
-void Bomb::drawBomb(){
-    _sprite.Draw();
+    // big white cover
+    _bigWhiteCover.SetShow(_fuse==5 || _fuse==4);
+
+    // cd
+    if(_fuse<3){
+        _sprite.SetShow(false);
+        game_framework::CAudio::Instance()->Stop(4);
+    }
+
+    _fuse--;
 }

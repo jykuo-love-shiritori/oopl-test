@@ -322,6 +322,9 @@ void InLevel::OnMove()							// 移動遊戲元素
 	if (playerStatus.health < 0 ) playerStatus.health = 0;
 	if (playerStatus.energy < 0 ) playerStatus.energy = 0;
 
+	isInTradingRoom = map.getLevel() == 10; //FIXED: trading room
+	uis.tb.setShowPrice(isInTradingRoom);
+
 	fishgame.fishKeyDown(isPress('Z'));
 	fishgame.Update();
 	//when enter colddown get FishGame result 
@@ -469,22 +472,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	#define FOOD_KEY '4'
 	bool isTradingKeyPress = isPress(VK_SHIFT);
 	if (isTradingKeyPress) { /* trading BEGIN */
-		bool isTradingRoom = map.getLevel() == 10;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
 			case CHERRY_BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
+				if(!isInTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::cherryBomb, 20)) goto actionFailed;
 				break;
 			case BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
+				if(!isInTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::Bomb, 80)) goto actionFailed;
 				break;
 			case MEGA_BOMB_KEY:
-				if(!isTradingRoom) goto actionFailed;
+				if(!isInTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::megaBomb, 200)) goto actionFailed;
 				break;
 			case FOOD_KEY:
-				if(!isTradingRoom) goto actionFailed;
+				if(!isInTradingRoom) goto actionFailed;
 				if(!bag.trade(Item::Food, 40)) goto actionFailed;
 				break;
 			// actionFailed:
@@ -598,6 +600,8 @@ void InLevel::OnShow()
 	map.drawFront();
 	
 	bug.drawBug();
+
+	bombAnime.drawBigWhiteCover();
 	
 	fishgame.showFish();
 	
