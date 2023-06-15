@@ -70,13 +70,28 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 
 	uis.tb._bag = &bag;
 	uis.rtui.setMoneyPtr(&bag._money);
+
+	mp5->Load(0,"Resources/Audio/brrrrr.mp3");
+	mp5->Load(1,"Resources/Audio/mineBGM.mp3");
+	mp5->Load(2,"Resources/Audio/stoneCrack1.wav");
+	mp5->Load(3,"Resources/Audio/stoneCrack2.wav");
+	mp5->Load(4,"Resources/Audio/bombFuse.mp3");
+	mp5->Load(5,"Resources/Audio/Determination.mp3");
+
+	resultScreen.LoadBitmapByString({
+		"Resources/resultScreenBG.bmp",
+		"Resources/resultScreen.bmp",
+		"Resources/finalScoreText.bmp"
+	},RGB(255,255,255));
 }
 
 void InLevel::OnBeginState()
 {
 	DEATH = false;
+	mp5->Stop(5);
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+	player._sprite_player.SetShow();
 
 	bag._money = 0;
 
@@ -87,6 +102,8 @@ void InLevel::OnBeginState()
 
 	playerStatus.health=100;
 	playerStatus.energy=100;
+
+	mp5->Play(1,true);
 }
 
 /* helper functions BEGIN */
@@ -130,6 +147,27 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 }
 /* helper functions END */
 
+void InLevel::GameOver(){
+	resultScreen.SetScale(2);
+	resultScreen.SetTopLeft(0,0);
+	resultScreen.SetFrameIndexOfBitmap(0);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1.5);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/4);
+	resultScreen.SetFrameIndexOfBitmap(1);
+	resultScreen.Show();
+
+	resultScreen.SetScale(1);
+	resultScreen.SetCenter(SIZE_X/2,SIZE_Y/3);
+	resultScreen.SetFrameIndexOfBitmap(2);
+	resultScreen.Show();
+
+	Digit finalScore =  Digit(&bag._money, 3);
+	finalScore.lsb_location={SIZE_X/2,SIZE_Y/2};
+	finalScore.Show();
+}
+
 void InLevel::OnMove()							// 移動遊戲元素
 {
 	//TODO: can change timer into cool thing
@@ -138,25 +176,32 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	if (playerStatus.health == 0) DEATH = true;
 	if (DEATH) {
+		static bool flag = false;
+		if (flag) return;
+		flag = true;
 		player._sprite_player.SetShow(false);
+		mp5->Stop(1);
+		mp5->Play(5,true);
+		GameOver();
+		return;
 	}
 	
 	// #define NO_COLLISION
 
 	Vector2i moveVec = getMoveVecByKeys();
-	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
+	// if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
 	if( moveVec!=Vector2i(0,0) ) { // is moving
 		// player moving speed
 		int speed = 0;
 		{ /* running and tried BEGIN */
-			const int highSpeed = 20;
+			const int highSpeed = 15;
 			const int lowSpeed = 10;
 			const int tiredSpeed = 5;
 			speed = lowSpeed;
 			if (isPress(VK_SHIFT)) { // run
 				if (playerStatus.energy > 0) {
 					speed = highSpeed;
-					playerStatus.energy -= 0.4;
+					playerStatus.energy -= 0.2;
 				} else {
 					X.Play();
 				}
@@ -183,7 +228,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
-	const int damage = 1;
 	{ /* break rock BEGIN */
 		{ /* attack rock BEGIN */
 			// A static set can be used to keep track of marked rocks until the end of the round of attack
@@ -196,7 +240,9 @@ void InLevel::OnMove()							// 移動遊戲元素
 				for (auto& 🗿 : 🗿🗿🗿) {
 					if (markedRocks.count(🗿) != 0) continue;
 					markedRocks.insert(🗿);
-					🗿->health -= damage;
+					🗿->health -= 1;
+					if(std::rand()%2==0){mp5->Play(2);}
+					else{mp5->Play(3);}
 				}
 			} else { /* is not attacking */
 				markedRocks.clear();
@@ -214,7 +260,7 @@ void InLevel::OnMove()							// 移動遊戲元素
 				// Enumerate all the rocks that collide with the bomb area
 				const vector<Rock*> 🗿🗿🗿 = rockManager.getCollisionWith(🧨);
 				for (auto& 🗿 : 🗿🗿🗿) {
-					🗿->health -= damage;
+					🗿->health -= bombAnime.getDamage();
 				}
 			}
 		} /* bomb rock END */
@@ -311,7 +357,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 #endif /* SPAWN_LADDER */
 #ifdef ELEVATOR
-		case 'E': // randomly create exit
+		case 'E': // go to trade room
 			{
 				static auto wasAt = -1;
 				if(wasAt == -1) {
@@ -322,11 +368,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 					wasAt = -1;
 				}
 				rockManager.clear();
-				player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+				SetupLevel(map.getInfo());
 			}
 			break;
 #endif /* ELEVATOR */
 		case 'R': /* BACK TO START SCREEN */
+			mp5->Stop(1);
+			mp5->Stop(5);
 			GotoGameState(GAME_STATE_INIT);
 			break;
 		case 'H':
@@ -364,9 +412,13 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		case 'P': // player attack
 			if(playerStatus.energy == 0) goto actionFailed;
-			if( !player.canAttack() ) /* skip */;
+			if( !player.canAttack() ) break;/* skip */;
 			player.attack();
-			playerStatus.energy -= 1.5;
+			mp5->Play(0);
+			playerStatus.energy -= 1;
+			break;
+		case 'Q': // go to game over
+			playerStatus.health=0;
 			break;
 	}
 	/* trade and use items */
@@ -376,7 +428,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	#define FOOD_KEY '4'
 	bool isTradingKeyPress = isPress(VK_SHIFT);
 	if (isTradingKeyPress) { /* trading BEGIN */
-		bool isTradingRoom = true;//map.getLevel() == 10; //FIXME: trading room
+		bool isTradingRoom = map.getLevel() == 10;//map.getLevel() == 10; //FIXME: trading room
 		switch (nChar) {
 			case CHERRY_BOMB_KEY:
 				if(!isTradingRoom) goto actionFailed;
@@ -480,6 +532,10 @@ void InLevel::OnShow()
 	
 	for (auto oui : ouioui) {
 		oui->Show();
+	}
+
+	if(DEATH){
+		GameOver();
 	}
 	/* top layer */
 }
