@@ -56,6 +56,8 @@ BEGIN_MESSAGE_MAP(CGameView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
+	ON_WM_MBUTTONDOWN()
+	ON_WM_MOUSEWHEEL()
 	ON_WM_KILLFOCUS()
 	ON_COMMAND(ID_FILE_PAUSE, OnFilePause)
 	ON_UPDATE_COMMAND_UI(ID_FILE_PAUSE, OnUpdateFilePause)
@@ -196,7 +198,14 @@ void CGameView::OnRButtonUp(UINT nFlags, CPoint point)
 	game_framework::CGame::Instance()->OnRButtonUp(nFlags, point);
 	CView::OnRButtonUp(nFlags, point);
 }
-
+void CGameView::OnMButtonDown(UINT nFlags, CPoint point) {
+	game_framework::CGame::Instance()->OnMButtonDown(nFlags, point);
+	CView::OnMButtonDown(nFlags, point);
+}
+BOOL CGameView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+	game_framework::CGame::Instance()->OnMouseWheel(nFlags, zDelta, pt);
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
+}
 void CGameView::OnKillFocus(CWnd* pNewWnd) 
 {
 	CView::OnKillFocus(pNewWnd);

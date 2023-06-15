@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "../Game/Player.h"
 
@@ -22,9 +22,13 @@ void Player::Init() {
     _sprite_attack.SetHitBox(regularBoxSize * 1.0);
 	_sprite_attack.SetShow(false);
 	_attackDirection = Vector2i(1, 0);
+    lastGotHitTime = 0;
 }
 
 void Player::Draw() {
+    if (clock() - lastGotHitTime > 1000) {
+		_sprite_player.SetFrameIndexOfBitmap(0);
+    }
     _sprite_player.Draw();
     _sprite_attack.Draw();
 }
@@ -59,7 +63,13 @@ void Player::MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool) {
 void Player::attack() {
     _attackTimer = PLAYER_ATTACK_TIME + PLAYER_ATTACK_CD;
 }
-
+void Player::GotHit(int damage) {
+    if (damage == 0) return;
+    lastGotHitTime = clock();
+	health -= damage;
+    🔫💥 = damage;
+    _sprite_player.SetFrameIndexOfBitmap(1);
+}
 void Player::Update() {
     { // attack timer BEGIN
         if(_attackTimer > 0) {

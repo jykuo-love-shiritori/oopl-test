@@ -27,6 +27,8 @@
 #include "Bag.h"
 #include "Bittermap.h"
 #include "./UI/RightTopUI.h"
+#include "Cavallo.h"
+#include "Proxy.h"
 #include "./UI/UI.h"
 #include "./UI/eh.h"
 #include "./UI/Toolbar.h"
@@ -80,6 +82,8 @@ namespace game_framework {	namespace stage {
 		void OnMouseMove(UINT nFlags, CPoint point);	// 處理滑鼠的動作 
 		void OnRButtonDown(UINT nFlags, CPoint point);  // 處理滑鼠的動作
 		void OnRButtonUp(UINT nFlags, CPoint point);	// 處理滑鼠的動作
+		void OnMButtonDown(UINT nFlags, CPoint point);
+		void OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	protected:
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
@@ -112,6 +116,8 @@ namespace game_framework {	namespace stage {
 		// FoodShop gus;
 		bool DEATH;
 		X X;
+		Cavallo 🐼;
+		Proxy<Cavallo> 🐼Proxy;
 		Fish fishgame;
 
 		int m = 0;

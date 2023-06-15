@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdlib>		// for std::rand()
 #include <winuser.h>	// for GetKeyState()
+#include <functional>
 
 #include "../Config/keymap.h"
 #include "../Config/scaler.h"
@@ -25,14 +26,13 @@ using namespace game_framework::stage;
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
 
-InLevel::InLevel(CGame *g) : CGameState(g)
+InLevel::InLevel(CGame *g) : CGameState(g), 🐼Proxy(🐼, false)
 {
 }
 
 InLevel::~InLevel()
 {
 }
-
 void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 {
 	BBC.LoadBitmapByString({"Resources/blackatom.bmp"},RGB(255,255,255));
@@ -40,7 +40,16 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 	const Vector2i regularBoxSize = Vector2i(1, 1) * TILE_SIZE * SCALE_SIZE;
 	
 	player.Init();
-
+	🐼.load();
+	// use bind to get the function for Covallo
+	🐼.init(
+	  {0, 0},
+	  std::bind(&Player::GotHit, &player ,std::placeholders::_1), 
+	  std::bind(&RockManager::getCollisionWith, &rockManager, std::placeholders::_1),
+	  &map.hp,
+	  true, /*            autoAttack position v */
+	  true, /*follow position > */ &player.position);
+	
 	map.loadBMPs(datapath);
 	map.bmps.SetScale(SCALE_SIZE);
 
@@ -105,6 +114,7 @@ void InLevel::OnBeginState()
 	playerStatus.energy=100;
 
 	mp5->Play(1,true);
+	🐼Proxy.SetEnable(false);
 }
 
 /* helper functions BEGIN */
@@ -136,6 +146,9 @@ void InLevel::SetupLevel(Map::Info mapInfo) {
 
 	/* generate exit */
 	player.position = mapInfo.startPosition * TILE_SIZE * SCALE_SIZE;
+	const auto ps = map.getPlaceablePositions();
+	// set position(random placeable position) when enter new level
+	🐼.setPosition(ps[rand() % static_cast<int>(ps.size())] * TILE_SIZE * SCALE_SIZE);
 	if (mapInfo.hasPresetExit) {
 		testExit.position = mapInfo.presetExitPosition * TILE_SIZE * SCALE_SIZE;
 		testExit.SetShow();
@@ -190,7 +203,8 @@ void InLevel::OnMove()							// 移動遊戲元素
 	// #define NO_COLLISION
 
 	Vector2i moveVec = getMoveVecByKeys();
-	// if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
+	const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
+	if (DEATH) moveVec=Vector2i(0,0); // can't move bc it's daed
 	if( moveVec!=Vector2i(0,0) ) { // is moving
 		// player moving speed
 		int speed = 0;
@@ -215,7 +229,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 			// Update player facing
 			if(moveVec!=Vector2i(0,0)) attackDirection=moveVec;
 
-			const HitboxPool collisionPool = map.hp + rockManager.getHitbox();
 			for (int i = 0; i < speed; i++) {
 				#ifndef NO_COLLISION
 				player.MoveWithCollision(moveVec, collisionPool);
@@ -223,9 +236,13 @@ void InLevel::OnMove()							// 移動遊戲元素
 				player.Move(moveVec);
 				#endif /* NO_COLLISION */
 			}
+			// move all Cavallo things with collision
 		} /* player move and collision END */
-	}
+	} // endif is moving
 
+	🐼Proxy.Invoke(&Cavallo::move, Unity::HitboxPool(collisionPool));
+	playerStatus.health -= player.🔫💥 * 0.5;
+	player.🔫💥 = 0;
 	player.Update();
 
 	// Damage value caused by the attack. //FIXME: and bomb
@@ -336,8 +353,10 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			map.setLevel(mapIndex);
 			rockManager.clear();
 			player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
+
 			break;
 #endif /* JUMP_LEVEL_DEBUG_KEY */
+#ifdef RESPAWN_ROCKS_DEBUG_KEY
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
 				rockManager.clear();
@@ -349,6 +368,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				} while (rockManager.getHitbox().Collide(playerHitbox).size() != 0);
 			}
 			break;
+#endif /* RESPAWN_ROCKS_DEBUG_KEY*/
 		case 'N': // money++
 			bag._money += 10000;
 			break;
@@ -498,6 +518,17 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// 	break;
 		}
 	} /* endif isTradingKeyPress */
+	static string s = "";
+	s += static_cast<char>(nChar);
+	if (s.size() > 7) {
+		s = s.substr(1, 7);
+	}
+	if (s == "CAVALLO") {
+		🐼Proxy.SetEnable(true);
+	}
+	if (s == "DISABLE") {
+		🐼Proxy.SetEnable(false);
+	}
 	return;
 /*
  * YES this is a GOTO LABEL only be used in this scope(OnKeyDown()),
@@ -516,7 +547,22 @@ void InLevel::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void InLevel::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
 }
+void InLevel::OnMButtonDown(UINT nFlags, CPoint point)
+{
+	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
+	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
+	// set destination of Cavallo when click mouse wheel (for not follow mode)
+	🐼Proxy.Invoke(&Cavallo::setDest, Vector2i( point.x, point.y ));
+}
+void InLevel::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
+	point.x = point.x + Bittermap::CameraPosition->x - SIZE_X / 2;
+	point.y = point.y + Bittermap::CameraPosition->y - SIZE_Y / 2;
+	if (!🐼.isAutoAttack() && zDelta < 0) {
+		// if not auto attack throw bomb to mouse position
+		🐼Proxy.Invoke(&Cavallo::Throw, Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
+	}
 
+}
 void InLevel::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
 }
@@ -546,6 +592,8 @@ void InLevel::OnShow()
 	player.Draw();
 
 	X.Show();
+	// draw Cavallo and its things sprites
+	🐼Proxy.Invoke(&Cavallo::draw);
 
 	map.drawFront();
 	

@@ -206,7 +206,15 @@ namespace game_framework {
 		if (running)
 			gameState->OnRButtonUp(nFlags, point);
 	}
-
+	void CGame::OnMButtonDown(UINT nFlags, CPoint point)
+	{
+		if (running)
+			gameState->OnMButtonDown(nFlags, point);
+	}
+	void CGame::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+		if (running)
+			gameState->OnMouseWheel(nFlags, zDelta, pt);
+	}
 	void CGame::OnResume()
 	{
 		//

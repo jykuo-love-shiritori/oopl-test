@@ -1,4 +1,4 @@
-#ifndef PLAYER_H
+﻿#ifndef PLAYER_H
 #define PLAYER_H
 
 #include "../Game/Bittermap.h"
@@ -27,12 +27,15 @@ public:
     void attack();
     void Move(Vector2i moveVec);
 	void MoveWithCollision(Vector2i moveVec, HitboxPool hitboxPool);
+    void GotHit(int damage);
 
 private:
     int _attackTimer = 0;
     Vector2i _attackDirection;
 public:
-    int health; //FIXME: why no use :pinched_fingers:
+    int health;
+    int 🔫💥 = 0;
+    clock_t lastGotHitTime;
     Vector2i& position = _sprite_player.position;
     game_framework::Bittermap _sprite_player;
     game_framework::Bittermap _sprite_attack;
