@@ -8,11 +8,6 @@ private:
     bool enabled;
 public:
     Proxy(T& obj, bool enable) : object(obj), enabled(enable) {}
-    void Init(T& obj, bool enable)
-    {
-        object = obj;
-        enabled = enable;
-    }
     void SetEnable(bool enable) {
         enabled = enable;
     }
