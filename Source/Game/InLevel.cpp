@@ -98,6 +98,7 @@ void InLevel::OnInit()  								// 遊戲的初值及圖形設定
 void InLevel::OnBeginState()
 {
 	DEATH = false;
+	flag=false;
 	mp5->Stop(5);
 	map.setLevel(1);
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
@@ -190,7 +191,6 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 	if (playerStatus.health == 0) DEATH = true;
 	if (DEATH) {
-		static bool flag = false;
 		if (flag) return;
 		flag = true;
 		player._sprite_player.SetShow(false);
