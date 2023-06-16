@@ -103,7 +103,7 @@ void InLevel::OnBeginState()
 	player.position = map.getInfo().startPosition * TILE_SIZE * SCALE_SIZE;
 	player._sprite_player.SetShow();
 
-	bag._money = 0;
+	bag.reset();
 
 	auto mapInfo = map.getInfo();
 	SetupLevel(mapInfo);
@@ -340,11 +340,11 @@ void InLevel::OnMove()							// 移動遊戲元素
 
 void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-//#define DEBUG_KEY
 #ifdef DEBUG_KEY
 
 	int mapIndex = (int)map.getLevel();
 	switch (nChar) {
+
 #ifdef JUMP_LEVEL_DEBUG_KEY
 		case 'J': // next map
 		case 'K': // previous map
@@ -359,6 +359,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 			break;
 #endif /* JUMP_LEVEL_DEBUG_KEY */
+
 #ifdef RESPAWN_ROCKS_DEBUG_KEY
 		case 'O': // randomly create/clear rock
 			if(isPress(VK_SHIFT)){
@@ -372,13 +373,21 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 #endif /* RESPAWN_ROCKS_DEBUG_KEY*/
+
+
+#ifdef ADD_MONEY_DEBUG_KEY
 		case 'N': // money++
 			bag._money += 10000;
 			break;
+#endif /* ADD_MONEY_DEBUG_KEY */
+
+#ifdef CHERRY_BOMB_DEBUG_KEY
 		case 'B': /* place cherry bomb */
 			bombAnime.useBomb(player.position,0);
 			break;
-#ifdef SPAWN_LADDER
+#endif /* CHERRY_BOMB_DEBUG_KEY */	
+
+#ifdef SPAWN_LADDER_DEBUG_KEY
 		case 'E': // randomly create exit
 			{
 				testExit.SetShow();
@@ -386,7 +395,8 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				testExit.position = pps[std::rand()%pps.size()] * TILE_SIZE * SCALE_SIZE;
 			}
 			break;
-#endif /* SPAWN_LADDER */
+#endif /* SPAWN_LADDER_DEBUG_KEY */
+
 #ifdef ELEVATOR
 		case 'E': // go to trade room
 			{
@@ -403,26 +413,33 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			break;
 #endif /* ELEVATOR */
+
+#ifdef RESTART_DEBUG_KEY
 		case 'R': /* BACK TO START SCREEN */
 			mp5->Stop(1);
 			mp5->Stop(5);
 			GotoGameState(GAME_STATE_INIT);
 			break;
+#endif /* RESTART_DEBUG_KEY */
+
+#ifdef ADD_HEALTH_DEBUG_KEY
 		case 'H':
 			playerStatus.health += 20;
 			break;
-			// } else if(Rect::isOverlay(player.GetHitbox(), dwarf.GetHitbox())) {
-			// 	dwarf.trade();
-			// } else if(Rect::isOverlay(player.GetHitbox(), gus.GetHitbox())) {
-			// 	gus.trade();
-			// }
-			// /* ... */
-			break;
+#endif /* ADD_HEALTH_DEBUG_KEY */
+
+#ifdef KILL_BUG_DEBUG_KEY
 		case 'L': /* kill bug */
 			bug.alterHealth(-999);
 			break;
+#endif /* KILL_BUG_DEBUG_KEY */
 	} /* switch (nChar) */
-	
+
+#endif /* DEBUG_KEY */
+
+	if(DEATH) return; // can't control
+
+	// FISHING
 	if (nChar=='Z'){ //when press other key stop fish game
 		if(bag._money < 2) goto actionFailed;
 		if (fishgame.GetFishState()==Fish::fishReady){
@@ -434,10 +451,6 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else {
 		fishgame.SetFishState(Fish::fishcolddown);
 	}
-
-	#endif /* DEBUG_KEY */
-
-	if(DEATH) return; // can't control
 
 	switch (nChar) { // attack and action(only enter exit for now)
 		case KEY_DO_ACTION: // Check/Do Action
@@ -583,8 +596,9 @@ void InLevel::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void InLevel::OnShow()
 {
-	BBC.ShowBitmap();
 	/* bottom layer */
+	BBC.ShowBitmap();
+	
 	map.drawBack();
 	map.drawBuilding();
 

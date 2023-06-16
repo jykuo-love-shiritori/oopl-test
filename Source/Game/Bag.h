@@ -14,6 +14,7 @@ class Bag {
 
         bool use(Item itemType);
         bool trade(Item item, unsigned int price);
+        void reset();
 
         /* getter */
         unsigned int getWeight() const { return _weight; }

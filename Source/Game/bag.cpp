@@ -3,6 +3,11 @@
 #include "Bag.h"
 #include "Item.h"
 
+void Bag::reset(){
+    _items.clear();
+    _money=0;
+}
+
 bool Bag::use(Item itemType) {
     auto i=std::find(_items.begin(),_items.end(), itemType);
     if(i==_items.end()) return false; // not found
