@@ -401,7 +401,7 @@ void InLevel::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'E': // go to trade room
 			{
 				static auto wasAt = -1;
-				if(wasAt == -1) {
+				if(wasAt == -1 || map.getLevel() != 10) {
 					wasAt = map.getLevel();
 					map.setLevel(10);
 				} else {
