@@ -1,74 +1,36 @@
-# Stardew Valley OOPL Project
+# Two Credit Valley : OOP Lab Game Project
 
-|Keys   |Function           |
-|:-----:|:-----------------:|
-|W/A/S/D|movement|
-|X|go to next level if on exit|
+## Introduction
+Your goal is to mine as many valuables as possible to rack up your score while fighting the deadly cave flies and managing your energy, health and items. Fishing is a bonus minigame. If game is too easy, type "cavallo" for added difficulty.
+|Key|Description|
+|-|-|
+|W/A/S/D|Move in every direction|
+|Shift+W/A/S/D|Run in every direction|
+|X|Go to next level if on ladder|
+|E|Teleport to shop level (Level 10)|
+|R|Return to title screen|
+|P|Attack in last faced direction|
+|1|Use cherry bomb|
+|2|Use bomb|
+|3|Use mega bomb|
+|4|Use food|
+|Shift+1/2/3/4|Buy respective items above (Only available in shop)|
 
-## Debug
+|DLC Key|Description|
+|-|-|
+|Z|Fish (-2 money if fail, +5 if successful)|
+|CAVALLO|Type cavallo to enable Cavallo (enemy)|
+|DISABLE|Type disable to disable Cavallo|
 
-|Keys   |Function           |
-|:-----:|:-----------------:|
-|J/K    |next/previousmap   |
-|E      |create random exit |
-|O      |create random rocks|
-|Shift+O|clear all rocks    |
+|Debug Key|Description|
+|-|-|
+|H|Add 20 health|
+|L|Kill annoying bug|
+|N|Add 10000 money|
 
-## Known bugs:
-- If rocks are not cleared before entering next level, rocks will remain on last levels locations
-- If player spawns on said rocks, game will freeze
-- Hitbox is still WIP, actual hitbox is different from sprite
+## Misc
 
-# TODO
-- [x] Map data
-  - [x] python preprosses TMX to [Custom format](https://github.com/jykuo-love-shiritori/tileset-image-cropper/tree/master/tmx_preprocess/txm2bin)
-- [x] Steal texture from original game
-  - [x] [jykuo-love-shiritori/tileset-image-cropper](https://github.com/jykuo-love-shiritori/tileset-image-cropper)
+Referenced from [Stardew Valley - The Mines](https://stardewvalleywiki.com/The_Mines)
 
-Ores:
-  - [ ] Copper ore
-  - [ ] Iron ore
-  - [ ] Gold ore
-  - [ ] Iridium ore
+[Final report and Release](https://github.com/jykuo-love-shiritori/oopl-test-glu/releases/tag/Giraffe-goes-mining)
 
-Gems:
-  - [ ] Amethyst
-  - [ ] Topaz
-  - [ ] Quartz
-  - [ ] Earth crystal
-  - [ ] Aquamarine
-  - [ ] Frozen tear
-  - [ ] Jade
-  - [ ] Diamond
-  - [ ] Emeraldg
-  - [ ] Fire quartz
-  - [ ] Ruby
-
-Monsters:
-  - [ ] Green slime
-  - [ ] Duggy
-  - [ ] Bug
-  - [ ] Rock crab
-  - [ ] Grub
-  - [ ] Cave fly
-  - [ ] Bat
-  - [ ] Stone golem
-  - [ ] Frost jelly
-  - [ ] Frost bat
-  - [ ] Dust sprite
-  - [ ] Ghost
-  - [ ] Skeleton
-  - [ ] Red sludge
-  - [ ] Lava bat
-  - [ ] Lava crab
-  - [ ] Shadow brute
-  - [ ] Shadow shaman
-  - [ ] Metal head
-  - [ ] Squid head
-
-Mechanics:
-  - [ ] Randomize rock formation?
-  - [ ] Randomize monster spawns?
-  - [ ] Ladders spawn from rocks
-  - [ ] Monster behavior
-  - [ ] Infested and mushroom floors
